@@ -10,8 +10,8 @@ description: >-
 minAdvancedPreset: 1.0.0
 
 actors:
-  narrator: { name: Freesia, prefix: "{{ap::name::narrator}}: ", color: pink }
-  editor: { name: Petals, prefix: "{{ap::name::editor}}: ", color: purple }
+  narrator: { name: Freesia, prefix: "{{ap::name::narrator}}: ", color: primary }
+  editor: { name: Petals, prefix: "{{ap::name::editor}}: ", color: accent }
   user: { name: "{{user}}", prefix: "{{ap::name::user}}: " }
 narrator: narrator
 user: user

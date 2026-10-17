@@ -6,17 +6,17 @@
   "author": "mirrorange",
   "description": "Freesia & Petals collaborative writing: regional prompt assembly and staged workflows (linear / iterative / edit) on five transports.",
   "minAdvancedPreset": "1.0.0",
-  "hash": "3a22cdde7d03ea18",
+  "hash": "edf18273374ceb02",
   "actors": {
     "narrator": {
       "name": "Freesia",
       "prefix": "{{ap::name::narrator}}: ",
-      "color": "pink"
+      "color": "primary"
     },
     "editor": {
       "name": "Petals",
       "prefix": "{{ap::name::editor}}: ",
-      "color": "purple"
+      "color": "accent"
     },
     "user": {
       "name": "{{user}}",
