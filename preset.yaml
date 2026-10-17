@@ -1,0 +1,435 @@
+# Petals Preset (花瓣预设) v7 — Freesia & Petals collaborative writing for Advanced Preset.
+formatVersion: 1
+id: petals
+name: Petals Preset
+version: 7.0.0
+author: mirrorange
+description: >-
+  Freesia & Petals collaborative writing: regional prompt assembly and staged workflows
+  (linear / iterative / edit) on five transports.
+minAdvancedPreset: 1.0.0
+
+actors:
+  narrator: { name: Freesia, prefix: "{{ap::name::narrator}}: ", color: pink }
+  editor: { name: Petals, prefix: "{{ap::name::editor}}: ", color: purple }
+  user: { name: "{{user}}", prefix: "{{ap::name::user}}: " }
+narrator: narrator
+user: user
+
+styles:
+  prefill: dialogue
+  plaintext: dialogue
+  structured: imperative
+  tool-single: imperative
+  tool-multi: imperative
+plaintextFormat: prefix
+contentMarker: <START_OF_CONTENT>
+prefillGuide: <START_OF_STORY>
+historyItemTemplate: "{{prefix}}{{content}}"
+stageHeading: "### Step {{n}} · {{label}} ({{actor}}){{optional}} → `{{target}}`"
+
+regions:
+  - { id: top, role: system, merge: join }
+  - { id: role, role: system }
+  - { id: mode, role: system }
+  - { id: guidelines, role: system, merge: { wrap: guidelines } }
+  - { id: writing_style, role: system, merge: { wrap: writing_style } }
+  - { id: settings, native: true }
+  - { id: history, role: system, anchor: historyStart }
+  - { id: memory, role: system, merge: join, anchor: historyEnd }
+  - { id: questions, role: system, merge: join }
+  - { id: task, role: system }
+  - { id: bottom, role: system, anchor: tail }
+workflowRegion: task
+questionsRegion: questions
+
+# Writing tab. '' / 0 = not set; prompts for unset params are left out.
+groups:
+  role: { label: Role, order: 10 }
+  mode: { label: Mode, order: 20 }
+  guidelines: { label: Guidelines, order: 30 }
+  narrative: { label: Narrative agency, allowNone: true }
+  style:
+    label: Writing Style
+    description: One main style (or none); Eros can be added on top for NSFW scenes.
+    order: 40
+    allowNone: true
+  features: { label: Features, order: 50 }
+  language:
+    label: Language
+    description: Unset languages follow the story so far; the workflow language falls back to the reply language.
+    order: 60
+    tab: writing
+  length: { label: Length, order: 70, tab: writing }
+
+params:
+  - id: language
+    type: text
+    label: Reply language
+    description: Language of the story and of Freesia's replies.
+    group: language
+    unset: the language used in the story so far
+    options: [简体中文, 繁體中文, English, 日本語, 한국어]
+  - id: dialogueLanguage
+    type: text
+    label: Dialogue language
+    description: >-
+      Language spoken by the characters. When it differs from the reply language, each line of dialogue is
+      followed by a translation in the reply language.
+    group: language
+    fallback: language
+    options: [简体中文, 繁體中文, English, 日本語, 한국어]
+  - id: workflowLanguage
+    type: text
+    label: Workflow language
+    description: Language of the workflow (Freesia ↔ Petals discussion, notes and thinking). English can save tokens.
+    group: language
+    fallback: language
+    options: [English, 简体中文, 繁體中文, 日本語, 한국어]
+  - id: draftLanguage
+    type: text
+    label: Draft language
+    description: Iterative workflow only — write the internal draft in this language, then revise in the reply language.
+    group: language
+    options: [English, 简体中文, 日本語]
+  - id: length
+    type: number
+    label: Reply length
+    description: Target length of the story content of each reply (workflow stages and structures excluded).
+    group: length
+    unit: words
+    min: 50
+    max: 10000
+    options: [400, 600, 800, 1200]
+  - id: lengthMode
+    type: select
+    label: Length strategy
+    group: length
+    unset: approximately
+    options:
+      - { value: "", label: Unset }
+      - { value: approx, label: Approximately, text: approximately }
+      - { value: atLeast, label: At least, text: at least }
+      - { value: atMost, label: At most, text: no more than }
+
+structures:
+  reply:
+    kind: reply
+    tag: Freesia_Reply
+    field: reply
+    title: "{{ap::name::narrator}}"
+    formatPrompt:
+      tag: |-
+        <Freesia_Reply>
+        <p>[paragraph]</p>
+        <p special>[highlight paragraph]</p>
+        <blockquote>[quote]</blockquote>
+        </Freesia_Reply>
+
+        Only use `<p>`, `<p special>`, and `<blockquote>` tags in <Freesia_Reply>. No other HTML tags, Markdown syntax or inline styles allowed. All tags are optional, repeatable, and may appear in any order. Reply must contain the main content only. No conversational fillers, headers, or footers allowed.
+      field: >-
+        Put the reply in the `reply` field. Only use `<p>`, `<p special>` (highlight) and `<blockquote>` tags inside it.
+        No other HTML tags, Markdown syntax or inline styles allowed. No conversational fillers, headers, or footers.
+  synopsis:
+    kind: synopsis
+    tag: synopsis
+    field: synopsis
+    formatPrompt:
+      tag: |-
+        <synopsis>
+          <time>...</time>
+          <location>...</location>
+          <event>...</event>
+          <summary>...</summary>
+        </synopsis>
+      field: Fill the `synopsis` field with `time`, `location`, `event` and `summary`.
+  options:
+    kind: options
+    tag: options
+    field: options
+    count: 4
+    formatPrompt:
+      tag: |-
+        <options>
+        <option title="...">...</option>
+        <option title="...">...</option>
+        <option title="...">...</option>
+        <option title="...">...</option>
+        </options>
+      field: 'Fill the `options` field with 4 items, each `{ "label": "...", "content": "..." }`.'
+  memory:
+    kind: memory
+    tag: Freesia_Memory
+    field: memory_ops
+    formatPrompt:
+      tag: |-
+        Use exactly one block per whole-entry update:
+
+        <Freesia_Memory>
+        <scope>memory</scope>
+        <operation>replace</operation>
+        <key>[Exact unique title]</key>
+        <content>[Complete new content for this title]</content>
+        </Freesia_Memory>
+
+        `scope` is `memory` (this chat) or `global_memory` (all chats).
+        `replace` creates the title if absent, or replaces its entire content if present.
+        To delete an entire entry:
+
+        <Freesia_Memory>
+        <scope>memory</scope>
+        <operation>delete</operation>
+        <key>[Exact existing title]</key>
+        </Freesia_Memory>
+
+        Only `replace` and `delete` exist. Never append or perform substring edits.
+        Escape &, < and > in key/content as &amp;, &lt; and &gt;.
+      field: |-
+        Add one item per whole-entry update to `memory_ops`:
+        `{ "scope": "memory" | "global_memory", "operation": "replace" | "delete", "key": "Exact unique title", "content": "Complete new content" | null }`.
+        `replace` creates or fully overwrites this title. `delete` removes this title and requires null content.
+        Only these two operations exist; no append or substring edits. `key` is the memory title, not a schema keyword named title.
+        Use normal JSON escaping, not XML entity escaping, for field values. Leave `memory_ops` empty when no updates are requested.
+  recap:
+    kind: recap
+    tag: Freesia_Summary
+    field: story_recap
+    formatPrompt:
+      tag: |-
+        <Freesia_Summary>
+        [The complete updated story recap as plain narrative text]
+        </Freesia_Summary>
+
+        This is a separate plain-text recap, not a titled memory entry or memory operation.
+        Replace the entire previous recap with the complete updated recap. Escape &, < and > in the recap as &amp;, &lt; and &gt;.
+      field: |-
+        Put the complete updated story recap in the `story_recap` string field.
+        Use plain narrative text, not a title/content object or a `memory_ops` item.
+        The value replaces the entire previous recap; combine the previous recap and newer events into one complete text.
+        Use normal JSON escaping, not XML entity escaping. Use null (or omit this optional field) when no recap update is requested.
+  impersonate:
+    kind: impersonate
+    tag: Freesia_Impersonate
+    field: impersonate
+    formatPrompt:
+      tag: |-
+        <Freesia_Impersonate>
+        [The generated reply content acting as {{ap::name::user}}]
+        </Freesia_Impersonate>
+      field: Put the generated reply (acting as {{ap::name::user}}) in the `impersonate` field.
+  love_letter:
+    kind: custom
+    shape: text
+    display: hidden
+    tag: love_letter
+    field: love_letter
+    formatPrompt:
+      tag: |-
+        <love_letter>
+        My dearest {{ap::name::user}},
+        ...
+        [Content continues to meet the 600-word count]
+        ...
+        </love_letter>
+      field: Put the love letter (at least 600 words, addressed to {{ap::name::user}}) in the `love_letter` field.
+
+regex:
+  - id: summary
+    pattern: (总结|概括|梗概|摘要|summarize|summary|recap|digest)
+    flags: i
+    target: meta
+    requires: meta.pure
+  - id: impersonate
+    pattern: (代写|代拟|帮我(写|回)|替我(写|回|说)|扮演我|impersonat|ghostwrit|write (my|the) (next )?(reply|message|response) for me)
+    flags: i
+    target: meta
+    requires: meta.pure
+
+meta:
+  trigger: "@{{ap::name::narrator}}"
+  wrap: true
+  recentCount: 3
+  tasks:
+    summary: flags.summary
+    impersonate: flags.impersonate
+  impersonatePrompt: "@{{ap::name::narrator}} Please ghostwrite my next reply."
+
+tokenSaving:
+  keepFullTurns: 6
+  truncateUserAfter: 2000
+  synopsisTemplate: "[{{time}} · {{location}}] {{event}}: {{summary}}"
+
+syntheticTurns:
+  - id: init
+    label: Workflow init
+    user: <!-- Workflow Start -->
+    tool:
+      name: ap_workflow_init
+      description: Initialise the Petals writing workflow. Returns the instructions for this turn.
+    # User-supplied opaque Gemini signature; sent only to Gemini when `sendThoughtSignature` is on. Never edit.
+    thoughtSignature: AY89a19rZjAaoGPoZIQYJVKTJki6wEZ833K90LZvrH0lkrtbJHgi1gs/uato/uKR2MTxgGXruDHi5dCr9axRX2GJBT1Net7a+u2cgwc5xYKL2Fomowpj4czoV5vAq/OYoJ2hefMPtuf7aLRuPSHInA==
+    response:
+      single: Workflow initialised. Now call `{{submit}}` exactly once, filling every field in order to complete the whole workflow in a single call.
+      multi: Workflow initialised. Complete the workflow by calling the stage tools in order, starting with `{{first}}`. Each tool records one stage.
+      parallel: Workflow initialised. Complete the workflow by calling the stage tools in order, starting with `{{first}}`. You may call several stage tools in one reply (in order) to finish faster.
+
+tools:
+  submit: "Submit the complete Petals workflow for this turn: every stage in order, then the final content and structures."
+  stagePrefix: ap_stage_
+  stageResult: Recorded. Next, call `{{next}}`.
+  nudge: The workflow is not finished. Continue by calling `{{next}}`.
+
+theme:
+  light: { primary: "#c026d3", accent: "#9333ea" }
+  dark: { primary: "#e879f9", accent: "#c084fc" }
+
+carrier:
+  label: 🌸 Petals
+  order:
+    - top
+    - role
+    - mode
+    - guidelines
+    - writing_style
+    - main: false
+    - worldInfoBefore
+    - personaDescription
+    - charDescription
+    - charPersonality
+    - scenario
+    - enhanceDefinitions: false
+    - nsfw: false
+    - worldInfoAfter
+    - dialogueExamples
+    - history
+    - chatHistory
+    - jailbreak: false
+    - memory
+    - questions
+    - task
+    - bottom
+
+moduleOrder:
+  - core
+  - context
+  - role-freesia
+  - mode-continuation
+  - mode-expansion
+  - "*"
+  - style-kardia
+  - style-aisthesis
+  - style-antheia
+  - style-kryos
+  - style-melos
+  - style-eros
+  - questions-core
+workflowOrder: [linear, iterative, edit, task]
+
+configurationDefaults:
+  # Empty names / prefixes use the actor defaults (Freesia / Petals / {{user}}).
+  sampling:
+    temperature: 1
+    frequency_penalty: 0
+    presence_penalty: 0
+    top_p: 1
+    top_k: 0
+    top_a: 0
+    min_p: 0
+    repetition_penalty: 1
+    openai_max_context: 1000000
+    openai_max_tokens: 16384
+    max_context_unlocked: true
+    stream_openai: true
+    names_behavior: 0
+    send_if_empty: ""
+    impersonation_prompt: "[Write the next reply as {{user}}, not as {{char}}.]"
+    new_chat_prompt: "[Start a new Chat]"
+    new_group_chat_prompt: "[Start a new group chat. Group members: {{group}}]"
+    new_example_chat_prompt: "[Example Chat]"
+    continue_nudge_prompt: "[Continue your last message without repeating its original content.]"
+    bias_preset_selected: Default (none)
+    wi_format: "{0}"
+    scenario_format: "{{scenario}}"
+    personality_format: "{{personality}}"
+    group_nudge_prompt: "[Write the next reply only as {{char}}.]"
+    assistant_prefill: ""
+    assistant_impersonation: ""
+    use_sysprompt: true
+    squash_system_messages: false
+    media_inlining: true
+    inline_image_quality: auto
+    continue_prefill: false
+    continue_postfix: " "
+    function_calling: true
+    tool_call_recurse_limit: 5
+    show_thoughts: true
+    reasoning_effort: low
+    verbosity: auto
+    enable_web_search: false
+    seed: -1
+    n: 1
+  connection:
+    transport: structured
+    workflow: linear
+    forceTool: true
+    parallelTools: false
+    syntheticTurn: init
+    sendThoughtSignature: false
+    maxSteps: 6
+    finalFallback: true
+  modules:
+    always-reply: false
+    antifiltering: false
+    event-synopsis: true
+    options: true
+    anti-evasion: true
+    banned-expressions: true
+    character-enhancement: true
+    cot-compatibility: false
+    emotional-stability: false
+    narrative-boundaries: false
+    narrative-proactivity: false
+    no-wrap-up: true
+    nsfw-protocol: false
+    output-structure: false
+    pacing-control: false
+    mode-continuation: false
+    mode-expansion: true
+    mode-preface: true
+    role-freesia: true
+    style-aisthesis: false
+    style-antheia: false
+    style-eros: false
+    style-kardia: true
+    style-kryos: false
+    style-melos: false
+
+defaultConfiguration: other
+configurations:
+  - id: gemini
+    name: Gemini
+    diff:
+      sampling: { use_sysprompt: false }
+      connection: { transport: tool-single, sendThoughtSignature: true, parallelTools: true }
+  - id: deepseek-claude-legacy
+    name: DeepSeek / Claude ≤ 4.5
+    diff:
+      connection: { transport: prefill }
+  - id: claude-4-6-5
+    name: Claude 4.6 – 5
+    diff:
+      connection: { transport: plaintext }
+  - id: claude-5-5-plus
+    name: Claude ≥ 5.5
+    diff:
+      connection: { transport: tool-single, parallelTools: true }
+  - id: other
+    name: Other
+    diff:
+      connection: { transport: structured }
+
+migrations:
+  - from: "<7.0.0"
+    rename:
+      modules: {}
+      params: {}

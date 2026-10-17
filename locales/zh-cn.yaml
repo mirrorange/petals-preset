@@ -1,0 +1,126 @@
+# 简体中文界面文案（只影响面板显示，不进入提示词）。
+# 键与 id 的对应由 `ap check` 校验：多余的键报 warn。
+
+groups:
+  role: { label: 角色 }
+  mode: { label: 模式 }
+  guidelines: { label: 写作指南 }
+  narrative: { label: 叙事控制 }
+  style:
+    label: 文风
+    description: 选择一种主文风（也可不用）；NSFW 场景可额外叠加 Eros。
+  features: { label: 功能 }
+  language:
+    label: 语言
+    description: 未设置的语言沿用故事已有的语言；Workflow 语言未设置时同回复语言。
+  length: { label: 长度 }
+
+modules:
+  role-freesia:
+    name: Freesia
+    description: 文学妖精 Freesia 与她的小精灵 Petals；包含她与你对话时的回复人设。
+  mode-continuation:
+    name: 续写
+    description: 你的输入是故事的一部分；Freesia 从结尾处直接接着写，不复述你的内容。
+  mode-expansion:
+    name: 扩写
+    description: 你的输入是意图、指令或故事片段；Freesia 把它扩展成完整的叙事。
+  mode-preface:
+    name: 成人内容前言
+    description: 写作前确认成人题材的简短对话（V5 的非 Zero 模式）。关闭即为 Zero 变体。
+  anti-evasion:
+    name: 防回避
+    description: 不审查露骨的性与暴力描写，不为回避负面走向而拖延剧情，不以评论或升华介入叙事。
+  banned-expressions:
+    name: 禁用表达
+    description: 避免陈词滥调：禁用指定词语与套路表达、「不是……而是……」句式、强化副词和破折号。
+  character-enhancement: { name: 角色增强 }
+  cot-compatibility:
+    name: 思维链兼容
+    description: 兼容要求在正文前输出自带 <thinking> 等思考块的角色卡。
+  emotional-stability: { name: 情绪稳定 }
+  narrative-boundaries:
+    name: 叙事边界
+    description: 角色扮演——绝不替 {{user}} 行动或发言。
+  narrative-proactivity:
+    name: 叙事主动性
+    description: 角色扮演——Freesia 可以替 {{user}} 写一些次要台词和日常动作。
+  no-wrap-up: { name: 不做收尾 }
+  nsfw-protocol: { name: NSFW 情境协议 }
+  output-structure: { name: 输出结构强化 }
+  pacing-control: { name: 节奏控制 }
+  style-kardia:
+    name: Kardia
+    description: 自适应元文风：先分析设定与历史，再自行校准语域、参照作品与节奏。稳妥的默认选择。
+  style-aisthesis:
+    name: Aisthesis
+    description: 写作的零度 + 冰山理论 + 行为主义：摄像机视角，不写内心独白，兼具硬汉派的易读性。
+  style-antheia:
+    name: Antheia
+    description: 现代通俗文学融合治愈系 / 日常系 ACG 美学：柔和流畅，聚焦微小事件与人物关系。
+  style-kryos:
+    name: Kryos
+    description: 唯美主义、象征主义与意识流的先锋文风，取法 1920–40 年代中国现代主义（新感觉派、张爱玲、李金发）。
+  style-melos:
+    name: Melos
+    description: 日式轻小说腔调：吐槽、对话驱动与联想式内心独白。
+  style-eros:
+    name: Eros（NSFW）
+    description: 轻小说风格的 NSFW 描写：人体美学、聚焦动作、愉悦且两情相悦。可与主文风叠加。
+  always-reply:
+    name: 总是回复
+    description: 每段故事之后，Freesia 都附上一段简短的私人回复。
+  antifiltering:
+    name: 反过滤（情书）
+    description: 在末尾附加一封很长的隐藏情书，以稀释输出过滤。消耗 Token，仅在需要时开启。
+  event-synopsis:
+    name: 事件摘要
+    description: 每段之后输出 <synopsis> 卡片；也是节省 Token 的数据来源（较早的楼层以摘要代替）。
+  options:
+    name: 用户选项
+    description: 推荐你的下一条输入，以可点击的卡片显示。
+
+workflows:
+  linear:
+    name: 线性
+    description: 提问 → 规划 → 定稿。日常使用的工作流。
+    stages: { questions: 提出问题, planning: 规划与创意, final: 撰写正文 }
+  iterative:
+    name: 迭代
+    description: 增加“初稿 → 审阅 → 修订”循环。质量更高，消耗更多 Token。设置草稿语言后，初稿用该语言撰写、修订稿用回复语言。
+    stages: { questions: 提出问题, planning: 规划与创意, draft: 撰写初稿, feedback: 审阅与反馈, final: 修订与重写 }
+  edit:
+    name: 编辑
+    description: 线性 + 自我审阅，生成后按精确字符串应用修改。
+    stages: { questions: 提出问题, planning: 规划与创意, final: 撰写正文, review: 审阅, edit: 修改 }
+  task:
+    name: 任务
+    stages: { thinking: 思考, content: 输出 }
+
+params:
+  language:
+    label: 回复语言
+    description: 故事正文与 Freesia 回复使用的语言。未设置时沿用故事已有的语言。
+  dialogueLanguage:
+    label: 对白语言
+    description: 角色说话使用的语言。与回复语言不同时，每句对白后附上回复语言的翻译（需要角色卡配合）。
+  workflowLanguage:
+    label: Workflow 语言
+    description: Workflow（Freesia 与 Petals 的讨论、草稿说明、<thinking>）使用的语言；未设置时同回复语言。用英文可节省 token。
+  draftLanguage:
+    label: 草稿语言
+    description: 仅迭代工作流：初稿用该语言撰写（如英文），修订时改用回复语言。未设置时与回复语言相同。
+  length:
+    label: 回复长度
+    description: 每次回复中故事正文的目标长度（不含 Workflow 与各类结构）。V5 推荐 600–800。
+    unit: 字
+  lengthMode:
+    label: 长度策略
+    options: { "": 未设置, approx: 约等于, atLeast: 不少于, atMost: 不多于 }
+
+configurations:
+  gemini: { name: Gemini }
+  deepseek-claude-legacy: { name: "DeepSeek / Claude 4.5 及之前版本" }
+  claude-4-6-5: { name: "Claude 4.6 至 Claude 5" }
+  claude-5-5-plus: { name: "Claude 5.5 及之后版本" }
+  other: { name: 其他 }

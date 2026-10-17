@@ -1,0 +1,19 @@
+{
+  "name": "@mirrorange/petals-preset",
+  "version": "7.0.0",
+  "description": "Petals Preset (花瓣预设) v7 — the first Advanced Preset for SillyTavern.",
+  "type": "module",
+  "files": ["dist/*.apreset.json"],
+  "main": "dist/petals.apreset.json",
+  "scripts": {
+    "build": "ap build",
+    "check": "ap check",
+    "dev": "ap dev",
+    "preview": "ap preview"
+  },
+  "devDependencies": {
+    "advanced-preset": "github:mirrorange/advanced-preset#path:/packages/cli"
+  },
+  "repository": { "type": "git", "url": "https://github.com/mirrorange/petals-preset.git" },
+  "license": "MIT"
+}
