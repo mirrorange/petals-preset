@@ -12,7 +12,7 @@
     "preview": "ap preview"
   },
   "devDependencies": {
-    "advanced-preset": "github:mirrorange/advanced-preset#path:/packages/cli"
+    "advanced-preset": "https://github.com/mirrorange/advanced-preset/releases/download/v1.0.0/advanced-preset-1.0.0.tgz"
   },
   "repository": { "type": "git", "url": "https://github.com/mirrorange/petals-preset.git" },
   "license": "MIT"
