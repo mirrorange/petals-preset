@@ -2,11 +2,11 @@
   "formatVersion": 2,
   "id": "petals",
   "name": "Petals Preset",
-  "version": "7.1.0",
+  "version": "7.2.0",
   "author": "mirrorange",
   "description": "Freesia & Petals collaborative writing: regional prompt assembly and staged workflows (linear / iterative / edit) on five transports.",
   "minAdvancedPreset": "1.1.0",
-  "hash": "293bb039ea27f661",
+  "hash": "42e351cf5cc05418",
   "actors": {
     "narrator": {
       "name": "Freesia",
@@ -527,6 +527,20 @@
           }
         }
       }
+    },
+    {
+      "id": "skip-thought",
+      "name": "Skip Thought",
+      "toggle": "user",
+      "default": false,
+      "structures": [],
+      "questions": {
+        "mandatory": [],
+        "optional": []
+      },
+      "source": "modules/features/skip-thought.md",
+      "description": "Gemini — bypasses the model's internal thinking so the workflow starts immediately. Pair with the \"Workflow init (skip thought)\" synthetic turn.",
+      "group": "features"
     },
     {
       "id": "anti-evasion",
@@ -2175,6 +2189,82 @@
       }
     },
     {
+      "id": "skip-thought/skip-thought-dialogue",
+      "module": "skip-thought",
+      "region": "bottom",
+      "order": 100,
+      "content": [
+        {
+          "pieces": [
+            {
+              "text": "{{ap::prefix::user}}The workflow already does all of the planning, so no internal reasoning is needed. In your internal thought block (`<thought>`), output only this exact sentence: \"Skip the internal thought and proceed directly to the workflow.\" Do not analyze the story, plan, draft or write anything else inside the thought block—then go straight to the workflow.\n\n"
+            }
+          ]
+        }
+      ],
+      "when": {
+        "t": "bin",
+        "op": "in",
+        "l": {
+          "t": "var",
+          "path": "transport"
+        },
+        "r": {
+          "t": "arr",
+          "items": [
+            {
+              "t": "lit",
+              "v": "prefill"
+            },
+            {
+              "t": "lit",
+              "v": "plaintext"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "skip-thought/skip-thought-imperative",
+      "module": "skip-thought",
+      "region": "bottom",
+      "order": 100,
+      "content": [
+        {
+          "pieces": [
+            {
+              "text": "The workflow already does all of the planning, so no internal reasoning is needed. In your internal thought block (`<thought>`), output only this exact sentence: \"Skip the internal thought and proceed directly to the workflow.\" Do not analyze the story, plan, draft or write anything else inside the thought block—then go straight to the workflow.\n"
+            }
+          ]
+        }
+      ],
+      "when": {
+        "t": "bin",
+        "op": "in",
+        "l": {
+          "t": "var",
+          "path": "transport"
+        },
+        "r": {
+          "t": "arr",
+          "items": [
+            {
+              "t": "lit",
+              "v": "structured"
+            },
+            {
+              "t": "lit",
+              "v": "tool-single"
+            },
+            {
+              "t": "lit",
+              "v": "tool-multi"
+            }
+          ]
+        }
+      }
+    },
+    {
       "id": "core/workflow-language",
       "module": "core",
       "region": "bottom",
@@ -3339,6 +3429,21 @@
         "parallel": "Workflow initialised. Complete the workflow by calling the stage tools in order, starting with `{{first}}`. You may call several stage tools in one reply (in order) to finish faster."
       },
       "thoughtSignature": "AY89a19rZjAaoGPoZIQYJVKTJki6wEZ833K90LZvrH0lkrtbJHgi1gs/uato/uKR2MTxgGXruDHi5dCr9axRX2GJBT1Net7a+u2cgwc5xYKL2Fomowpj4czoV5vAq/OYoJ2hefMPtuf7aLRuPSHInA=="
+    },
+    {
+      "id": "init-skip-thought",
+      "label": "Workflow init (skip thought)",
+      "user": "<!-- Workflow Start -->",
+      "tool": {
+        "name": "start_workflow",
+        "description": "Open the writing session of {{ap::name::narrator}} and {{ap::name::editor}} for this turn. Returns how the workflow is delivered."
+      },
+      "response": {
+        "single": "Workflow initialised. Now call `{{submit}}` exactly once, filling every field in order to complete the whole workflow in a single call.",
+        "multi": "Workflow initialised. Complete the workflow by calling the stage tools in order, starting with `{{first}}`. Each tool records one stage.",
+        "parallel": "Workflow initialised. Complete the workflow by calling the stage tools in order, starting with `{{first}}`. You may call several stage tools in one reply (in order) to finish faster."
+      },
+      "thoughtSignature": "AY89a1+a+MIYy6FPVVZOUYcPe3YWxMtEikrAsPW3VBSHcALLf7nNcDv67a6j4ScvrwCFhMzqsG3rKQi/xYyYbh+CS9n51H4C2SBr8gG/CRkupZPVyA=="
     }
   ],
   "tools": {
@@ -3754,6 +3859,7 @@
       "antifiltering": false,
       "event-synopsis": true,
       "options": true,
+      "skip-thought": false,
       "anti-evasion": true,
       "banned-expressions": true,
       "character-enhancement": true,
@@ -3992,6 +4098,10 @@
         "options": {
           "name": "用户选项",
           "description": "推荐你的下一条输入，以可点击的卡片显示。"
+        },
+        "skip-thought": {
+          "name": "跳过思考",
+          "description": "Gemini 专用——让模型的内部思考块只输出一句固定的话，直接进入 Workflow 以加快输出。需配合合成轮次「Workflow init (skip thought)」。"
         }
       },
       "workflows": {

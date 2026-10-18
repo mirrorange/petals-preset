@@ -2,7 +2,7 @@
 formatVersion: 1
 id: petals
 name: Petals Preset
-version: 7.1.0
+version: 7.2.0
 author: mirrorange
 description: >-
   Freesia & Petals collaborative writing: regional prompt assembly and staged workflows
@@ -287,18 +287,26 @@ tokenSaving:
 syntheticTurns:
   - id: init
     label: Workflow init
-    user: <!-- Workflow Start -->
-    tool:
+    user: &init-user <!-- Workflow Start -->
+    tool: &init-tool
       name: start_workflow
       description: >-
         Open the writing session of {{ap::name::narrator}} and {{ap::name::editor}} for this turn.
         Returns how the workflow is delivered.
     # User-supplied opaque Gemini signature; sent only to Gemini when `sendThoughtSignature` is on. Never edit.
     thoughtSignature: AY89a19rZjAaoGPoZIQYJVKTJki6wEZ833K90LZvrH0lkrtbJHgi1gs/uato/uKR2MTxgGXruDHi5dCr9axRX2GJBT1Net7a+u2cgwc5xYKL2Fomowpj4czoV5vAq/OYoJ2hefMPtuf7aLRuPSHInA==
-    response:
+    response: &init-response
       single: Workflow initialised. Now call `{{submit}}` exactly once, filling every field in order to complete the whole workflow in a single call.
       multi: Workflow initialised. Complete the workflow by calling the stage tools in order, starting with `{{first}}`. Each tool records one stage.
       parallel: Workflow initialised. Complete the workflow by calling the stage tools in order, starting with `{{first}}`. You may call several stage tools in one reply (in order) to finish faster.
+  - id: init-skip-thought
+    label: Workflow init (skip thought)
+    # Variant for the `skip-thought` module: the signature matches a thought block that only says
+    # "Skip the internal thought and proceed directly to the workflow." Never edit.
+    user: *init-user
+    tool: *init-tool
+    thoughtSignature: AY89a1+a+MIYy6FPVVZOUYcPe3YWxMtEikrAsPW3VBSHcALLf7nNcDv67a6j4ScvrwCFhMzqsG3rKQi/xYyYbh+CS9n51H4C2SBr8gG/CRkupZPVyA==
+    response: *init-response
 
 # Every name and description the model sees in structured-output and tool-calling modes.
 # Stages override their own field / tool texts in workflows/*.md.
@@ -437,6 +445,7 @@ configurationDefaults:
     antifiltering: false
     event-synopsis: true
     options: true
+    skip-thought: false
     anti-evasion: true
     banned-expressions: true
     character-enhancement: true

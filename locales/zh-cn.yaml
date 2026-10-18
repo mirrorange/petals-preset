@@ -79,6 +79,9 @@ modules:
   options:
     name: 用户选项
     description: 推荐你的下一条输入，以可点击的卡片显示。
+  skip-thought:
+    name: 跳过思考
+    description: Gemini 专用——让模型的内部思考块只输出一句固定的话，直接进入 Workflow 以加快输出。需配合合成轮次「Workflow init (skip thought)」。
 
 workflows:
   linear:
