@@ -7,8 +7,26 @@ hint: >-
   (Typically by first outputting the thought process within the <thinking> tag, followed by the task results in the
   specified tag. Think in {{ap::param::workflowLanguage}}.)
 stages:
-  - { id: thinking, actor: narrator, kind: text, tag: thinking, label: Thinking }
-  - { id: content, actor: narrator, kind: content, label: Output, optional: true }
+  - id: thinking
+    actor: narrator
+    kind: text
+    tag: thinking
+    label: Thinking
+    field: { name: thinking, description: "{{ap::name::narrator}}'s thought process about the task." }
+    tool:
+      name: think
+      description: "{{ap::name::narrator}} thinks the task through before producing the results."
+      param: { name: thoughts }
+  - id: content
+    actor: narrator
+    kind: content
+    label: Output
+    optional: true
+    field: { name: story_content, description: "Story content, only when explicitly requested." }
+    tool:
+      name: write_output
+      description: "{{ap::name::narrator}} writes the task results; story content only when explicitly requested."
+      param: { name: output }
 ---
 <!-- @section stage:thinking style=dialogue -->
 First output your thought process within `<thinking>` tags.

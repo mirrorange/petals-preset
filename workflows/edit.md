@@ -6,11 +6,55 @@ hint: >-
   (Typically, {{ap::name::narrator}} consults {{ap::name::editor}}, drafts the content, then reviews it and applies
   edits. Refer to the workflow for details.)
 stages:
-  - { id: questions, actor: narrator, kind: text, questions: ask, label: Asking Questions }
-  - { id: planning, actor: editor, kind: text, questions: answer, label: Planning and Creative Input }
-  - { id: final, actor: narrator, kind: content, label: Drafting }
-  - { id: review, actor: narrator, kind: text, tag: Freesia_Review, label: Review }
-  - { id: edit, actor: narrator, kind: patch, tag: Freesia_Edit, label: Editing, optional: true }
+  - id: questions
+    actor: narrator
+    kind: text
+    questions: ask
+    label: Asking Questions
+    field: { name: "step{{n}}_questions", description: "{{ap::name::narrator}} asks {{ap::name::editor}} the questions for this turn. Questions only, no explanations." }
+    tool:
+      name: ask_questions
+      description: "{{ap::name::narrator}} asks {{ap::name::editor}} the questions for this turn."
+      param: { name: questions, description: "Mandatory questions and the relevant optional ones. Questions only, no explanations." }
+  - id: planning
+    actor: editor
+    kind: text
+    questions: answer
+    label: Planning and Creative Input
+    field: { name: "step{{n}}_creative_input", description: "{{ap::name::editor}} answers {{ap::name::narrator}}'s questions with professional advice and concrete solutions." }
+    tool:
+      name: give_creative_input
+      description: "{{ap::name::editor}} answers {{ap::name::narrator}}'s questions with professional advice and concrete solutions."
+      param: { name: advice, description: "Answers and suggestions; point out redundancy, overused phrasing and monotony." }
+  - id: final
+    actor: narrator
+    kind: content
+    label: Drafting
+    field: { name: "step{{n}}_story", description: "{{ap::name::narrator}} writes the story content using {{ap::name::editor}}' input." }
+    tool:
+      name: write_story
+      description: "{{ap::name::narrator}} writes the story content using {{ap::name::editor}}' input."
+      param: { name: story, description: "The story content, including structures required by the settings." }
+  - id: review
+    actor: narrator
+    kind: text
+    tag: Freesia_Review
+    label: Review
+    field: { name: "step{{n}}_review", description: "{{ap::name::narrator}} self-checks the story content against the guidelines." }
+    tool:
+      name: review_story
+      description: "{{ap::name::narrator}} self-checks the story content against the guidelines."
+      param: { name: review, description: "What should be improved, and why." }
+  - id: edit
+    actor: narrator
+    kind: patch
+    tag: Freesia_Edit
+    label: Editing
+    optional: true
+    field: { name: "step{{n}}_edits", description: "{{ap::name::narrator}}'s exact-string edits fixing the issues found in the review. May be empty." }
+    tool:
+      name: edit_story
+      description: "{{ap::name::narrator}} applies exact-string edits that fix the issues found in the review."
 ---
 <!-- @section preamble -->
 <edit_system>

@@ -6,11 +6,53 @@ hint: >-
   (Typically, {{ap::name::narrator}} consults {{ap::name::editor}}, drafts, receives {{ap::name::editor}}' review
   and then revises. Refer to the workflow for details.)
 stages:
-  - { id: questions, actor: narrator, kind: text, questions: ask, label: Asking Questions }
-  - { id: planning, actor: editor, kind: text, questions: answer, label: Planning and Creative Input }
-  - { id: draft, actor: narrator, kind: text, label: Drafting }
-  - { id: feedback, actor: editor, kind: text, label: Review and Feedback }
-  - { id: final, actor: narrator, kind: content, label: Revision and Redrafting }
+  - id: questions
+    actor: narrator
+    kind: text
+    questions: ask
+    label: Asking Questions
+    field: { name: "step{{n}}_questions", description: "{{ap::name::narrator}} asks {{ap::name::editor}} the questions for this turn. Questions only, no explanations." }
+    tool:
+      name: ask_questions
+      description: "{{ap::name::narrator}} asks {{ap::name::editor}} the questions for this turn."
+      param: { name: questions, description: "Mandatory questions and the relevant optional ones. Questions only, no explanations." }
+  - id: planning
+    actor: editor
+    kind: text
+    questions: answer
+    label: Planning and Creative Input
+    field: { name: "step{{n}}_creative_input", description: "{{ap::name::editor}} answers {{ap::name::narrator}}'s questions with professional advice and concrete solutions." }
+    tool:
+      name: give_creative_input
+      description: "{{ap::name::editor}} answers {{ap::name::narrator}}'s questions with professional advice and concrete solutions."
+      param: { name: advice, description: "Answers and suggestions; point out redundancy, overused phrasing and monotony." }
+  - id: draft
+    actor: narrator
+    kind: text
+    label: Drafting
+    field: { name: "step{{n}}_draft", description: "{{ap::name::narrator}}'s first draft of the story content." }
+    tool:
+      name: write_draft
+      description: "{{ap::name::narrator}} writes a first draft using {{ap::name::editor}}' input."
+      param: { name: draft, description: "The complete draft." }
+  - id: feedback
+    actor: editor
+    kind: text
+    label: Review and Feedback
+    field: { name: "step{{n}}_feedback", description: "{{ap::name::editor}} reviews the draft and gives concrete feedback." }
+    tool:
+      name: give_feedback
+      description: "{{ap::name::editor}} reviews {{ap::name::narrator}}'s draft and gives concrete feedback."
+      param: { name: feedback, description: "Strengths, problems and concrete revision suggestions." }
+  - id: final
+    actor: narrator
+    kind: content
+    label: Revision and Redrafting
+    field: { name: "step{{n}}_story", description: "{{ap::name::narrator}} revises the draft according to {{ap::name::editor}}' feedback into the final story content." }
+    tool:
+      name: revise_story
+      description: "{{ap::name::narrator}} revises the draft according to {{ap::name::editor}}' feedback into the final story content."
+      param: { name: story, description: "The story content, including structures required by the settings." }
 ---
 <!-- @section intro style=dialogue -->
 {{ap::prefix::narrator}}Let’s go ahead and continue the story. We can now summon your little sprite, {{ap::name::editor}}, to assist with our creative work.

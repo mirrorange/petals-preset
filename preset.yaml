@@ -2,12 +2,12 @@
 formatVersion: 1
 id: petals
 name: Petals Preset
-version: 7.0.0
+version: 7.1.0
 author: mirrorange
 description: >-
   Freesia & Petals collaborative writing: regional prompt assembly and staged workflows
   (linear / iterative / edit) on five transports.
-minAdvancedPreset: 1.0.0
+minAdvancedPreset: 1.1.0
 
 actors:
   narrator: { name: Freesia, prefix: "{{ap::name::narrator}}: ", color: primary }
@@ -118,6 +118,9 @@ structures:
     tag: Freesia_Reply
     field: reply
     title: "{{ap::name::narrator}}"
+    description: >-
+      {{ap::name::narrator}}'s own reply to {{ap::name::user}}'s @ instruction, spoken as {{ap::name::narrator}}
+      (only <p>, <p special> and <blockquote>).
     formatPrompt:
       tag: |-
         <Freesia_Reply>
@@ -134,6 +137,12 @@ structures:
     kind: synopsis
     tag: synopsis
     field: synopsis
+    description: Synopsis of the events in this story segment.
+    properties:
+      time: "When the events occurred: `MM-dd HH:mm - (MM-dd) HH:mm`, or `Day1 HH:mm - (Day2) HH:mm` without dates."
+      location: Scene or setting of the events.
+      event: Title of the current event, 10 words or less.
+      summary: Brief, objective description of what happened.
     formatPrompt:
       tag: |-
         <synopsis>
@@ -148,6 +157,10 @@ structures:
     tag: options
     field: options
     count: 4
+    description: Four diverse options for {{ap::name::user}}'s next input to advance the story.
+    properties:
+      label: Reply type / direction, under 5 words.
+      content: The reply itself, written as {{ap::name::user}}'s next input.
     formatPrompt:
       tag: |-
         <options>
@@ -161,6 +174,13 @@ structures:
     kind: memory
     tag: Freesia_Memory
     field: memory_ops
+    description: >-
+      {{ap::name::narrator}}'s memory updates, one item per whole entry. Empty when {{ap::name::user}} asked for none.
+    properties:
+      scope: "`memory` remembers for this chat, `global_memory` for every chat."
+      operation: "`replace` creates the entry or overwrites all of it; `delete` removes it."
+      key: Exact unique title of the entry.
+      content: Complete new content of the entry; null for `delete`.
     formatPrompt:
       tag: |-
         Use exactly one block per whole-entry update:
@@ -194,6 +214,9 @@ structures:
     kind: recap
     tag: Freesia_Summary
     field: story_recap
+    description: >-
+      The complete updated story recap as plain narrative text; it replaces the previous recap.
+      Null when no recap was requested.
     formatPrompt:
       tag: |-
         <Freesia_Summary>
@@ -211,6 +234,7 @@ structures:
     kind: impersonate
     tag: Freesia_Impersonate
     field: impersonate
+    description: "{{ap::name::user}}'s next reply, ghostwritten by {{ap::name::narrator}} in {{ap::name::user}}'s voice."
     formatPrompt:
       tag: |-
         <Freesia_Impersonate>
@@ -223,6 +247,7 @@ structures:
     display: hidden
     tag: love_letter
     field: love_letter
+    description: "{{ap::name::narrator}}'s love letter to {{ap::name::user}}, at least 600 words."
     formatPrompt:
       tag: |-
         <love_letter>
@@ -264,8 +289,10 @@ syntheticTurns:
     label: Workflow init
     user: <!-- Workflow Start -->
     tool:
-      name: ap_workflow_init
-      description: Initialise the Petals writing workflow. Returns the instructions for this turn.
+      name: start_workflow
+      description: >-
+        Open the writing session of {{ap::name::narrator}} and {{ap::name::editor}} for this turn.
+        Returns how the workflow is delivered.
     # User-supplied opaque Gemini signature; sent only to Gemini when `sendThoughtSignature` is on. Never edit.
     thoughtSignature: AY89a19rZjAaoGPoZIQYJVKTJki6wEZ833K90LZvrH0lkrtbJHgi1gs/uato/uKR2MTxgGXruDHi5dCr9axRX2GJBT1Net7a+u2cgwc5xYKL2Fomowpj4czoV5vAq/OYoJ2hefMPtuf7aLRuPSHInA==
     response:
@@ -273,11 +300,39 @@ syntheticTurns:
       multi: Workflow initialised. Complete the workflow by calling the stage tools in order, starting with `{{first}}`. Each tool records one stage.
       parallel: Workflow initialised. Complete the workflow by calling the stage tools in order, starting with `{{first}}`. You may call several stage tools in one reply (in order) to finish faster.
 
+# Every name and description the model sees in structured-output and tool-calling modes.
+# Stages override their own field / tool texts in workflows/*.md.
 tools:
-  submit: "Submit the complete Petals workflow for this turn: every stage in order, then the final content and structures."
-  stagePrefix: ap_stage_
-  stageResult: Recorded. Next, call `{{next}}`.
-  nudge: The workflow is not finished. Continue by calling `{{next}}`.
+  turn:
+    name: petals_workflow
+    description: >-
+      One turn of the writing workflow between {{ap::name::narrator}} and {{ap::name::editor}}: every stage in order,
+      each written by its persona, followed by the requested structures.
+    field: "step{{n}}_{{stage}}"
+    fieldDescription: "Step {{n}} · {{label}}"
+  submit:
+    name: submit_workflow
+    description: >-
+      Hand in this turn's whole workflow in one call: {{ap::name::narrator}} and {{ap::name::editor}}'s stages in order,
+      the story content, then the requested structures. Fill every field in order.
+  stage:
+    name: "{{stage}}"
+    description: "Step {{n}} · {{label}}"
+    param: { name: content, description: "Text of this stage." }
+    patchParam:
+      name: edits
+      description: Exact-string replacements applied to the story content. May be empty.
+  patch:
+    old: Exact text copied from the story content; long enough to match exactly once.
+    new: Replacement text.
+  envelope:
+    thinking: { name: thinking, description: "{{ap::name::narrator}}'s thought process about the task." }
+    result: { name: result, description: "The task result, exactly in the requested format." }
+  results:
+    next: Recorded. Next, call `{{next}}`.
+    done: Recorded. The workflow is complete.
+    unknown: "`{{name}}` is not part of the workflow."
+    nudge: The workflow is not finished. Continue by calling `{{next}}`.
 
 theme:
   light: { primary: "#c026d3", accent: "#9333ea" }
