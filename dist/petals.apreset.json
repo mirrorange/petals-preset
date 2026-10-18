@@ -1,12 +1,12 @@
 {
-  "formatVersion": 1,
+  "formatVersion": 2,
   "id": "petals",
   "name": "Petals Preset",
-  "version": "7.0.0",
+  "version": "7.1.0",
   "author": "mirrorange",
   "description": "Freesia & Petals collaborative writing: regional prompt assembly and staged workflows (linear / iterative / edit) on five transports.",
-  "minAdvancedPreset": "1.0.0",
-  "hash": "edf18273374ceb02",
+  "minAdvancedPreset": "1.1.0",
+  "hash": "293bb039ea27f661",
   "actors": {
     "narrator": {
       "name": "Freesia",
@@ -2388,20 +2388,56 @@
           "actor": "narrator",
           "kind": "text",
           "label": "Asking Questions",
-          "questions": "ask"
+          "questions": "ask",
+          "field": {
+            "name": "step{{n}}_questions",
+            "description": "{{ap::name::narrator}} asks {{ap::name::editor}} the questions for this turn. Questions only, no explanations."
+          },
+          "tool": {
+            "name": "ask_questions",
+            "description": "{{ap::name::narrator}} asks {{ap::name::editor}} the questions for this turn.",
+            "param": {
+              "name": "questions",
+              "description": "Mandatory questions and the relevant optional ones. Questions only, no explanations."
+            }
+          }
         },
         {
           "id": "planning",
           "actor": "editor",
           "kind": "text",
           "label": "Planning and Creative Input",
-          "questions": "answer"
+          "questions": "answer",
+          "field": {
+            "name": "step{{n}}_creative_input",
+            "description": "{{ap::name::editor}} answers {{ap::name::narrator}}'s questions with professional advice and concrete solutions."
+          },
+          "tool": {
+            "name": "give_creative_input",
+            "description": "{{ap::name::editor}} answers {{ap::name::narrator}}'s questions with professional advice and concrete solutions.",
+            "param": {
+              "name": "advice",
+              "description": "Answers and suggestions; point out redundancy, overused phrasing and monotony."
+            }
+          }
         },
         {
           "id": "final",
           "actor": "narrator",
           "kind": "content",
-          "label": "Drafting"
+          "label": "Drafting",
+          "field": {
+            "name": "step{{n}}_story",
+            "description": "{{ap::name::narrator}} writes the story content using {{ap::name::editor}}' input."
+          },
+          "tool": {
+            "name": "write_story",
+            "description": "{{ap::name::narrator}} writes the story content using {{ap::name::editor}}' input.",
+            "param": {
+              "name": "story",
+              "description": "The story content, including structures required by the settings."
+            }
+          }
         }
       ],
       "sections": {
@@ -2512,32 +2548,92 @@
           "actor": "narrator",
           "kind": "text",
           "label": "Asking Questions",
-          "questions": "ask"
+          "questions": "ask",
+          "field": {
+            "name": "step{{n}}_questions",
+            "description": "{{ap::name::narrator}} asks {{ap::name::editor}} the questions for this turn. Questions only, no explanations."
+          },
+          "tool": {
+            "name": "ask_questions",
+            "description": "{{ap::name::narrator}} asks {{ap::name::editor}} the questions for this turn.",
+            "param": {
+              "name": "questions",
+              "description": "Mandatory questions and the relevant optional ones. Questions only, no explanations."
+            }
+          }
         },
         {
           "id": "planning",
           "actor": "editor",
           "kind": "text",
           "label": "Planning and Creative Input",
-          "questions": "answer"
+          "questions": "answer",
+          "field": {
+            "name": "step{{n}}_creative_input",
+            "description": "{{ap::name::editor}} answers {{ap::name::narrator}}'s questions with professional advice and concrete solutions."
+          },
+          "tool": {
+            "name": "give_creative_input",
+            "description": "{{ap::name::editor}} answers {{ap::name::narrator}}'s questions with professional advice and concrete solutions.",
+            "param": {
+              "name": "advice",
+              "description": "Answers and suggestions; point out redundancy, overused phrasing and monotony."
+            }
+          }
         },
         {
           "id": "draft",
           "actor": "narrator",
           "kind": "text",
-          "label": "Drafting"
+          "label": "Drafting",
+          "field": {
+            "name": "step{{n}}_draft",
+            "description": "{{ap::name::narrator}}'s first draft of the story content."
+          },
+          "tool": {
+            "name": "write_draft",
+            "description": "{{ap::name::narrator}} writes a first draft using {{ap::name::editor}}' input.",
+            "param": {
+              "name": "draft",
+              "description": "The complete draft."
+            }
+          }
         },
         {
           "id": "feedback",
           "actor": "editor",
           "kind": "text",
-          "label": "Review and Feedback"
+          "label": "Review and Feedback",
+          "field": {
+            "name": "step{{n}}_feedback",
+            "description": "{{ap::name::editor}} reviews the draft and gives concrete feedback."
+          },
+          "tool": {
+            "name": "give_feedback",
+            "description": "{{ap::name::editor}} reviews {{ap::name::narrator}}'s draft and gives concrete feedback.",
+            "param": {
+              "name": "feedback",
+              "description": "Strengths, problems and concrete revision suggestions."
+            }
+          }
         },
         {
           "id": "final",
           "actor": "narrator",
           "kind": "content",
-          "label": "Revision and Redrafting"
+          "label": "Revision and Redrafting",
+          "field": {
+            "name": "step{{n}}_story",
+            "description": "{{ap::name::narrator}} revises the draft according to {{ap::name::editor}}' feedback into the final story content."
+          },
+          "tool": {
+            "name": "revise_story",
+            "description": "{{ap::name::narrator}} revises the draft according to {{ap::name::editor}}' feedback into the final story content.",
+            "param": {
+              "name": "story",
+              "description": "The story content, including structures required by the settings."
+            }
+          }
         }
       ],
       "sections": {
@@ -2760,27 +2856,75 @@
           "actor": "narrator",
           "kind": "text",
           "label": "Asking Questions",
-          "questions": "ask"
+          "questions": "ask",
+          "field": {
+            "name": "step{{n}}_questions",
+            "description": "{{ap::name::narrator}} asks {{ap::name::editor}} the questions for this turn. Questions only, no explanations."
+          },
+          "tool": {
+            "name": "ask_questions",
+            "description": "{{ap::name::narrator}} asks {{ap::name::editor}} the questions for this turn.",
+            "param": {
+              "name": "questions",
+              "description": "Mandatory questions and the relevant optional ones. Questions only, no explanations."
+            }
+          }
         },
         {
           "id": "planning",
           "actor": "editor",
           "kind": "text",
           "label": "Planning and Creative Input",
-          "questions": "answer"
+          "questions": "answer",
+          "field": {
+            "name": "step{{n}}_creative_input",
+            "description": "{{ap::name::editor}} answers {{ap::name::narrator}}'s questions with professional advice and concrete solutions."
+          },
+          "tool": {
+            "name": "give_creative_input",
+            "description": "{{ap::name::editor}} answers {{ap::name::narrator}}'s questions with professional advice and concrete solutions.",
+            "param": {
+              "name": "advice",
+              "description": "Answers and suggestions; point out redundancy, overused phrasing and monotony."
+            }
+          }
         },
         {
           "id": "final",
           "actor": "narrator",
           "kind": "content",
-          "label": "Drafting"
+          "label": "Drafting",
+          "field": {
+            "name": "step{{n}}_story",
+            "description": "{{ap::name::narrator}} writes the story content using {{ap::name::editor}}' input."
+          },
+          "tool": {
+            "name": "write_story",
+            "description": "{{ap::name::narrator}} writes the story content using {{ap::name::editor}}' input.",
+            "param": {
+              "name": "story",
+              "description": "The story content, including structures required by the settings."
+            }
+          }
         },
         {
           "id": "review",
           "actor": "narrator",
           "kind": "text",
           "label": "Review",
-          "tag": "Freesia_Review"
+          "tag": "Freesia_Review",
+          "field": {
+            "name": "step{{n}}_review",
+            "description": "{{ap::name::narrator}} self-checks the story content against the guidelines."
+          },
+          "tool": {
+            "name": "review_story",
+            "description": "{{ap::name::narrator}} self-checks the story content against the guidelines.",
+            "param": {
+              "name": "review",
+              "description": "What should be improved, and why."
+            }
+          }
         },
         {
           "id": "edit",
@@ -2788,7 +2932,15 @@
           "kind": "patch",
           "label": "Editing",
           "optional": true,
-          "tag": "Freesia_Edit"
+          "tag": "Freesia_Edit",
+          "field": {
+            "name": "step{{n}}_edits",
+            "description": "{{ap::name::narrator}}'s exact-string edits fixing the issues found in the review. May be empty."
+          },
+          "tool": {
+            "name": "edit_story",
+            "description": "{{ap::name::narrator}} applies exact-string edits that fix the issues found in the review."
+          }
         }
       ],
       "sections": {
@@ -2948,14 +3100,36 @@
           "actor": "narrator",
           "kind": "text",
           "label": "Thinking",
-          "tag": "thinking"
+          "tag": "thinking",
+          "field": {
+            "name": "thinking",
+            "description": "{{ap::name::narrator}}'s thought process about the task."
+          },
+          "tool": {
+            "name": "think",
+            "description": "{{ap::name::narrator}} thinks the task through before producing the results.",
+            "param": {
+              "name": "thoughts"
+            }
+          }
         },
         {
           "id": "content",
           "actor": "narrator",
           "kind": "content",
           "label": "Output",
-          "optional": true
+          "optional": true,
+          "field": {
+            "name": "story_content",
+            "description": "Story content, only when explicitly requested."
+          },
+          "tool": {
+            "name": "write_output",
+            "description": "{{ap::name::narrator}} writes the task results; story content only when explicitly requested.",
+            "param": {
+              "name": "output"
+            }
+          }
         }
       ],
       "sections": {
@@ -3018,6 +3192,7 @@
         "tag": "<Freesia_Reply>\n<p>[paragraph]</p>\n<p special>[highlight paragraph]</p>\n<blockquote>[quote]</blockquote>\n</Freesia_Reply>\n\nOnly use `<p>`, `<p special>`, and `<blockquote>` tags in <Freesia_Reply>. No other HTML tags, Markdown syntax or inline styles allowed. All tags are optional, repeatable, and may appear in any order. Reply must contain the main content only. No conversational fillers, headers, or footers allowed.",
         "field": "Put the reply in the `reply` field. Only use `<p>`, `<p special>` (highlight) and `<blockquote>` tags inside it. No other HTML tags, Markdown syntax or inline styles allowed. No conversational fillers, headers, or footers."
       },
+      "description": "{{ap::name::narrator}}'s own reply to {{ap::name::user}}'s @ instruction, spoken as {{ap::name::narrator}} (only <p>, <p special> and <blockquote>).",
       "title": "{{ap::name::narrator}}"
     },
     "synopsis": {
@@ -3028,6 +3203,13 @@
       "formatPrompt": {
         "tag": "<synopsis>\n  <time>...</time>\n  <location>...</location>\n  <event>...</event>\n  <summary>...</summary>\n</synopsis>",
         "field": "Fill the `synopsis` field with `time`, `location`, `event` and `summary`."
+      },
+      "description": "Synopsis of the events in this story segment.",
+      "properties": {
+        "time": "When the events occurred: `MM-dd HH:mm - (MM-dd) HH:mm`, or `Day1 HH:mm - (Day2) HH:mm` without dates.",
+        "location": "Scene or setting of the events.",
+        "event": "Title of the current event, 10 words or less.",
+        "summary": "Brief, objective description of what happened."
       }
     },
     "options": {
@@ -3039,6 +3221,11 @@
         "tag": "<options>\n<option title=\"...\">...</option>\n<option title=\"...\">...</option>\n<option title=\"...\">...</option>\n<option title=\"...\">...</option>\n</options>",
         "field": "Fill the `options` field with 4 items, each `{ \"label\": \"...\", \"content\": \"...\" }`."
       },
+      "description": "Four diverse options for {{ap::name::user}}'s next input to advance the story.",
+      "properties": {
+        "label": "Reply type / direction, under 5 words.",
+        "content": "The reply itself, written as {{ap::name::user}}'s next input."
+      },
       "count": 4
     },
     "memory": {
@@ -3049,6 +3236,13 @@
       "formatPrompt": {
         "tag": "Use exactly one block per whole-entry update:\n\n<Freesia_Memory>\n<scope>memory</scope>\n<operation>replace</operation>\n<key>[Exact unique title]</key>\n<content>[Complete new content for this title]</content>\n</Freesia_Memory>\n\n`scope` is `memory` (this chat) or `global_memory` (all chats).\n`replace` creates the title if absent, or replaces its entire content if present.\nTo delete an entire entry:\n\n<Freesia_Memory>\n<scope>memory</scope>\n<operation>delete</operation>\n<key>[Exact existing title]</key>\n</Freesia_Memory>\n\nOnly `replace` and `delete` exist. Never append or perform substring edits.\nEscape &, < and > in key/content as &amp;, &lt; and &gt;.",
         "field": "Add one item per whole-entry update to `memory_ops`:\n`{ \"scope\": \"memory\" | \"global_memory\", \"operation\": \"replace\" | \"delete\", \"key\": \"Exact unique title\", \"content\": \"Complete new content\" | null }`.\n`replace` creates or fully overwrites this title. `delete` removes this title and requires null content.\nOnly these two operations exist; no append or substring edits. `key` is the memory title, not a schema keyword named title.\nUse normal JSON escaping, not XML entity escaping, for field values. Leave `memory_ops` empty when no updates are requested."
+      },
+      "description": "{{ap::name::narrator}}'s memory updates, one item per whole entry. Empty when {{ap::name::user}} asked for none.",
+      "properties": {
+        "scope": "`memory` remembers for this chat, `global_memory` for every chat.",
+        "operation": "`replace` creates the entry or overwrites all of it; `delete` removes it.",
+        "key": "Exact unique title of the entry.",
+        "content": "Complete new content of the entry; null for `delete`."
       }
     },
     "recap": {
@@ -3059,7 +3253,8 @@
       "formatPrompt": {
         "tag": "<Freesia_Summary>\n[The complete updated story recap as plain narrative text]\n</Freesia_Summary>\n\nThis is a separate plain-text recap, not a titled memory entry or memory operation.\nReplace the entire previous recap with the complete updated recap. Escape &, < and > in the recap as &amp;, &lt; and &gt;.",
         "field": "Put the complete updated story recap in the `story_recap` string field.\nUse plain narrative text, not a title/content object or a `memory_ops` item.\nThe value replaces the entire previous recap; combine the previous recap and newer events into one complete text.\nUse normal JSON escaping, not XML entity escaping. Use null (or omit this optional field) when no recap update is requested."
-      }
+      },
+      "description": "The complete updated story recap as plain narrative text; it replaces the previous recap. Null when no recap was requested."
     },
     "impersonate": {
       "id": "impersonate",
@@ -3069,7 +3264,8 @@
       "formatPrompt": {
         "tag": "<Freesia_Impersonate>\n[The generated reply content acting as {{ap::name::user}}]\n</Freesia_Impersonate>",
         "field": "Put the generated reply (acting as {{ap::name::user}}) in the `impersonate` field."
-      }
+      },
+      "description": "{{ap::name::user}}'s next reply, ghostwritten by {{ap::name::narrator}} in {{ap::name::user}}'s voice."
     },
     "love_letter": {
       "id": "love_letter",
@@ -3080,6 +3276,7 @@
         "tag": "<love_letter>\nMy dearest {{ap::name::user}},\n...\n[Content continues to meet the 600-word count]\n...\n</love_letter>",
         "field": "Put the love letter (at least 600 words, addressed to {{ap::name::user}}) in the `love_letter` field."
       },
+      "description": "{{ap::name::narrator}}'s love letter to {{ap::name::user}}, at least 600 words.",
       "shape": "text",
       "display": "hidden"
     }
@@ -3133,8 +3330,8 @@
       "label": "Workflow init",
       "user": "<!-- Workflow Start -->",
       "tool": {
-        "name": "ap_workflow_init",
-        "description": "Initialise the Petals writing workflow. Returns the instructions for this turn."
+        "name": "start_workflow",
+        "description": "Open the writing session of {{ap::name::narrator}} and {{ap::name::editor}} for this turn. Returns how the workflow is delivered."
       },
       "response": {
         "single": "Workflow initialised. Now call `{{submit}}` exactly once, filling every field in order to complete the whole workflow in a single call.",
@@ -3145,11 +3342,50 @@
     }
   ],
   "tools": {
-    "submit": "Submit the complete Petals workflow for this turn: every stage in order, then the final content and structures.",
-    "stagePrefix": "ap_stage_",
-    "structures": "Structures of this turn.",
-    "stageResult": "Recorded. Next, call `{{next}}`.",
-    "nudge": "The workflow is not finished. Continue by calling `{{next}}`."
+    "turn": {
+      "name": "petals_workflow",
+      "field": "step{{n}}_{{stage}}",
+      "description": "One turn of the writing workflow between {{ap::name::narrator}} and {{ap::name::editor}}: every stage in order, each written by its persona, followed by the requested structures.",
+      "fieldDescription": "Step {{n}} · {{label}}"
+    },
+    "submit": {
+      "name": "submit_workflow",
+      "description": "Hand in this turn's whole workflow in one call: {{ap::name::narrator}} and {{ap::name::editor}}'s stages in order, the story content, then the requested structures. Fill every field in order."
+    },
+    "stage": {
+      "name": "{{stage}}",
+      "description": "Step {{n}} · {{label}}",
+      "param": {
+        "name": "content",
+        "description": "Text of this stage."
+      },
+      "patchParam": {
+        "name": "edits",
+        "description": "Exact-string replacements applied to the story content. May be empty."
+      }
+    },
+    "patch": {
+      "old": "Exact text copied from the story content; long enough to match exactly once.",
+      "new": "Replacement text."
+    },
+    "envelope": {
+      "thinking": {
+        "name": "thinking",
+        "description": "{{ap::name::narrator}}'s thought process about the task."
+      },
+      "result": {
+        "name": "result",
+        "description": "The task result, exactly in the requested format."
+      }
+    },
+    "results": {
+      "next": "Recorded. Next, call `{{next}}`.",
+      "done": "Recorded. The workflow is complete.",
+      "unknown": "`{{name}}` is not part of the workflow.",
+      "nudge": "The workflow is not finished. Continue by calling `{{next}}`."
+    },
+    "callerSchemaHint": "After your thinking, output the result as one JSON code block (```json … ```) that matches this JSON Schema:\n\n```json\n{{schema}}\n```",
+    "jsonStringHint": "(JSON object encoded as a string)"
   },
   "theme": {
     "light": {
