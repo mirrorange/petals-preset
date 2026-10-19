@@ -2,12 +2,12 @@
 formatVersion: 1
 id: petals
 name: Petals Preset
-version: 7.5.0
+version: 7.6.0
 author: mirrorange
 description: >-
   Freesia & Petals collaborative writing: regional prompt assembly and staged workflows
   (linear / iterative / edit) on five transports.
-minAdvancedPreset: 1.3.0
+minAdvancedPreset: 1.4.0
 
 actors:
   narrator: { name: Freesia, prefix: "{{ap::name::narrator}}: ", color: primary }
@@ -41,7 +41,18 @@ regions:
   - { id: task, role: system }
   - { id: bottom, role: system, anchor: tail }
 workflowRegion: task
-questionsRegion: questions
+
+# Questions the narrator asks in the `questions` stage. Active modules add theirs (id → question);
+# `questions-core` reads them with {{ap::var::…::values}}. Ids are stable for user modules.
+vars:
+  mandatoryQuestions:
+    type: dict
+    label: Mandatory questions
+    description: Asked in every questions stage.
+  optionalQuestions:
+    type: dict
+    label: Optional questions
+    description: The narrator picks the 2–3 most relevant.
 
 # Where users may add their own modules from the panel. Ids are kept stable across versions;
 # a renamed point must be mapped in `migrations[].rename.insertionPoints`.

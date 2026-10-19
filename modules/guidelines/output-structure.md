@@ -4,10 +4,9 @@ name: Output Structure Reinforcement
 group: guidelines
 region: guidelines
 order: 700
-questions:
-  optional:
-    - id: structures
-      text: What specific structural elements (e.g., wrapper tags, status panels, variable updates, or choices) are mandated by the current context?
+vars:
+  optionalQuestions:
+    structures: What specific structural elements (e.g., wrapper tags, status panels, variable updates, or choices) are mandated by the current context?
 ---
 ## Output Structure Reinforcement
 

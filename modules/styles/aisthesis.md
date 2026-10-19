@@ -7,13 +7,11 @@ exclusive: main-style
 when: '!meta.pure && gen.type != "impersonate"'
 region: writing_style
 order: 100
-questions:
-  mandatory:
-  - id: camera-eye
-    text: How should the narrative be constructed to strictly enforce the "Camera Eye" objectivity required by Aisthesis, eliminating all subjective consciousness?
-  optional:
-  - id: visual-coding
-    text: How can the characters' social status, relationships, or hidden psychological states be "coded" purely through visual information?
+vars:
+  mandatoryQuestions:
+    camera-eye: How should the narrative be constructed to strictly enforce the "Camera Eye" objectivity required by Aisthesis, eliminating all subjective consciousness?
+  optionalQuestions:
+    visual-coding: How can the characters' social status, relationships, or hidden psychological states be "coded" purely through visual information?
 ---
 ## Writing Style: Aisthesis
 

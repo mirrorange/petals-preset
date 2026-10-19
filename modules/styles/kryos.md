@@ -7,17 +7,13 @@ exclusive: main-style
 when: '!meta.pure && gen.type != "impersonate"'
 region: writing_style
 order: 100
-questions:
-  mandatory:
-  - id: fracture
-    text: How can the narrative fracture linear logical flow, ensuring subjective emotions are projected solely through material details and sensory displacement?
-  optional:
-  - id: defamiliarize
-    text: How can conceit, reification or synesthesia be applied to defamiliarize the scene?
-  - id: montage
-    text: Is there an opportunity to use "Textual Montage" for rapid, fragmented perception?
-  - id: desolation
-    text: How does the imagery reveal the decay or void beneath the surface, thereby embodying a sense of "Desolate Magnificence"?
+vars:
+  mandatoryQuestions:
+    fracture: How can the narrative fracture linear logical flow, ensuring subjective emotions are projected solely through material details and sensory displacement?
+  optionalQuestions:
+    defamiliarize: How can conceit, reification or synesthesia be applied to defamiliarize the scene?
+    montage: Is there an opportunity to use "Textual Montage" for rapid, fragmented perception?
+    desolation: How does the imagery reveal the decay or void beneath the surface, thereby embodying a sense of "Desolate Magnificence"?
 ---
 ## Writing Style: Kryos
 
