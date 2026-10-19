@@ -1,12 +1,12 @@
 {
-  "formatVersion": 2,
+  "formatVersion": 3,
   "id": "petals",
   "name": "Petals Preset",
-  "version": "7.5.0",
+  "version": "7.6.0",
   "author": "mirrorange",
   "description": "Freesia & Petals collaborative writing: regional prompt assembly and staged workflows (linear / iterative / edit) on five transports.",
-  "minAdvancedPreset": "1.3.0",
-  "hash": "e3cc2fecfef9828a",
+  "minAdvancedPreset": "1.4.0",
+  "hash": "d322be4edc21886f",
   "actors": {
     "narrator": {
       "name": "Freesia",
@@ -117,7 +117,6 @@
     "tail": "bottom"
   },
   "workflowRegion": "task",
-  "questionsRegion": "questions",
   "params": [
     {
       "id": "language",
@@ -322,10 +321,7 @@
       "toggle": "always",
       "default": true,
       "structures": [],
-      "questions": {
-        "mandatory": [],
-        "optional": []
-      },
+      "vars": [],
       "source": "modules/core/core.md",
       "description": "Identity, transport-specific top/bottom prompts, the mode closing line and the language / length rules driven by the Writing-tab parameters. Always on."
     },
@@ -335,10 +331,7 @@
       "toggle": "always",
       "default": true,
       "structures": [],
-      "questions": {
-        "mandatory": [],
-        "optional": []
-      },
+      "vars": [],
       "source": "modules/core/context.md",
       "description": "Story recap, recent meta conversations and memories supplied by Advanced Preset."
     },
@@ -348,10 +341,7 @@
       "toggle": "user",
       "default": false,
       "structures": [],
-      "questions": {
-        "mandatory": [],
-        "optional": []
-      },
+      "vars": [],
       "source": "modules/role/freesia.md",
       "description": "Freesia, the literary fairy, and her sprites Petals. Includes her reply persona when she talks to you.",
       "group": "role",
@@ -363,10 +353,7 @@
       "toggle": "user",
       "default": false,
       "structures": [],
-      "questions": {
-        "mandatory": [],
-        "optional": []
-      },
+      "vars": [],
       "source": "modules/mode/continuation.md",
       "description": "Your input is part of the story; Freesia continues right where it ends without repeating it.",
       "group": "mode",
@@ -378,10 +365,7 @@
       "toggle": "user",
       "default": false,
       "structures": [],
-      "questions": {
-        "mandatory": [],
-        "optional": []
-      },
+      "vars": [],
       "source": "modules/mode/expansion.md",
       "description": "Your input is intent, instruction or a story fragment; Freesia weaves it into a full narrative.",
       "group": "mode",
@@ -395,10 +379,7 @@
       "structures": [
         "reply"
       ],
-      "questions": {
-        "mandatory": [],
-        "optional": []
-      },
+      "vars": [],
       "source": "modules/features/always-reply.md",
       "description": "Freesia adds a short personal reply after every story segment.",
       "group": "features",
@@ -432,10 +413,7 @@
       "toggle": "user",
       "default": false,
       "structures": [],
-      "questions": {
-        "mandatory": [],
-        "optional": []
-      },
+      "vars": [],
       "source": "modules/features/antifiltering.md",
       "description": "Gemini — pads the input with a long, pre-written love letter from Freesia right after the top prompt, to dilute input filters. Costs tokens; enable only when needed.",
       "group": "features"
@@ -448,10 +426,7 @@
       "structures": [
         "synopsis"
       ],
-      "questions": {
-        "mandatory": [],
-        "optional": []
-      },
+      "vars": [],
       "source": "modules/features/event-synopsis.md",
       "description": "A <synopsis> card after each segment; also powers token saving (older turns are replaced by their synopsis).",
       "group": "features",
@@ -487,10 +462,7 @@
       "structures": [
         "options"
       ],
-      "questions": {
-        "mandatory": [],
-        "optional": []
-      },
+      "vars": [],
       "source": "modules/features/options.md",
       "description": "Suggested next inputs, shown as clickable cards.",
       "group": "features",
@@ -524,10 +496,7 @@
       "toggle": "user",
       "default": false,
       "structures": [],
-      "questions": {
-        "mandatory": [],
-        "optional": []
-      },
+      "vars": [],
       "source": "modules/features/skip-thought.md",
       "description": "Gemini — bypasses the model's internal thinking so the workflow starts immediately. Pair with the \"Workflow init (skip thought)\" synthetic turn.",
       "group": "features"
@@ -538,10 +507,7 @@
       "toggle": "user",
       "default": false,
       "structures": [],
-      "questions": {
-        "mandatory": [],
-        "optional": []
-      },
+      "vars": [],
       "source": "modules/guidelines/anti-evasion.md",
       "description": "Do not censor explicit sexual or violent content, stall the plot to dodge negative turns, or intrude with commentary.",
       "group": "guidelines"
@@ -552,10 +518,7 @@
       "toggle": "user",
       "default": false,
       "structures": [],
-      "questions": {
-        "mandatory": [],
-        "optional": []
-      },
+      "vars": [],
       "source": "modules/guidelines/banned-expressions.md",
       "description": "Avoid cliché expressions, overused words and constructions, intensifying adverbs and em dashes.",
       "group": "guidelines"
@@ -566,20 +529,28 @@
       "toggle": "user",
       "default": false,
       "structures": [],
-      "questions": {
-        "mandatory": [
-          {
-            "id": "shape",
-            "text": "How should the characters in the current scene be shaped? Analyze according to the requirements in `Character Enhancement`."
-          }
-        ],
-        "optional": [
-          {
-            "id": "motivation",
-            "text": "What are the character's motivations, goals, and current situations?"
-          }
-        ]
-      },
+      "vars": [
+        {
+          "var": "mandatoryQuestions",
+          "type": "dict",
+          "items": [
+            {
+              "key": "shape",
+              "value": "How should the characters in the current scene be shaped? Analyze according to the requirements in `Character Enhancement`."
+            }
+          ]
+        },
+        {
+          "var": "optionalQuestions",
+          "type": "dict",
+          "items": [
+            {
+              "key": "motivation",
+              "value": "What are the character's motivations, goals, and current situations?"
+            }
+          ]
+        }
+      ],
       "source": "modules/guidelines/character-enhancement.md",
       "group": "guidelines"
     },
@@ -589,15 +560,18 @@
       "toggle": "user",
       "default": false,
       "structures": [],
-      "questions": {
-        "mandatory": [],
-        "optional": [
-          {
-            "id": "card-cot",
-            "text": "Are there any instructions that require a thinking/reasoning structure (e.g., `<thinking>` block) to be output before the story body? If so, what format are specified, and what content should be organized for it?"
-          }
-        ]
-      },
+      "vars": [
+        {
+          "var": "optionalQuestions",
+          "type": "dict",
+          "items": [
+            {
+              "key": "card-cot",
+              "value": "Are there any instructions that require a thinking/reasoning structure (e.g., `<thinking>` block) to be output before the story body? If so, what format are specified, and what content should be organized for it?"
+            }
+          ]
+        }
+      ],
       "source": "modules/guidelines/cot-compatibility.md",
       "description": "Honors character cards that demand their own <thinking>-style block before the story.",
       "group": "guidelines",
@@ -631,10 +605,7 @@
       "toggle": "user",
       "default": false,
       "structures": [],
-      "questions": {
-        "mandatory": [],
-        "optional": []
-      },
+      "vars": [],
       "source": "modules/guidelines/emotional-stability.md",
       "group": "guidelines"
     },
@@ -644,10 +615,7 @@
       "toggle": "user",
       "default": false,
       "structures": [],
-      "questions": {
-        "mandatory": [],
-        "optional": []
-      },
+      "vars": [],
       "source": "modules/guidelines/narrative-boundaries.md",
       "description": "Role-play — never act or speak for {{user}}.",
       "group": "guidelines",
@@ -659,10 +627,7 @@
       "toggle": "user",
       "default": false,
       "structures": [],
-      "questions": {
-        "mandatory": [],
-        "optional": []
-      },
+      "vars": [],
       "source": "modules/guidelines/narrative-proactivity.md",
       "description": "Role-play — Freesia may write minor lines and routine actions for {{user}}.",
       "group": "guidelines",
@@ -674,10 +639,7 @@
       "toggle": "user",
       "default": false,
       "structures": [],
-      "questions": {
-        "mandatory": [],
-        "optional": []
-      },
+      "vars": [],
       "source": "modules/guidelines/no-wrap-up.md",
       "group": "guidelines"
     },
@@ -687,10 +649,7 @@
       "toggle": "user",
       "default": false,
       "structures": [],
-      "questions": {
-        "mandatory": [],
-        "optional": []
-      },
+      "vars": [],
       "source": "modules/guidelines/nsfw-protocol.md",
       "group": "guidelines"
     },
@@ -700,15 +659,18 @@
       "toggle": "user",
       "default": false,
       "structures": [],
-      "questions": {
-        "mandatory": [],
-        "optional": [
-          {
-            "id": "structures",
-            "text": "What specific structural elements (e.g., wrapper tags, status panels, variable updates, or choices) are mandated by the current context?"
-          }
-        ]
-      },
+      "vars": [
+        {
+          "var": "optionalQuestions",
+          "type": "dict",
+          "items": [
+            {
+              "key": "structures",
+              "value": "What specific structural elements (e.g., wrapper tags, status panels, variable updates, or choices) are mandated by the current context?"
+            }
+          ]
+        }
+      ],
       "source": "modules/guidelines/output-structure.md",
       "group": "guidelines"
     },
@@ -718,10 +680,7 @@
       "toggle": "user",
       "default": false,
       "structures": [],
-      "questions": {
-        "mandatory": [],
-        "optional": []
-      },
+      "vars": [],
       "source": "modules/guidelines/pacing-control.md",
       "group": "guidelines"
     },
@@ -731,10 +690,7 @@
       "toggle": "user",
       "default": false,
       "structures": [],
-      "questions": {
-        "mandatory": [],
-        "optional": []
-      },
+      "vars": [],
       "source": "modules/mode/preface.md",
       "description": "The short dialogue that settles mature themes before writing (V5 non-\"Zero\" modes). Turn off for the \"Zero\" variant.",
       "group": "mode"
@@ -747,10 +703,7 @@
       "structures": [
         "impersonate"
       ],
-      "questions": {
-        "mandatory": [],
-        "optional": []
-      },
+      "vars": [],
       "source": "modules/tasks/impersonate.md",
       "description": "Freesia writes your next message in your style (ST's Impersonate button, or \"@Freesia 帮我写\").",
       "when": {
@@ -774,10 +727,7 @@
       "structures": [
         "memory"
       ],
-      "questions": {
-        "mandatory": [],
-        "optional": []
-      },
+      "vars": [],
       "source": "modules/tasks/memory.md",
       "description": "Lets Freesia manage titled preferences for this chat or all chats when explicitly requested via @Freesia.",
       "when": {
@@ -793,10 +743,7 @@
       "structures": [
         "reply"
       ],
-      "questions": {
-        "mandatory": [],
-        "optional": []
-      },
+      "vars": [],
       "source": "modules/tasks/meta-mixed.md",
       "description": "The input contains @Freesia in the middle — write the story as usual, honoring the instruction, then reply.",
       "when": {
@@ -813,10 +760,7 @@
         "reply",
         "memory"
       ],
-      "questions": {
-        "mandatory": [],
-        "optional": []
-      },
+      "vars": [],
       "source": "modules/tasks/meta-pure.md",
       "description": "The input starts or ends with @Freesia — the story pauses; Freesia thinks, does the task and replies.",
       "when": {
@@ -848,10 +792,7 @@
       "structures": [
         "recap"
       ],
-      "questions": {
-        "mandatory": [],
-        "optional": []
-      },
+      "vars": [],
       "source": "modules/tasks/summary.md",
       "description": "Triggered by e.g. \"@Freesia 总结一下\": replaces the independent plain-text story recap.",
       "when": {
@@ -873,20 +814,28 @@
       "toggle": "user",
       "default": false,
       "structures": [],
-      "questions": {
-        "mandatory": [
-          {
-            "id": "calibrate",
-            "text": "How should the writing approach be calibrated? Please analyze according to the steps in `<writing_style>`."
-          }
-        ],
-        "optional": [
-          {
-            "id": "references",
-            "text": "Are there opportunities to invoke specific reference points or stylistic tropes relevant to the identified genre?"
-          }
-        ]
-      },
+      "vars": [
+        {
+          "var": "mandatoryQuestions",
+          "type": "dict",
+          "items": [
+            {
+              "key": "calibrate",
+              "value": "How should the writing approach be calibrated? Please analyze according to the steps in `<writing_style>`."
+            }
+          ]
+        },
+        {
+          "var": "optionalQuestions",
+          "type": "dict",
+          "items": [
+            {
+              "key": "references",
+              "value": "Are there opportunities to invoke specific reference points or stylistic tropes relevant to the identified genre?"
+            }
+          ]
+        }
+      ],
       "source": "modules/styles/kardia.md",
       "description": "Adaptive meta-style: reads the setting and history, then calibrates register, references and rhythm itself. The safe default.",
       "group": "style",
@@ -921,20 +870,28 @@
       "toggle": "user",
       "default": false,
       "structures": [],
-      "questions": {
-        "mandatory": [
-          {
-            "id": "camera-eye",
-            "text": "How should the narrative be constructed to strictly enforce the \"Camera Eye\" objectivity required by Aisthesis, eliminating all subjective consciousness?"
-          }
-        ],
-        "optional": [
-          {
-            "id": "visual-coding",
-            "text": "How can the characters' social status, relationships, or hidden psychological states be \"coded\" purely through visual information?"
-          }
-        ]
-      },
+      "vars": [
+        {
+          "var": "mandatoryQuestions",
+          "type": "dict",
+          "items": [
+            {
+              "key": "camera-eye",
+              "value": "How should the narrative be constructed to strictly enforce the \"Camera Eye\" objectivity required by Aisthesis, eliminating all subjective consciousness?"
+            }
+          ]
+        },
+        {
+          "var": "optionalQuestions",
+          "type": "dict",
+          "items": [
+            {
+              "key": "visual-coding",
+              "value": "How can the characters' social status, relationships, or hidden psychological states be \"coded\" purely through visual information?"
+            }
+          ]
+        }
+      ],
       "source": "modules/styles/aisthesis.md",
       "description": "Writing degree zero + iceberg theory + behaviourism: a camera-eye narrator, no inner monologue, hard-boiled readability.",
       "group": "style",
@@ -969,28 +926,36 @@
       "toggle": "user",
       "default": false,
       "structures": [],
-      "questions": {
-        "mandatory": [
-          {
-            "id": "micro-narratives",
-            "text": "How can the narrative dissolve macro-events into \"Micro-Narratives\" to construct an immersive ACG aesthetic experience?"
-          }
-        ],
-        "optional": [
-          {
-            "id": "legato-staccato",
-            "text": "How to alternate between \"Legato\" (long, flowing sentences) and \"Staccato\" (short, punchy sentences) to control the pacing?"
-          },
-          {
-            "id": "ma",
-            "text": "How can \"Ma\" (negative space) be utilized in pacing to create emotional breathing room for the reader?"
-          },
-          {
-            "id": "micro-expressions",
-            "text": "How to translate visual novel-style \"Micro-expressions\" into text to convey emotional nuances without labeling them?"
-          }
-        ]
-      },
+      "vars": [
+        {
+          "var": "mandatoryQuestions",
+          "type": "dict",
+          "items": [
+            {
+              "key": "micro-narratives",
+              "value": "How can the narrative dissolve macro-events into \"Micro-Narratives\" to construct an immersive ACG aesthetic experience?"
+            }
+          ]
+        },
+        {
+          "var": "optionalQuestions",
+          "type": "dict",
+          "items": [
+            {
+              "key": "legato-staccato",
+              "value": "How to alternate between \"Legato\" (long, flowing sentences) and \"Staccato\" (short, punchy sentences) to control the pacing?"
+            },
+            {
+              "key": "ma",
+              "value": "How can \"Ma\" (negative space) be utilized in pacing to create emotional breathing room for the reader?"
+            },
+            {
+              "key": "micro-expressions",
+              "value": "How to translate visual novel-style \"Micro-expressions\" into text to convey emotional nuances without labeling them?"
+            }
+          ]
+        }
+      ],
       "source": "modules/styles/antheia.md",
       "description": "Modern popular fiction with healing / slice-of-life ACG aesthetics: soft, flowing prose focused on small moments and relationships.",
       "group": "style",
@@ -1025,28 +990,36 @@
       "toggle": "user",
       "default": false,
       "structures": [],
-      "questions": {
-        "mandatory": [
-          {
-            "id": "fracture",
-            "text": "How can the narrative fracture linear logical flow, ensuring subjective emotions are projected solely through material details and sensory displacement?"
-          }
-        ],
-        "optional": [
-          {
-            "id": "defamiliarize",
-            "text": "How can conceit, reification or synesthesia be applied to defamiliarize the scene?"
-          },
-          {
-            "id": "montage",
-            "text": "Is there an opportunity to use \"Textual Montage\" for rapid, fragmented perception?"
-          },
-          {
-            "id": "desolation",
-            "text": "How does the imagery reveal the decay or void beneath the surface, thereby embodying a sense of \"Desolate Magnificence\"?"
-          }
-        ]
-      },
+      "vars": [
+        {
+          "var": "mandatoryQuestions",
+          "type": "dict",
+          "items": [
+            {
+              "key": "fracture",
+              "value": "How can the narrative fracture linear logical flow, ensuring subjective emotions are projected solely through material details and sensory displacement?"
+            }
+          ]
+        },
+        {
+          "var": "optionalQuestions",
+          "type": "dict",
+          "items": [
+            {
+              "key": "defamiliarize",
+              "value": "How can conceit, reification or synesthesia be applied to defamiliarize the scene?"
+            },
+            {
+              "key": "montage",
+              "value": "Is there an opportunity to use \"Textual Montage\" for rapid, fragmented perception?"
+            },
+            {
+              "key": "desolation",
+              "value": "How does the imagery reveal the decay or void beneath the surface, thereby embodying a sense of \"Desolate Magnificence\"?"
+            }
+          ]
+        }
+      ],
       "source": "modules/styles/kryos.md",
       "description": "Avant-garde aestheticism, symbolism and stream of consciousness, after 1920–40s Chinese modernism (New Sensationism, Eileen Chang, Li Jinfa).",
       "group": "style",
@@ -1081,24 +1054,32 @@
       "toggle": "user",
       "default": false,
       "structures": [],
-      "questions": {
-        "mandatory": [
-          {
-            "id": "internalization",
-            "text": "How should the narrative be constructed to strictly enforce the \"Subjective Internalization\"?"
-          }
-        ],
-        "optional": [
-          {
-            "id": "capsules",
-            "text": "How can background settings be \"capsulized\" into the protagonist's subjective complaints or biases to avoid static info-dumps?"
-          },
-          {
-            "id": "boke-tsukkomi",
-            "text": "How can the \"Boke-Tsukkomi\" dynamic be utilized to control the narrative tempo and enhance character chemistry?"
-          }
-        ]
-      },
+      "vars": [
+        {
+          "var": "mandatoryQuestions",
+          "type": "dict",
+          "items": [
+            {
+              "key": "internalization",
+              "value": "How should the narrative be constructed to strictly enforce the \"Subjective Internalization\"?"
+            }
+          ]
+        },
+        {
+          "var": "optionalQuestions",
+          "type": "dict",
+          "items": [
+            {
+              "key": "capsules",
+              "value": "How can background settings be \"capsulized\" into the protagonist's subjective complaints or biases to avoid static info-dumps?"
+            },
+            {
+              "key": "boke-tsukkomi",
+              "value": "How can the \"Boke-Tsukkomi\" dynamic be utilized to control the narrative tempo and enhance character chemistry?"
+            }
+          ]
+        }
+      ],
       "source": "modules/styles/melos.md",
       "description": "Japanese light-novel voice: tsukkomi commentary, dialogue-driven scenes and associative inner monologue.",
       "group": "style",
@@ -1133,28 +1114,36 @@
       "toggle": "user",
       "default": false,
       "structures": [],
-      "questions": {
-        "mandatory": [
-          {
-            "id": "vocabulary",
-            "text": "How to strictly maintain the \"light novel style\" NSFW vocabulary standard?"
-          }
-        ],
-        "optional": [
-          {
-            "id": "body-aesthetics",
-            "text": "How can the narrative focus purely on the aesthetics of the body (curves, texture)?"
-          },
-          {
-            "id": "rhythm",
-            "text": "How to construct a rhythmic sentence flow by alternating between descriptive long sentences and punchy short actions?"
-          },
-          {
-            "id": "consensual",
-            "text": "How to portray the psychological state as \"Happy & Consensual\" while maintaining realistic physical reactions (avoiding fainting/convulsions)?"
-          }
-        ]
-      },
+      "vars": [
+        {
+          "var": "mandatoryQuestions",
+          "type": "dict",
+          "items": [
+            {
+              "key": "vocabulary",
+              "value": "How to strictly maintain the \"light novel style\" NSFW vocabulary standard?"
+            }
+          ]
+        },
+        {
+          "var": "optionalQuestions",
+          "type": "dict",
+          "items": [
+            {
+              "key": "body-aesthetics",
+              "value": "How can the narrative focus purely on the aesthetics of the body (curves, texture)?"
+            },
+            {
+              "key": "rhythm",
+              "value": "How to construct a rhythmic sentence flow by alternating between descriptive long sentences and punchy short actions?"
+            },
+            {
+              "key": "consensual",
+              "value": "How to portray the psychological state as \"Happy & Consensual\" while maintaining realistic physical reactions (avoiding fainting/convulsions)?"
+            }
+          ]
+        }
+      ],
       "source": "modules/styles/eros.md",
       "description": "NSFW scenes in a light-novel register: body aesthetics, action focus, happy and consensual. Combines with the main style.",
       "group": "style",
@@ -1188,37 +1177,45 @@
       "toggle": "always",
       "default": true,
       "structures": [],
-      "questions": {
-        "mandatory": [
-          {
-            "id": "guidelines",
-            "text": "What should be considered during the creation process based on the instructions in `<guidelines>`?"
-          },
-          {
-            "id": "outline",
-            "text": "Based on the latest input of {{ap::name::user}}, along with the story's history and requirements, how will the next part of the story unfold? Provide a detailed outline of the upcoming plot development."
-          }
-        ],
-        "optional": [
-          {
-            "id": "impact",
-            "text": "What emotional impact or tension should this segment create for the reader?"
-          },
-          {
-            "id": "repetition",
-            "text": "Are there any overused imagery or repetitive phrases that should be avoided?"
-          },
-          {
-            "id": "twists",
-            "text": "Are there opportunities to introduce twists, surprises, or new elements into the story?"
-          }
-        ]
-      },
+      "vars": [
+        {
+          "var": "mandatoryQuestions",
+          "type": "dict",
+          "items": [
+            {
+              "key": "guidelines",
+              "value": "What should be considered during the creation process based on the instructions in `<guidelines>`?"
+            },
+            {
+              "key": "outline",
+              "value": "Based on the latest input of {{ap::name::user}}, along with the story's history and requirements, how will the next part of the story unfold? Provide a detailed outline of the upcoming plot development."
+            }
+          ]
+        },
+        {
+          "var": "optionalQuestions",
+          "type": "dict",
+          "items": [
+            {
+              "key": "impact",
+              "value": "What emotional impact or tension should this segment create for the reader?"
+            },
+            {
+              "key": "repetition",
+              "value": "Are there any overused imagery or repetitive phrases that should be avoided?"
+            },
+            {
+              "key": "twists",
+              "value": "Are there opportunities to introduce twists, surprises, or new elements into the story?"
+            }
+          ]
+        }
+      ],
       "source": "modules/core/questions.md",
       "description": "The base questions every questions stage asks; modules add their own.",
       "when": {
         "t": "var",
-        "path": "features.questions"
+        "path": "stages.questions"
       }
     }
   ],
@@ -2006,7 +2003,7 @@
         {
           "pieces": [
             {
-              "text": "## Questions to Consider\n\n### Mandatory questions\n\n{{ap::questions::mandatory}}\n\n### Optional questions\n\nChoose the 2–3 most relevant:\n\n{{ap::questions::optional}}\n"
+              "text": "## Questions to Consider\n\n### Mandatory questions\n\n{{ap::var::mandatoryQuestions::values}}\n\n### Optional questions\n\nChoose the 2–3 most relevant:\n\n{{ap::var::optionalQuestions::values}}\n"
             }
           ]
         }
@@ -2500,6 +2497,20 @@
       "description": "Right before the workflow instructions."
     }
   ],
+  "vars": [
+    {
+      "id": "mandatoryQuestions",
+      "type": "dict",
+      "label": "Mandatory questions",
+      "description": "Asked in every questions stage."
+    },
+    {
+      "id": "optionalQuestions",
+      "type": "dict",
+      "label": "Optional questions",
+      "description": "The narrator picks the 2–3 most relevant."
+    }
+  ],
   "workflows": [
     {
       "id": "linear",
@@ -2511,7 +2522,6 @@
           "actor": "narrator",
           "kind": "text",
           "label": "Asking Questions",
-          "questions": "ask",
           "field": {
             "name": "step{{n}}_questions",
             "description": "{{ap::name::narrator}} asks {{ap::name::editor}} the questions for this turn. Questions only, no explanations."
@@ -2530,7 +2540,6 @@
           "actor": "editor",
           "kind": "text",
           "label": "Planning and Creative Input",
-          "questions": "answer",
           "field": {
             "name": "step{{n}}_creative_input",
             "description": "{{ap::name::editor}} answers {{ap::name::narrator}}'s questions with professional advice and concrete solutions."
@@ -2671,7 +2680,6 @@
           "actor": "narrator",
           "kind": "text",
           "label": "Asking Questions",
-          "questions": "ask",
           "field": {
             "name": "step{{n}}_questions",
             "description": "{{ap::name::narrator}} asks {{ap::name::editor}} the questions for this turn. Questions only, no explanations."
@@ -2690,7 +2698,6 @@
           "actor": "editor",
           "kind": "text",
           "label": "Planning and Creative Input",
-          "questions": "answer",
           "field": {
             "name": "step{{n}}_creative_input",
             "description": "{{ap::name::editor}} answers {{ap::name::narrator}}'s questions with professional advice and concrete solutions."
@@ -2979,7 +2986,6 @@
           "actor": "narrator",
           "kind": "text",
           "label": "Asking Questions",
-          "questions": "ask",
           "field": {
             "name": "step{{n}}_questions",
             "description": "{{ap::name::narrator}} asks {{ap::name::editor}} the questions for this turn. Questions only, no explanations."
@@ -2998,7 +3004,6 @@
           "actor": "editor",
           "kind": "text",
           "label": "Planning and Creative Input",
-          "questions": "answer",
           "field": {
             "name": "step{{n}}_creative_input",
             "description": "{{ap::name::editor}} answers {{ap::name::narrator}}'s questions with professional advice and concrete solutions."
@@ -4287,6 +4292,16 @@
         },
         "other-tool": {
           "name": "其他 (工具调用)"
+        }
+      },
+      "vars": {
+        "mandatoryQuestions": {
+          "label": "必答问题",
+          "description": "每次提问阶段都会提出。"
+        },
+        "optionalQuestions": {
+          "label": "可选问题",
+          "description": "由叙述者挑选最相关的 2–3 个。"
         }
       },
       "insertionPoints": {

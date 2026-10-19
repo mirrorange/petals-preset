@@ -7,13 +7,11 @@ exclusive: main-style
 when: '!meta.pure && gen.type != "impersonate"'
 region: writing_style
 order: 100
-questions:
-  mandatory:
-  - id: calibrate
-    text: How should the writing approach be calibrated? Please analyze according to the steps in `<writing_style>`.
-  optional:
-  - id: references
-    text: Are there opportunities to invoke specific reference points or stylistic tropes relevant to the identified genre?
+vars:
+  mandatoryQuestions:
+    calibrate: How should the writing approach be calibrated? Please analyze according to the steps in `<writing_style>`.
+  optionalQuestions:
+    references: Are there opportunities to invoke specific reference points or stylistic tropes relevant to the identified genre?
 ---
 ## Writing Style: Kardia
 
