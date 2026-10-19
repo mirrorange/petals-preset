@@ -1,0 +1,302 @@
+# `preset.yaml` 清单
+
+`preset.yaml` 是预设的根文件。本页按字段列出全部顶层键；每个键的默认值、取值范围和相关诊断都在对应小节里。涉及较多规则的部分（结构、工具文案、配置、插入点等）给出摘要并链接到专门的页面。
+
+## 顶层字段一览
+
+| 字段 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `formatVersion` | `1` | `1` | 源码格式版本。不是 1 时报错 |
+| `id` | string | — | **必填**。小写 kebab-case，安装后以此识别预设 |
+| `name` | string | `id` | 显示名 |
+| `version` | semver | `0.0.0` | 必须形如 `1.2.3` 或 `1.2.3-beta.1` |
+| `author` | string | — | |
+| `description` | string | — | 面板中显示 |
+| `minAdvancedPreset` | semver | — | 安装时检查扩展版本，低于此版本拒绝安装 |
+| `actors` | map | — | **至少一个**。见[角色](#角色-actors) |
+| `narrator` | actor id | 第一个角色 | 主叙述者 |
+| `user` | actor id | `user` | 代表用户的角色，必须在 `actors` 中声明 |
+| `styles` | map | 见下 | 传输方式 → 写法 |
+| `plaintextFormat` | `prefix` \| `tag` | `prefix` | 纯文本传输下阶段的分隔方式 |
+| `contentMarker` | string | `<START_OF_CONTENT>` | 对话式输出中正文开始的标记 |
+| `prefillGuide` | string | 空（运行时用 `<START>`） | 预填充模式下助手预填充前的那条用户消息 |
+| `historyItemTemplate` | string | `{{prefix}}{{content}}` | 预填充模式下每条历史消息的格式 |
+| `stageHeading` | string | `### Step {{n}}: {{label}} ({{actor}})` | 指令式下每个阶段分节前自动加的标题 |
+| `stop` | string[] | `[]` | 预填充模式的停止词 |
+| `regions` | list | — | **必填**。见[区域](#区域-regions) |
+| `anchors` | map | — | 语义锚点的另一种写法 |
+| `workflowRegion` | region id | `tail` 锚点的区域 | 工作流提示词放入的区域 |
+| `insertionPoints` | list | `[]` | 用户模组插入点，见 [user-modules.md](user-modules.md) |
+| `vars` | map | `{}` | 构建变量，见 [build-variables.md](build-variables.md) |
+| `params` | list | `[]` | 参数，见[参数](#参数-params) |
+| `groups` | map | `{}` | 面板分组与单选集，见[分组](#分组-groups) |
+| `structures` | map | `{}` | 结构，见 [structures.md](structures.md) |
+| `regex` | list | `[]` | 正则标记，见[正则标记](#正则标记-regex) |
+| `meta` | map | 见下 | 元指令与内置任务，见 [meta-and-tasks.md](meta-and-tasks.md) |
+| `tokenSaving` | map | 见下 | 省 token 的默认参数 |
+| `syntheticTurns` | list | `[]` | 工具模式的示范轮次，见 [transports.md](transports.md#示范轮次-syntheticturns) |
+| `tools` | map | 见 transports | 模型可见的工具名、字段名与文案，见 [transports.md](transports.md#tools-文案) |
+| `theme` | map | `{}` | 面板与消息 UI 的配色 |
+| `carrier` | map | — | **必填 `order`**。见 [configuration.md](configuration.md#carrier) |
+| `configurationDefaults` | map | 见 configuration | 配置默认值 |
+| `configurations` | list | 一个 `default` | 推荐配置 |
+| `defaultConfiguration` | id | 第一个推荐配置 | |
+| `migrations` | list | `[]` | 改名迁移，见 [configuration.md](configuration.md#迁移) |
+| `moduleOrder` | list | `["*"]` | 模组排序，见 [modules.md](modules.md#排序) |
+| `workflowOrder` | list | 文件名顺序 | 工作流在面板中的顺序 |
+
+最小可用的清单：
+
+```yaml
+formatVersion: 1
+id: my-preset
+name: My Preset
+version: 0.1.0
+actors:
+  narrator: { name: Narrator }
+  user: { name: "{{user}}" }
+regions:
+  - { id: top, role: system, merge: join }
+  - { id: settings, native: true }
+  - { id: history, role: system, anchor: historyStart }
+  - { id: task, role: system, anchor: historyEnd }
+  - { id: tail, role: system, anchor: tail }
+workflowRegion: task
+carrier:
+  order: [top, { main: false }, worldInfoBefore, charDescription, scenario, worldInfoAfter, dialogueExamples, history, chatHistory, task, tail]
+```
+
+## 角色 `actors`
+
+```yaml
+actors:
+  narrator: { name: Freesia, prefix: "{{ap::name::narrator}}: ", color: primary }
+  editor:   { name: Petals,  prefix: "{{ap::name::editor}}: ",   color: accent }
+  user:     { name: "{{user}}" }
+narrator: narrator
+user: user
+```
+
+| 字段 | 默认 | 说明 |
+| --- | --- | --- |
+| `name` | 角色 id | 显示名，模型也会看到。可含 ST 宏（`{{user}}`） |
+| `prefix` | `{{ap::name::<id>}}: ` | 对话式输出里该角色发言的前缀，用于切分阶段 |
+| `color` | — | 阶段卡片颜色：`primary`、`accent`（取主题色）或任意 CSS 颜色 |
+
+- 角色 id 用在工作流阶段的 `actor`、宏 `{{ap::name::<id>}}` / `{{ap::prefix::<id>}}` 和配置 `identity` 中。
+- 用户可以在配置的“身份”里覆盖名字和前缀（`configurationDefaults.identity.names/prefixes`）；覆盖值优先于这里的声明。
+- `user` 角色的前缀出现在模型输出的行首时，AP 认为模型开始替用户说话，在那里截断（见 [transports.md](transports.md#对话式解析)）。
+
+## 写法 `styles`
+
+```yaml
+styles: { prefill: dialogue, plaintext: dialogue, structured: imperative, tool-single: imperative, tool-multi: imperative }
+```
+
+键是五种传输方式，值是 `dialogue` 或 `imperative`。上面就是默认值。写法决定：条件变量 `style`、`@style` 片段、工作流分节选用哪一份、`{{ap::structure::<id>}}` 输出哪种格式说明、指令式是否加 `stageHeading`。未知传输方式的键给出警告。
+
+## 对话式输出相关字段
+
+| 字段 | 说明 |
+| --- | --- |
+| `plaintextFormat` | `prefix`：纯文本下按角色前缀切分阶段；`tag`：每个阶段都包在 `<阶段tag或阶段id>…</…>` 里。预填充总是 `prefix` |
+| `contentMarker` | 模型输出这个标记后，后面的文字归入终结正文阶段。设为空字符串则不使用标记 |
+| `prefillGuide` | 预填充整形时插入的用户消息（可含宏）。空时用 `<START>` |
+| `historyItemTemplate` | 预填充整形时每条历史消息的模板。变量：`{{prefix}}`（用户消息为用户前缀，其他为 `名字: `）、`{{name}}`、`{{content}}` |
+| `stop` | 预填充请求的停止词（与 ST 自带的合并），并在客户端再截一次 |
+
+## 指令式阶段标题 `stageHeading`
+
+指令式写法下，每个有内容的阶段分节前会自动加上这个标题。可用占位符：
+
+| 占位符 | 值 |
+| --- | --- |
+| `{{n}}` | 阶段在本轮激活阶段中的序号（从 1 开始） |
+| `{{label}}` | 阶段 `label` |
+| `{{actor}}` | 阶段角色的显示名 |
+| `{{target}}` | 该阶段的字段名（结构化 / 工具）或工具名（多工具） |
+| `{{optional}}` | 可选阶段为 ` (optional)`，否则为空 |
+
+设为空字符串可关闭自动标题。
+
+## 区域 `regions`
+
+区域是提示词里按顺序排列的“槽位”。每个模组条目落在某个区域里，工作流提示词落在 `workflowRegion`。
+
+```yaml
+regions:
+  - { id: top, role: system, merge: join }
+  - { id: guidelines, role: system, merge: { wrap: guidelines } }
+  - { id: settings, native: true }
+  - { id: history, role: system, anchor: historyStart }
+  - { id: memory, role: system, merge: join, anchor: historyEnd }
+  - { id: task, role: system }
+  - { id: bottom, role: system, anchor: tail }
+workflowRegion: task
+```
+
+| 字段 | 默认 | 说明 |
+| --- | --- | --- |
+| `id` | — | 必填，唯一 |
+| `role` | `system` | 区域消息的默认角色：`system` \| `user` \| `assistant` |
+| `merge` | `none` | `none`：每个条目块一条消息；`join`：相邻无 `@as` 的块合并为一条，用 `separator` 连接；`{ wrap: <tag> }`：合并后包在 `<tag>…</tag>` 里 |
+| `separator` | `"\n\n"` | `join` / `wrap` 时的连接符 |
+| `native` | `false` | 原生区域：只是标记 ST 原生提示词（角色卡、世界书……）在顺序中的位置，AP 不往里放内容，也没有锚点 |
+| `anchor` | — | 把语义锚点 `historyStart` / `historyEnd` / `tail` 绑定到这个区域 |
+
+- 三个语义锚点**都必须**绑定到某个区域（可以写在 `regions[].anchor`，也可以写 `anchors: { historyStart: history, … }`）。
+  - `historyStart`：聊天记录之前的最后一个区域。预填充整形以它为界（之前的内容合成一条 system 消息）。
+  - `historyEnd`：聊天记录之后的第一个区域。
+  - `tail`：最末尾的区域，也是 `workflowRegion` 的默认值。
+- 在 `merge: join/wrap` 的区域里，`@as` 开头的块不参与合并，单独成为一条消息。
+- 区域的实际位置由 `carrier.order` 决定（见 [configuration.md](configuration.md#carrier)）；`regions` 的顺序决定条目的排序与预览顺序，二者应保持一致。
+- 诊断：条目指向未知区域或原生区域报错；`workflowRegion` 未知或是原生区域报错；没有任何条目的非原生区域给出警告。
+
+## 参数 `params`
+
+参数是用户在面板里填写或选择的值，提示词用 `{{ap::param::<id>}}` 读取，条件用 `params.<id>` 判断。
+
+```yaml
+params:
+  - id: language
+    type: select
+    label: Reply language
+    group: language
+    unset: the language used in the story so far
+    options:
+      - English
+      - { value: zh, label: 简体中文, text: Simplified Chinese }
+  - id: length
+    type: number
+    label: Target length
+    unit: words
+    min: 0
+    max: 5000
+    default: 0
+    unset: a length that fits the scene
+  - id: pov
+    type: text
+    label: Point of view
+    fallback: language
+```
+
+| 字段 | 默认 | 说明 |
+| --- | --- | --- |
+| `id` | — | 必填 |
+| `type` | `text` | `text` \| `number` \| `select` |
+| `label` | `id` | 面板标签 |
+| `description` | — | 面板说明 |
+| `group` | — | 所属分组（`groups` 的键），未声明给出警告 |
+| `default` | `''`（number 为 `0`） | 默认值 |
+| `unset` | — | 未设置时 `{{ap::param}}` 输出的文本 |
+| `fallback` | — | 未设置时先尝试读取另一个参数（最多 4 层） |
+| `unit` / `min` / `max` | — | 数字参数的单位与范围（面板用） |
+| `options` | — | `select` 必填；`text` 也可提供，作为输入建议。每项是标量，或 `{ value, label?, text? }` |
+
+**取值规则**（`{{ap::param::<id>}}`）：
+
+1. 值取当前配置的 `params.<id>`，没有则取 `default`。
+2. 值为 `''` 或 `0` 视为“未设置”：若有 `fallback` 且那个参数有值，用它；否则输出 `unset`（没有则为空）。
+3. 已设置时，若值匹配某个选项的 `value`，输出该选项的 `text`（没有 `text` 则输出值本身）。
+
+条件里的 `params.<id>` 是原始值（不经过 `unset`/`fallback`/`text`）。诊断：`fallback` 指向不存在的参数报错；`select` 没有 `options` 报错。
+
+## 分组 `groups`
+
+```yaml
+groups:
+  guidelines: { label: Guidelines, order: 10 }
+  mode: { label: Mode, description: Pick one., allowNone: false }
+  language: { label: Language, order: 20, tab: writing }
+```
+
+| 字段 | 默认 | 说明 |
+| --- | --- | --- |
+| `label` | 键 | 面板标题 |
+| `description` | — | 面板说明 |
+| `order` | 按声明顺序 10、20、30… | 面板排序 |
+| `allowNone` | `false` | 仅对单选集有意义：允许一个都不选 |
+| `tab` | `modules` | 放在面板的“模组”页还是“写作”页（`modules` \| `writing`） |
+
+分组键同时被两种东西引用：模组的 `group`（面板归类）和模组的 `exclusive`（单选集）；参数的 `group`。单选集的规则见 [modules.md](modules.md#激活规则)。
+
+面板中的单选集：不允许为空时显示为一组单选项；`allowNone: true` 时，单选集还有一个总开关，打开后才列出选项。单选集是它所在分组的唯一内容（单选集 id 等于成员模组的 `group`）时，总开关放在分组标题上；否则作为分组内的一行，以单选集分组的 `label` 命名，避免看起来像在控制分组里的其他模组。
+
+## 正则标记 `regex`
+
+正则标记在每次生成前对文本做一次匹配，结果作为条件变量 `flags.<id>`（布尔）。
+
+```yaml
+regex:
+  - { id: summary, pattern: "(summary|summarize|recap|总结)", flags: i, target: meta, requires: meta.pure }
+  - { id: ooc, pattern: "\\(OOC:", target: input }
+  - { id: battle, pattern: "fight|battle", target: "recent:3" }
+```
+
+| 字段 | 默认 | 说明 |
+| --- | --- | --- |
+| `id` | — | 变量名 `flags.<id>` |
+| `pattern` | — | JavaScript 正则源码（YAML 里注意转义） |
+| `flags` | `i` | 正则标志 |
+| `target` | `meta` | `input`：用户本次输入全文；`meta`：本次输入中的元指令文本；`recent:N`：最近 N 条消息 |
+| `requires` | — | 条件表达式；匹配且条件成立时标记才为真 |
+
+`requires` 求值时只有 `meta.*` 可用（此时尚未组装）。非法正则或 `target` 报错。
+
+## 元指令 `meta`
+
+```yaml
+meta:
+  trigger: "@{{ap::name::narrator}}"
+  wrap: true
+  recentCount: 3
+  tasks: { summary: flags.summary, impersonate: flags.impersonate }
+  impersonatePrompt: "@{{ap::name::narrator}} Write my next reply for me."
+```
+
+| 字段 | 默认 | 说明 |
+| --- | --- | --- |
+| `trigger` | `@{{ap::name::<narrator>}}` | 元指令触发词（大小写不敏感） |
+| `wrap` | `true` | 允许 `@Trigger{ … }` 花括号写法 |
+| `recentCount` | `3` | `{{ap::recent_meta}}` 取最近几次元指令（配置 `meta.recentCount` 可覆盖） |
+| `tasks.summary` / `tasks.impersonate` | — | 纯元指令时判断是否为“总结”/“代写”任务的条件 |
+| `impersonatePrompt` | `<trigger> Write my next reply for me.` | 点击 ST 代写按钮时发送的元指令 |
+
+完整语义见 [meta-and-tasks.md](meta-and-tasks.md)。`tasks` 只接受 `summary` 与 `impersonate`。
+
+## 省 token `tokenSaving`
+
+```yaml
+tokenSaving:
+  keepFullTurns: 6
+  truncateUserAfter: 2000
+  synopsisTemplate: "[{{time}} · {{location}}] {{event}}: {{summary}}"
+```
+
+| 字段 | 默认 | 说明 |
+| --- | --- | --- |
+| `keepFullTurns` | `6` | 保留最近几轮完整内容 |
+| `truncateUserAfter` | `2000` | 更早的用户消息超过这个字符数就截断并加 `…`（0 表示不截断） |
+| `synopsisTemplate` | 如上 | 更早的助手消息替换成事件摘要时的格式 |
+
+是否启用由配置 `tokenSaving.enabled` 决定（默认关闭）；`keepFullTurns` / `truncateUserAfter` 也可在配置中覆盖。规则见 [meta-and-tasks.md](meta-and-tasks.md#省-token)。
+
+## 主题 `theme`
+
+```yaml
+theme:
+  light: { primary: "#c026d3", accent: "#9333ea" }
+  dark:  { primary: "#e879f9", accent: "#c084fc" }
+```
+
+AP 跟随 ST 的明暗模式选择 `light` 或 `dark`。`primary` 与 `accent` 会生成 50–900 的色阶（`--ap-primary-500` 等）；其他键原样成为 CSS 变量 `--ap-<key>`。用户可以在“外观”里用自己的颜色覆盖。
+
+## 其余字段
+
+- `insertionPoints` → [user-modules.md](user-modules.md#插入点-insertionpoints)
+- `vars` → [build-variables.md](build-variables.md)
+- `structures` → [structures.md](structures.md)
+- `syntheticTurns`、`tools` → [transports.md](transports.md)
+- `carrier`、`configurationDefaults`、`configurations`、`defaultConfiguration`、`migrations` → [configuration.md](configuration.md)
+- `moduleOrder` → [modules.md](modules.md#排序)
+- `workflowOrder`：工作流 id 列表；列出的按列出顺序排在前面，其余按文件名。决定面板里工作流的顺序，以及“第一个故事工作流”（默认工作流）是谁。

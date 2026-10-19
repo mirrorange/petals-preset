@@ -9,10 +9,11 @@
     "build": "ap build",
     "check": "ap check",
     "dev": "ap dev",
-    "preview": "ap preview"
+    "preview": "ap preview",
+    "skills": "ap skills install"
   },
   "devDependencies": {
-    "advanced-preset": "https://github.com/mirrorange/advanced-preset/releases/download/v1.4.0/advanced-preset-1.4.0.tgz"
+    "advanced-preset": "https://github.com/mirrorange/advanced-preset/releases/download/v1.5.0/advanced-preset-1.5.0.tgz"
   },
   "repository": { "type": "git", "url": "https://github.com/mirrorange/petals-preset.git" },
   "license": "MIT"
