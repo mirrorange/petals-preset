@@ -127,3 +127,11 @@ configurations:
   claude-4-6-5: { name: "Claude 4.6 至 Claude 5" }
   claude-5-5-plus: { name: "Claude 5.5 及之后版本" }
   other: { name: 其他 }
+
+insertionPoints:
+  after-identity: { label: 身份设定之后, description: 紧接在 Freesia 的身份与核心指令之后。 }
+  after-role: { label: 角色之后 }
+  guidelines: { label: 写作指南, description: 位于指南块内，内置指南之后。 }
+  writing-style: { label: 文风, description: 位于文风块内，所选文风之后。 }
+  after-history: { label: 历史之后, description: 紧接在聊天历史与记忆之后，适合放当前状态或提醒。 }
+  before-task: { label: 任务之前, description: 紧挨在工作流指令之前。 }

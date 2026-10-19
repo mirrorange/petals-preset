@@ -2,11 +2,11 @@
   "formatVersion": 2,
   "id": "petals",
   "name": "Petals Preset",
-  "version": "7.2.0",
+  "version": "7.3.0",
   "author": "mirrorange",
   "description": "Freesia & Petals collaborative writing: regional prompt assembly and staged workflows (linear / iterative / edit) on five transports.",
-  "minAdvancedPreset": "1.1.0",
-  "hash": "42e351cf5cc05418",
+  "minAdvancedPreset": "1.2.0",
+  "hash": "df5a3c477efe29eb",
   "actors": {
     "narrator": {
       "name": "Freesia",
@@ -2467,6 +2467,49 @@
       }
     }
   ],
+  "insertionPoints": [
+    {
+      "id": "after-identity",
+      "label": "After identity",
+      "region": "top",
+      "order": 1000,
+      "description": "Right after Freesia's identity and the core instructions."
+    },
+    {
+      "id": "after-role",
+      "label": "After role",
+      "region": "role",
+      "order": 1000
+    },
+    {
+      "id": "guidelines",
+      "label": "Guidelines",
+      "region": "guidelines",
+      "order": 2000,
+      "description": "Inside the guidelines block, after the built-in guidelines."
+    },
+    {
+      "id": "writing-style",
+      "label": "Writing style",
+      "region": "writing_style",
+      "order": 1000,
+      "description": "Inside the writing style block, after the selected style."
+    },
+    {
+      "id": "after-history",
+      "label": "After history",
+      "region": "memory",
+      "order": 1000,
+      "description": "Right after the chat history and memories; good for current state or reminders."
+    },
+    {
+      "id": "before-task",
+      "label": "Before task",
+      "region": "task",
+      "order": 5,
+      "description": "Right before the workflow instructions."
+    }
+  ],
   "workflows": [
     {
       "id": "linear",
@@ -3789,13 +3832,14 @@
   "configurationDefaults": {
     "connection": {
       "transport": "structured",
-      "workflow": "linear",
       "forceTool": true,
       "parallelTools": false,
-      "syntheticTurn": "init",
       "sendThoughtSignature": false,
+      "streamToolArguments": "auto",
       "maxSteps": 6,
-      "finalFallback": true
+      "finalFallback": true,
+      "workflow": "linear",
+      "syntheticTurn": "init"
     },
     "sampling": {
       "temperature": 1,
@@ -4191,6 +4235,31 @@
         },
         "other": {
           "name": "其他"
+        }
+      },
+      "insertionPoints": {
+        "after-identity": {
+          "label": "身份设定之后",
+          "description": "紧接在 Freesia 的身份与核心指令之后。"
+        },
+        "after-role": {
+          "label": "角色之后"
+        },
+        "guidelines": {
+          "label": "写作指南",
+          "description": "位于指南块内，内置指南之后。"
+        },
+        "writing-style": {
+          "label": "文风",
+          "description": "位于文风块内，所选文风之后。"
+        },
+        "after-history": {
+          "label": "历史之后",
+          "description": "紧接在聊天历史与记忆之后，适合放当前状态或提醒。"
+        },
+        "before-task": {
+          "label": "任务之前",
+          "description": "紧挨在工作流指令之前。"
         }
       }
     }
