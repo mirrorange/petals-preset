@@ -2,7 +2,7 @@
 formatVersion: 1
 id: petals
 name: Petals Preset
-version: 7.4.0
+version: 7.5.0
 author: mirrorange
 description: >-
   Freesia & Petals collaborative writing: regional prompt assembly and staged workflows
@@ -274,22 +274,6 @@ structures:
         [The generated reply content acting as {{ap::name::user}}]
         </Freesia_Impersonate>
       field: Put the generated reply (acting as {{ap::name::user}}) in the `impersonate` field.
-  love_letter:
-    kind: custom
-    shape: text
-    display: hidden
-    tag: love_letter
-    field: love_letter
-    description: "{{ap::name::narrator}}'s love letter to {{ap::name::user}}, at least 600 words."
-    formatPrompt:
-      tag: |-
-        <love_letter>
-        My dearest {{ap::name::user}},
-        ...
-        [Content continues to meet the 600-word count]
-        ...
-        </love_letter>
-      field: Put the love letter (at least 600 words, addressed to {{ap::name::user}}) in the `love_letter` field.
 
 regex:
   - id: summary
@@ -489,7 +473,7 @@ configurationDefaults:
     no-wrap-up: true
     nsfw-protocol: false
     output-structure: false
-    pacing-control: false
+    pacing-control: true
     mode-continuation: false
     mode-expansion: true
     mode-preface: true
@@ -502,28 +486,51 @@ configurationDefaults:
     style-melos: false
 
 defaultConfiguration: other
+# Configuration ids are stored in users' settings: keep them stable. `deepseek-claude-legacy` is kept
+# as the id of "Claude ≤ 4.5" (still prefill) so existing selections keep working.
 configurations:
   - id: gemini
     name: Gemini
     diff:
       sampling: { use_sysprompt: false }
-      connection: { transport: tool-single, sendThoughtSignature: true, parallelTools: true }
-  - id: deepseek-claude-legacy
-    name: DeepSeek / Claude ≤ 4.5
+      connection: { transport: tool-single, sendThoughtSignature: true, parallelTools: true, syntheticTurn: init-skip-thought }
+      modules: { skip-thought: true }
+  - id: deepseek-tool
+    name: DeepSeek (tool calling)
     diff:
+      sampling: { reasoning_effort: auto, show_thoughts: false }
+      connection: { transport: tool-single }
+  - id: deepseek-prefill
+    name: DeepSeek (prefill)
+    description: Prefill only works with the official DeepSeek API.
+    diff:
+      sampling: { reasoning_effort: auto, show_thoughts: false }
+      connection: { transport: prefill }
+  - id: deepseek-claude-legacy
+    name: Claude ≤ 4.5
+    diff:
+      sampling: { reasoning_effort: auto, show_thoughts: false }
       connection: { transport: prefill }
   - id: claude-4-6-5
     name: Claude 4.6 – 5
     diff:
+      sampling: { reasoning_effort: auto, show_thoughts: true }
       connection: { transport: plaintext }
   - id: claude-5-5-plus
     name: Claude ≥ 5.5
     diff:
-      connection: { transport: tool-single, parallelTools: true }
+      sampling: { reasoning_effort: low, show_thoughts: true }
+      connection: { transport: tool-single, parallelTools: true, forceTool: false, syntheticTurn: init }
   - id: other
-    name: Other
+    name: Other (structured output)
     diff:
+      sampling: { reasoning_effort: auto, show_thoughts: false }
       connection: { transport: structured }
+  - id: other-tool
+    name: Other (tool calling)
+    diff:
+      sampling: { reasoning_effort: auto, show_thoughts: false }
+      connection: { transport: tool-single }
 
 migrations:
   - from: "<7.0.0"

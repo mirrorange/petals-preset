@@ -1,6 +1,6 @@
 ---
 id: skip-thought
-name: Skip Thought
+name: Skip Thought (Gemini)
 description: Gemini — bypasses the model's internal thinking so the workflow starts immediately. Pair with the "Workflow init (skip thought)" synthetic turn.
 group: features
 ---
