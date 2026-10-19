@@ -33,23 +33,23 @@ modules:
     name: 防回避
     description: 不审查露骨的性与暴力描写，不为回避负面走向而拖延剧情，不以评论或升华介入叙事。
   banned-expressions:
-    name: 禁用表达
+    name: 禁词表
     description: 避免陈词滥调：禁用指定词语与套路表达、「不是……而是……」句式、强化副词和破折号。
   character-enhancement: { name: 角色增强 }
   cot-compatibility:
     name: 思维链兼容
     description: 兼容要求在正文前输出自带 <thinking> 等思考块的角色卡。
-  emotional-stability: { name: 情绪稳定 }
+  emotional-stability: { name: 防情绪化 }
   narrative-boundaries:
-    name: 叙事边界
+    name: 防抢话
     description: 角色扮演——绝不替 {{user}} 行动或发言。
   narrative-proactivity:
-    name: 叙事主动性
+    name: 允许抢话
     description: 角色扮演——Freesia 可以替 {{user}} 写一些次要台词和日常动作。
-  no-wrap-up: { name: 不做收尾 }
-  nsfw-protocol: { name: NSFW 情境协议 }
+  no-wrap-up: { name: 防总结/升华 }
+  nsfw-protocol: { name: 防发情 }
   output-structure: { name: 输出结构强化 }
-  pacing-control: { name: 节奏控制 }
+  pacing-control: { name: 叙事节奏控制 }
   style-kardia:
     name: Kardia
     description: 自适应元文风：先分析设定与历史，再自行校准语域、参照作品与节奏。稳妥的默认选择。
@@ -69,11 +69,11 @@ modules:
     name: Eros（NSFW）
     description: 轻小说风格的 NSFW 描写：人体美学、聚焦动作、愉悦且两情相悦。可与主文风叠加。
   always-reply:
-    name: 总是回复
+    name: 始终请求元回复
     description: 每段故事之后，Freesia 都附上一段简短的私人回复。
   antifiltering:
-    name: 反过滤（情书）
-    description: 在末尾附加一封很长的隐藏情书，以稀释输出过滤。消耗 Token，仅在需要时开启。
+    name: 反过滤 (Gemini)
+    description: Gemini 专用——在 top 之后附加一封预先写好的超长情书，填充输入以稀释输入过滤。消耗大量 Token，仅在需要时开启。
   event-synopsis:
     name: 事件摘要
     description: 每段之后输出 <synopsis> 卡片；也是节省 Token 的数据来源（较早的楼层以摘要代替）。
@@ -81,7 +81,7 @@ modules:
     name: 用户选项
     description: 推荐你的下一条输入，以可点击的卡片显示。
   skip-thought:
-    name: 跳过思考
+    name: 跳过思考 (Gemini)
     description: Gemini 专用——让模型的内部思考块只输出一句固定的话，直接进入 Workflow 以加快输出。需配合合成轮次「Workflow init (skip thought)」。
 
 workflows:
@@ -124,10 +124,13 @@ params:
 
 configurations:
   gemini: { name: Gemini }
-  deepseek-claude-legacy: { name: "DeepSeek / Claude 4.5 及之前版本" }
+  deepseek-tool: { name: DeepSeek (工具调用) }
+  deepseek-prefill: { name: DeepSeek (预填充), description: 仅 DeepSeek 官方 API 支持预填充，其他提供商请使用「DeepSeek (工具调用)」。 }
+  deepseek-claude-legacy: { name: "Claude 4.5 及之前版本" }
   claude-4-6-5: { name: "Claude 4.6 至 Claude 5" }
   claude-5-5-plus: { name: "Claude 5.5 及之后版本" }
-  other: { name: 其他 }
+  other: { name: 其他 (结构化输出) }
+  other-tool: { name: 其他 (工具调用) }
 
 insertionPoints:
   after-identity: { label: 身份设定之后, description: 紧接在 Freesia 的身份与核心指令之后。 }

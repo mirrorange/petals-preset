@@ -1,6 +1,6 @@
 {
   "name": "@mirrorange/petals-preset",
-  "version": "7.3.0",
+  "version": "7.5.0",
   "description": "Petals Preset (花瓣预设) v7 — the first Advanced Preset for SillyTavern.",
   "type": "module",
   "files": ["dist/*.apreset.json"],
