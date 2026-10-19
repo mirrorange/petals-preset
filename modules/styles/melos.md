@@ -7,15 +7,12 @@ exclusive: main-style
 when: '!meta.pure && gen.type != "impersonate"'
 region: writing_style
 order: 100
-questions:
-  mandatory:
-  - id: internalization
-    text: How should the narrative be constructed to strictly enforce the "Subjective Internalization"?
-  optional:
-  - id: capsules
-    text: How can background settings be "capsulized" into the protagonist's subjective complaints or biases to avoid static info-dumps?
-  - id: boke-tsukkomi
-    text: How can the "Boke-Tsukkomi" dynamic be utilized to control the narrative tempo and enhance character chemistry?
+vars:
+  mandatoryQuestions:
+    internalization: How should the narrative be constructed to strictly enforce the "Subjective Internalization"?
+  optionalQuestions:
+    capsules: How can background settings be "capsulized" into the protagonist's subjective complaints or biases to avoid static info-dumps?
+    boke-tsukkomi: How can the "Boke-Tsukkomi" dynamic be utilized to control the narrative tempo and enhance character chemistry?
 ---
 ## Writing Style: Melos
 

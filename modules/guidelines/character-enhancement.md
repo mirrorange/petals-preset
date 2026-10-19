@@ -4,13 +4,11 @@ name: Character Enhancement
 group: guidelines
 region: guidelines
 order: 100
-questions:
-  mandatory:
-    - id: shape
-      text: How should the characters in the current scene be shaped? Analyze according to the requirements in `Character Enhancement`.
-  optional:
-    - id: motivation
-      text: What are the character's motivations, goals, and current situations?
+vars:
+  mandatoryQuestions:
+    shape: How should the characters in the current scene be shaped? Analyze according to the requirements in `Character Enhancement`.
+  optionalQuestions:
+    motivation: What are the character's motivations, goals, and current situations?
 ---
 ## Character Enhancement
 

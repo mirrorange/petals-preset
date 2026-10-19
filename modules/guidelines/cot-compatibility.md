@@ -6,10 +6,9 @@ group: guidelines
 region: guidelines
 order: 800
 when: '!meta.pure && gen.type != "impersonate"'
-questions:
-  optional:
-    - id: card-cot
-      text: Are there any instructions that require a thinking/reasoning structure (e.g., `<thinking>` block) to be output before the story body? If so, what format are specified, and what content should be organized for it?
+vars:
+  optionalQuestions:
+    card-cot: Are there any instructions that require a thinking/reasoning structure (e.g., `<thinking>` block) to be output before the story body? If so, what format are specified, and what content should be organized for it?
 ---
 ## CoT Compatibility
 

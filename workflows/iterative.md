@@ -9,7 +9,6 @@ stages:
   - id: questions
     actor: narrator
     kind: text
-    questions: ask
     label: Asking Questions
     field: { name: "step{{n}}_questions", description: "{{ap::name::narrator}} asks {{ap::name::editor}} the questions for this turn. Questions only, no explanations." }
     tool:
@@ -19,7 +18,6 @@ stages:
   - id: planning
     actor: editor
     kind: text
-    questions: answer
     label: Planning and Creative Input
     field: { name: "step{{n}}_creative_input", description: "{{ap::name::editor}} answers {{ap::name::narrator}}'s questions with professional advice and concrete solutions." }
     tool:

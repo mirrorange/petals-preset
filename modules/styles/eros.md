@@ -6,17 +6,13 @@ group: style
 when: '!meta.pure && gen.type != "impersonate"'
 region: writing_style
 order: 200
-questions:
-  mandatory:
-  - id: vocabulary
-    text: How to strictly maintain the "light novel style" NSFW vocabulary standard?
-  optional:
-  - id: body-aesthetics
-    text: How can the narrative focus purely on the aesthetics of the body (curves, texture)?
-  - id: rhythm
-    text: How to construct a rhythmic sentence flow by alternating between descriptive long sentences and punchy short actions?
-  - id: consensual
-    text: How to portray the psychological state as "Happy & Consensual" while maintaining realistic physical reactions (avoiding fainting/convulsions)?
+vars:
+  mandatoryQuestions:
+    vocabulary: How to strictly maintain the "light novel style" NSFW vocabulary standard?
+  optionalQuestions:
+    body-aesthetics: How can the narrative focus purely on the aesthetics of the body (curves, texture)?
+    rhythm: How to construct a rhythmic sentence flow by alternating between descriptive long sentences and punchy short actions?
+    consensual: How to portray the psychological state as "Happy & Consensual" while maintaining realistic physical reactions (avoiding fainting/convulsions)?
 ---
 ## Writing Style: Eros (for NSFW)
 
