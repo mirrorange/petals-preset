@@ -2,12 +2,12 @@
 formatVersion: 1
 id: petals
 name: Petals Preset
-version: 7.2.0
+version: 7.3.0
 author: mirrorange
 description: >-
   Freesia & Petals collaborative writing: regional prompt assembly and staged workflows
   (linear / iterative / edit) on five transports.
-minAdvancedPreset: 1.1.0
+minAdvancedPreset: 1.2.0
 
 actors:
   narrator: { name: Freesia, prefix: "{{ap::name::narrator}}: ", color: primary }
@@ -42,6 +42,39 @@ regions:
   - { id: bottom, role: system, anchor: tail }
 workflowRegion: task
 questionsRegion: questions
+
+# Where users may add their own modules from the panel. Ids are kept stable across versions;
+# a renamed point must be mapped in `migrations[].rename.insertionPoints`.
+insertionPoints:
+  - id: after-identity
+    label: After identity
+    description: Right after Freesia's identity and the core instructions.
+    region: top
+    order: 1000
+  - id: after-role
+    label: After role
+    region: role
+    order: 1000
+  - id: guidelines
+    label: Guidelines
+    description: Inside the guidelines block, after the built-in guidelines.
+    region: guidelines
+    order: 2000
+  - id: writing-style
+    label: Writing style
+    description: Inside the writing style block, after the selected style.
+    region: writing_style
+    order: 1000
+  - id: after-history
+    label: After history
+    description: Right after the chat history and memories; good for current state or reminders.
+    region: memory
+    order: 1000
+  - id: before-task
+    label: Before task
+    description: Right before the workflow instructions.
+    region: task
+    order: 5
 
 # Writing tab. '' / 0 = not set; prompts for unset params are left out.
 groups:
