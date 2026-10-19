@@ -7,17 +7,13 @@ exclusive: main-style
 when: '!meta.pure && gen.type != "impersonate"'
 region: writing_style
 order: 100
-questions:
-  mandatory:
-  - id: micro-narratives
-    text: How can the narrative dissolve macro-events into "Micro-Narratives" to construct an immersive ACG aesthetic experience?
-  optional:
-  - id: legato-staccato
-    text: How to alternate between "Legato" (long, flowing sentences) and "Staccato" (short, punchy sentences) to control the pacing?
-  - id: ma
-    text: How can "Ma" (negative space) be utilized in pacing to create emotional breathing room for the reader?
-  - id: micro-expressions
-    text: How to translate visual novel-style "Micro-expressions" into text to convey emotional nuances without labeling them?
+vars:
+  mandatoryQuestions:
+    micro-narratives: How can the narrative dissolve macro-events into "Micro-Narratives" to construct an immersive ACG aesthetic experience?
+  optionalQuestions:
+    legato-staccato: How to alternate between "Legato" (long, flowing sentences) and "Staccato" (short, punchy sentences) to control the pacing?
+    ma: How can "Ma" (negative space) be utilized in pacing to create emotional breathing room for the reader?
+    micro-expressions: How to translate visual novel-style "Micro-expressions" into text to convey emotional nuances without labeling them?
 ---
 ## Writing Style: Antheia
 

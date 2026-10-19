@@ -132,6 +132,9 @@ configurations:
   other: { name: 其他 (结构化输出) }
   other-tool: { name: 其他 (工具调用) }
 
+vars:
+  mandatoryQuestions: { label: 必答问题, description: 每次提问阶段都会提出。 }
+  optionalQuestions: { label: 可选问题, description: 由叙述者挑选最相关的 2–3 个。 }
 insertionPoints:
   after-identity: { label: 身份设定之后, description: 紧接在 Freesia 的身份与核心指令之后。 }
   after-role: { label: 角色之后 }
