@@ -3,7 +3,7 @@ id: style-melos
 name: Melos
 description: 'Japanese light-novel voice: tsukkomi commentary, dialogue-driven scenes and associative inner monologue.'
 group: style
-exclusive: style
+exclusive: main-style
 when: '!meta.pure && gen.type != "impersonate"'
 region: writing_style
 order: 100

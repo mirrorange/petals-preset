@@ -3,7 +3,7 @@ id: style-aisthesis
 name: Aisthesis
 description: 'Writing degree zero + iceberg theory + behaviourism: a camera-eye narrator, no inner monologue, hard-boiled readability.'
 group: style
-exclusive: style
+exclusive: main-style
 when: '!meta.pure && gen.type != "impersonate"'
 region: writing_style
 order: 100

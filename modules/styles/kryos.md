@@ -3,7 +3,7 @@ id: style-kryos
 name: Kryos
 description: Avant-garde aestheticism, symbolism and stream of consciousness, after 1920–40s Chinese modernism (New Sensationism, Eileen Chang, Li Jinfa).
 group: style
-exclusive: style
+exclusive: main-style
 when: '!meta.pure && gen.type != "impersonate"'
 region: writing_style
 order: 100

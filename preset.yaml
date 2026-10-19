@@ -2,12 +2,12 @@
 formatVersion: 1
 id: petals
 name: Petals Preset
-version: 7.3.0
+version: 7.4.0
 author: mirrorange
 description: >-
   Freesia & Petals collaborative writing: regional prompt assembly and staged workflows
   (linear / iterative / edit) on five transports.
-minAdvancedPreset: 1.2.0
+minAdvancedPreset: 1.3.0
 
 actors:
   narrator: { name: Freesia, prefix: "{{ap::name::narrator}}: ", color: primary }
@@ -86,7 +86,7 @@ groups:
     label: Writing Style
     description: One main style (or none); Eros can be added on top for NSFW scenes.
     order: 40
-    allowNone: true
+  main-style: { label: Main style, allowNone: true }
   features: { label: Features, order: 50 }
   language:
     label: Language

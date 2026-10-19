@@ -2,11 +2,11 @@
   "formatVersion": 2,
   "id": "petals",
   "name": "Petals Preset",
-  "version": "7.3.0",
+  "version": "7.4.0",
   "author": "mirrorange",
   "description": "Freesia & Petals collaborative writing: regional prompt assembly and staged workflows (linear / iterative / edit) on five transports.",
-  "minAdvancedPreset": "1.2.0",
-  "hash": "df5a3c477efe29eb",
+  "minAdvancedPreset": "1.3.0",
+  "hash": "66b43d64be34e173",
   "actors": {
     "narrator": {
       "name": "Freesia",
@@ -292,7 +292,11 @@
     "style": {
       "label": "Writing Style",
       "order": 40,
-      "description": "One main style (or none); Eros can be added on top for NSFW scenes.",
+      "description": "One main style (or none); Eros can be added on top for NSFW scenes."
+    },
+    "main-style": {
+      "label": "Main style",
+      "order": 60,
       "allowNone": true
     },
     "features": {
@@ -900,7 +904,7 @@
       "source": "modules/styles/kardia.md",
       "description": "Adaptive meta-style: reads the setting and history, then calibrates register, references and rhythm itself. The safe default.",
       "group": "style",
-      "exclusive": "style",
+      "exclusive": "main-style",
       "when": {
         "t": "bin",
         "op": "&&",
@@ -948,7 +952,7 @@
       "source": "modules/styles/aisthesis.md",
       "description": "Writing degree zero + iceberg theory + behaviourism: a camera-eye narrator, no inner monologue, hard-boiled readability.",
       "group": "style",
-      "exclusive": "style",
+      "exclusive": "main-style",
       "when": {
         "t": "bin",
         "op": "&&",
@@ -1004,7 +1008,7 @@
       "source": "modules/styles/antheia.md",
       "description": "Modern popular fiction with healing / slice-of-life ACG aesthetics: soft, flowing prose focused on small moments and relationships.",
       "group": "style",
-      "exclusive": "style",
+      "exclusive": "main-style",
       "when": {
         "t": "bin",
         "op": "&&",
@@ -1060,7 +1064,7 @@
       "source": "modules/styles/kryos.md",
       "description": "Avant-garde aestheticism, symbolism and stream of consciousness, after 1920–40s Chinese modernism (New Sensationism, Eileen Chang, Li Jinfa).",
       "group": "style",
-      "exclusive": "style",
+      "exclusive": "main-style",
       "when": {
         "t": "bin",
         "op": "&&",
@@ -1112,7 +1116,7 @@
       "source": "modules/styles/melos.md",
       "description": "Japanese light-novel voice: tsukkomi commentary, dialogue-driven scenes and associative inner monologue.",
       "group": "style",
-      "exclusive": "style",
+      "exclusive": "main-style",
       "when": {
         "t": "bin",
         "op": "&&",
@@ -4036,6 +4040,9 @@
         "style": {
           "label": "文风",
           "description": "选择一种主文风（也可不用）；NSFW 场景可额外叠加 Eros。"
+        },
+        "main-style": {
+          "label": "主文风"
         },
         "features": {
           "label": "功能"

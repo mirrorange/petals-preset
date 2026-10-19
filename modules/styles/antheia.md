@@ -3,7 +3,7 @@ id: style-antheia
 name: Antheia
 description: 'Modern popular fiction with healing / slice-of-life ACG aesthetics: soft, flowing prose focused on small moments and relationships.'
 group: style
-exclusive: style
+exclusive: main-style
 when: '!meta.pure && gen.type != "impersonate"'
 region: writing_style
 order: 100

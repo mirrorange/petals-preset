@@ -3,7 +3,7 @@ id: style-kardia
 name: Kardia
 description: 'Adaptive meta-style: reads the setting and history, then calibrates register, references and rhythm itself. The safe default.'
 group: style
-exclusive: style
+exclusive: main-style
 when: '!meta.pure && gen.type != "impersonate"'
 region: writing_style
 order: 100

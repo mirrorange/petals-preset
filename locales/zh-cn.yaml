@@ -9,6 +9,7 @@ groups:
   style:
     label: 文风
     description: 选择一种主文风（也可不用）；NSFW 场景可额外叠加 Eros。
+  main-style: { label: 主文风 }
   features: { label: 功能 }
   language:
     label: 语言
