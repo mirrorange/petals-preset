@@ -7,13 +7,24 @@ Freesia 与 Petals 的协作写作预设，[Advanced Preset](https://github.com/
 - **推荐配置**：Gemini · DeepSeek（工具调用 / 预填充）· Claude ≤ 4.5 · Claude 4.6–5 · Claude ≥ 5.5 · 其他（结构化输出 / 工具调用）
 - **我的模组插入位置**：身份设定之后 · 角色之后 · 写作指南 · 文风 · 历史之后 · 任务之前（需 Advanced Preset ≥ 1.2.0）
 
+## 安装
+
+花瓣预设随 Advanced Preset 扩展内置。也可以在 AP 面板 → 预设 → 导入链接中填入：
+
+```
+https://github.com/mirrorange/petals-preset/blob/main/dist/petals.apreset.json
+```
+
 ## 开发
 
 ```sh
-node ../advanced-preset/packages/cli/dist/ap.js dev .   # 或 pnpm install && pnpm dev
+npm install
+npm run dev        # 或在 AP 仓库旁：node ../advanced-preset/packages/cli/dist/ap.js dev .
 ```
 
-在 SillyTavern 的 Advanced Preset 面板「调试」页填入 `http://localhost:4747`，修改源码即热更新。
+在 SillyTavern 的 Advanced Preset 面板「调试」→「开发源」填入 `http://localhost:4747`，修改源码即热更新。
+
+用 AI Agent 修改时，仓库里的 [AGENTS.md](AGENTS.md) 与 `.agents/skills/`（`npm run skills` 更新）会告诉 Agent 如何设计、编写、测试 AP 预设。花瓣的设计思路见[案例：花瓣预设是怎样设计出来的](https://github.com/mirrorange/advanced-preset/blob/main/docs/guide/13-petals-case-study.md)；格式说明见 [AP 参考文档](https://github.com/mirrorange/advanced-preset/blob/main/docs/reference/README.md)。
 
 | 路径 | 内容 |
 | --- | --- |
