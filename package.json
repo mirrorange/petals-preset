@@ -1,9 +1,28 @@
 {
   "name": "@mirrorange/petals-preset",
-  "version": "7.6.0",
-  "description": "Petals Preset (花瓣预设) v7 — the first Advanced Preset for SillyTavern.",
+  "version": "7.6.1",
+  "description": "Petals Preset (花瓣预设) v7 — write stories with Freesia! Freesia writes, Petals gives suggestions: a dual-character driven workflow for Advanced Preset (SillyTavern).",
+  "keywords": [
+    "advanced-preset",
+    "sillytavern",
+    "preset",
+    "creative-writing",
+    "roleplay"
+  ],
+  "homepage": "https://github.com/mirrorange/petals-preset#readme",
+  "bugs": {
+    "url": "https://github.com/mirrorange/petals-preset/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mirrorange/petals-preset.git"
+  },
+  "license": "CC0-1.0",
+  "author": "mirrorange",
   "type": "module",
-  "files": ["dist/*.apreset.json"],
+  "files": [
+    "dist/*.apreset.json"
+  ],
   "main": "dist/petals.apreset.json",
   "scripts": {
     "build": "ap build",
@@ -13,8 +32,6 @@
     "skills": "ap skills install"
   },
   "devDependencies": {
-    "advanced-preset": "https://github.com/mirrorange/advanced-preset/releases/download/v1.5.0/advanced-preset-1.5.0.tgz"
-  },
-  "repository": { "type": "git", "url": "https://github.com/mirrorange/petals-preset.git" },
-  "license": "MIT"
+    "advanced-preset": "^1.6.0"
+  }
 }

@@ -2,11 +2,11 @@
   "formatVersion": 3,
   "id": "petals",
   "name": "Petals Preset",
-  "version": "7.6.0",
+  "version": "7.6.1",
   "author": "mirrorange",
-  "description": "Freesia & Petals collaborative writing: regional prompt assembly and staged workflows (linear / iterative / edit) on five transports.",
+  "description": "Write stories with Freesia! Freesia writes, Petals gives suggestions — a dual-character driven workflow.",
   "minAdvancedPreset": "1.4.0",
-  "hash": "d322be4edc21886f",
+  "hash": "1c014d7d8067de42",
   "actors": {
     "narrator": {
       "name": "Freesia",
@@ -4064,6 +4064,8 @@
   ],
   "locales": {
     "zh-cn": {
+      "name": "花瓣预设",
+      "description": "与小苍兰一起写故事吧！Freesia 写故事，Petals 提建议，双角色驱动的工作流",
       "groups": {
         "role": {
           "label": "角色"

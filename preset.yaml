@@ -2,11 +2,9 @@
 formatVersion: 1
 id: petals
 name: Petals Preset
-version: 7.6.0
+version: 7.6.1
 author: mirrorange
-description: >-
-  Freesia & Petals collaborative writing: regional prompt assembly and staged workflows
-  (linear / iterative / edit) on five transports.
+description: Write stories with Freesia! Freesia writes, Petals gives suggestions — a dual-character driven workflow.
 minAdvancedPreset: 1.4.0
 
 actors:

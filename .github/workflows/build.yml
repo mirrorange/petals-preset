@@ -9,13 +9,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/checkout@v4
-        with: { repository: mirrorange/advanced-preset, path: .ap }
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
-      - run: node .ap/packages/cli/dist/ap.js check . --strict
-      - run: node .ap/packages/cli/dist/ap.js build .
-      - run: git diff --exit-code dist || (echo "dist/ is stale — run ap build and commit" && exit 1)
+      - run: npm install
+      - run: npx ap check --strict
+      - run: npx ap build
+      - run: git diff --exit-code dist || (echo "dist/ is stale — run npm run build and commit" && exit 1)
       - if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with: { files: dist/*.apreset.json }
