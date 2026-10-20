@@ -4,6 +4,8 @@ on:
     branches: [main]
     tags: ['v*']
   pull_request:
+permissions:
+  contents: write   # create the GitHub Release on v* tags
 jobs:
   build:
     runs-on: ubuntu-latest
