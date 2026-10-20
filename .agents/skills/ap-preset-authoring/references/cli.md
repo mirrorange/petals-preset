@@ -1,6 +1,6 @@
 # `ap` 命令行
 
-`ap` 是 AP 的工具链：编译、检查、开发服务器、预览、创建新预设，以及安装 Agent Skills。它随 `advanced-preset` npm 包发布，预设仓库通过 `devDependencies` 安装（模板仓库已配置好），在仓库里用 `npx ap …` 或 `npm run <script>` 调用。
+`ap` 是 AP 的工具链：编译、检查、开发服务器、预览、创建新预设，以及安装 Agent Skills。它随 npm 包 [`advanced-preset`](https://www.npmjs.com/package/advanced-preset) 发布，预设仓库通过 `devDependencies` 安装（`npm install -D advanced-preset`，模板仓库已配置好），在仓库里用 `npx ap …` 或 `npm run <script>` 调用。
 
 ```
 ap build   [dir] [--out dist] [--strict]
@@ -89,16 +89,16 @@ warn  preset.yaml groups: module `x` has no group
 
 ## ap init
 
-从内置模板创建新的预设仓库（版本号换成 [Releases](https://github.com/mirrorange/advanced-preset/releases) 中的最新版）：
+从内置模板创建新的预设仓库：
 
 ```bash
-npx --yes https://github.com/mirrorange/advanced-preset/releases/download/v1.5.0/advanced-preset-1.5.0.tgz init my-preset --name "My Preset" --author me
+npx advanced-preset@latest init my-preset --name "My Preset" --author me
 ```
 
 - `--id`：预设 id，默认由目录名生成（小写 kebab-case）；
 - `--name`：显示名，默认同 id；`--author`：作者；
 - 目标目录已有 `preset.yaml` 时拒绝执行；
-- 生成的仓库包含示例模组与工作流、`package.json`（`build` / `check` / `dev` / `preview` / `skills` 脚本，依赖当前 CLI 版本）、GitHub Actions、`.agents/skills/` 中的 Agent Skills 与 `AGENTS.md`。
+- 生成的仓库包含示例模组与工作流、`package.json`（`build` / `check` / `dev` / `preview` / `skills` 脚本，以 `^<当前版本>` 依赖 npm 上的 CLI）、GitHub Actions、`LICENSE`（CC0 1.0，可自行替换）、`.agents/skills/` 中的 Agent Skills 与 `AGENTS.md`。
 
 ## ap skills
 
