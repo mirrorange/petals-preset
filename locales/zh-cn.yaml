@@ -1,6 +1,9 @@
 # 简体中文界面文案（只影响面板显示，不进入提示词）。
 # 键与 id 的对应由 `ap check` 校验：多余的键报 warn。
 
+name: 花瓣预设
+description: 与小苍兰一起写故事吧！Freesia 写故事，Petals 提建议，双角色驱动的工作流
+
 groups:
   role: { label: 角色 }
   mode: { label: 模式 }

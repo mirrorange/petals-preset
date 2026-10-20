@@ -32,6 +32,6 @@
 
 ## 更新 AP 工具链与技能
 
-1. 把 `package.json` 中 `advanced-preset` 的地址改成新版本（`https://github.com/mirrorange/advanced-preset/releases/download/v<版本>/advanced-preset-<版本>.tgz`），`npm install`。
+1. `npm install -D advanced-preset@latest`（或把 `package.json` 中 `advanced-preset` 的版本范围改成新版本后 `npm install`）。旧仓库若还写着 GitHub Release 的 tarball 地址，直接用这条命令换成 npm 版本。
 2. `npx ap skills install`，把 `.agents/skills/ap-*` 更新到与新 CLI 匹配的版本（另装在 `.claude/skills` 的也要更新：`npx ap skills install --target .claude/skills`）。
 3. `npx ap check --strict`：新版本可能新增警告。

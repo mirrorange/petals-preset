@@ -106,7 +106,7 @@ defaultConfiguration: gemini
 
 ## Carrier
 
-AP 为每个已安装的预设维护一个 ST Chat Completion 预设，名为 `AP · <预设 name>`（用户改名后按内部元数据 `extensions.advanced_preset.presetId` 仍能找到）。**用户在 ST 预设下拉框里选中某个 Carrier，就等于启用了对应的 AP 预设。**
+AP 为每个已安装的预设维护一个 ST Chat Completion 预设，名为 `AP · <预设 name>`（按内部元数据 `extensions.advanced_preset.presetId` 查找，不依赖名称）。**用户在 ST 预设下拉框里选中某个 Carrier，就等于启用了对应的 AP 预设。** 选中 Carrier 时，ST 的导出按钮导出 AP 预设产物而非 Carrier，重命名与另存为按钮隐藏；ST 的导入按钮遇到 AP 产物时按 AP 预设安装。
 
 ```yaml
 carrier:
