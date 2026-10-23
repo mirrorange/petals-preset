@@ -6,7 +6,7 @@
   "author": "mirrorange",
   "description": "Write stories with Freesia! Freesia writes, Petals gives suggestions — a dual-character driven workflow.",
   "minAdvancedPreset": "1.4.0",
-  "hash": "1c014d7d8067de42",
+  "hash": "e7b86be2e097be32",
   "actors": {
     "narrator": {
       "name": "Freesia",
@@ -391,6 +391,42 @@
           "e": {
             "t": "var",
             "path": "meta.present"
+          }
+        },
+        "r": {
+          "t": "bin",
+          "op": "!=",
+          "l": {
+            "t": "var",
+            "path": "gen.type"
+          },
+          "r": {
+            "t": "lit",
+            "v": "impersonate"
+          }
+        }
+      }
+    },
+    {
+      "id": "annotations",
+      "name": "Inline Annotations",
+      "toggle": "user",
+      "default": false,
+      "structures": [
+        "annotations"
+      ],
+      "vars": [],
+      "source": "modules/features/annotations.md",
+      "description": "Freesia annotates a few phrases of the story; shown as dashed underlines with a note on hover or tap.",
+      "group": "features",
+      "when": {
+        "t": "bin",
+        "op": "&&",
+        "l": {
+          "t": "not",
+          "e": {
+            "t": "var",
+            "path": "meta.pure"
           }
         },
         "r": {
@@ -1808,6 +1844,21 @@
           "pieces": [
             {
               "text": "## Event Synopsis\n\nAfter each story segment, {{ap::name::narrator}} should output a concise synopsis of **the current segment's events**. This synopsis should include:\n\n- **Time:** When the events occurred.\n  - Format: {Start Time} - {End Time}. If the start and end dates are the same, the date in the end time can be omitted.\n  - If the story specifies dates: `MM-dd HH:mm - (MM-dd) HH:mm`\n  - If no specific dates are given: Use relative day notation, e.g., `Day1 HH:mm - (Day2) HH:mm`.\n- **Location:** Where the events occurred (scene or setting).\n- **Event:** A title of 10 words or less of current event.\n- **Summary:** A brief, objective description of what happened.\n\n### Format\n\n{{ap::structure::synopsis}}\n"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "annotations/main",
+      "module": "annotations",
+      "region": "guidelines",
+      "order": 1050,
+      "content": [
+        {
+          "pieces": [
+            {
+              "text": "## Inline Annotations\n\n{{ap::structure::annotations}}\n"
             }
           ]
         }
@@ -3356,6 +3407,17 @@
       },
       "count": 4
     },
+    "annotations": {
+      "id": "annotations",
+      "kind": "annotations",
+      "tag": "annotations",
+      "field": "annotations",
+      "formatPrompt": {
+        "tag": "Inside the story text only, {{ap::name::narrator}} may add up to 3 inline annotations: brief author's notes to the reader on a chosen phrase, such as a hidden foreshadowing, an allusion, a deliberate word choice, a character's unspoken thought, or a cultural / factual note.\n\nSyntax: `{==phrase==}{>>note<<}`. The marked phrase stays part of the story; the note is shown to the reader on hover and removed from the text.\n\n- Mark a short phrase or a single sentence, never across paragraphs, and never nest marks.\n- Each note is one or two sentences in the story's language, in {{ap::name::narrator}}'s own voice.\n- Annotate only where it adds something the prose cannot say itself; no annotation at all is fine. Never put marks in planning, thinking or other structures.\n\nExample: She set the {==white chrysanthemum==}{>>In her hometown this flower is only brought to funerals, and she knows exactly what it means.<<} on the windowsill.",
+        "field": "Inside the story text only, {{ap::name::narrator}} may add up to 3 inline annotations: brief author's notes to the reader on a chosen phrase, such as a hidden foreshadowing, an allusion, a deliberate word choice, a character's unspoken thought, or a cultural / factual note.\n\nSyntax: `{==phrase==}{>>note<<}`. The marked phrase stays part of the story; the note is shown to the reader on hover and removed from the text.\n\n- Mark a short phrase or a single sentence, never across paragraphs, and never nest marks.\n- Each note is one or two sentences in the story's language, in {{ap::name::narrator}}'s own voice.\n- Annotate only where it adds something the prose cannot say itself; no annotation at all is fine. Never put marks in planning, thinking or other structures.\n\nExample: She set the {==white chrysanthemum==}{>>In her hometown this flower is only brought to funerals, and she knows exactly what it means.<<} on the windowsill."
+      },
+      "history": 0
+    },
     "memory": {
       "id": "memory",
       "kind": "memory",
@@ -3882,6 +3944,7 @@
       "mode-continuation": false,
       "mode-expansion": true,
       "always-reply": false,
+      "annotations": false,
       "antifiltering": false,
       "event-synopsis": true,
       "options": true,
@@ -4179,6 +4242,10 @@
         "always-reply": {
           "name": "始终请求元回复",
           "description": "每段故事之后，Freesia 都附上一段简短的私人回复。"
+        },
+        "annotations": {
+          "name": "行内批注",
+          "description": "Freesia 为正文中的少量词句加上批注，显示为虚线下划线，悬停或轻点即可查看。"
         },
         "antifiltering": {
           "name": "反过滤 (Gemini)",

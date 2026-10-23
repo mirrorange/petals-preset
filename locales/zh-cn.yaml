@@ -74,6 +74,9 @@ modules:
   always-reply:
     name: 始终请求元回复
     description: 每段故事之后，Freesia 都附上一段简短的私人回复。
+  annotations:
+    name: 行内批注
+    description: Freesia 为正文中的少量词句加上批注，显示为虚线下划线，悬停或轻点即可查看。
   antifiltering:
     name: 反过滤 (Gemini)
     description: Gemini 专用——在 top 之后附加一封预先写好的超长情书，填充输入以稀释输入过滤。消耗大量 Token，仅在需要时开启。

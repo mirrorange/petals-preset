@@ -212,6 +212,20 @@ structures:
         <option title="...">...</option>
         </options>
       field: 'Fill the `options` field with 4 items, each `{ "label": "...", "content": "..." }`.'
+  annotations:
+    kind: annotations
+    history: 0
+    formatPrompt:
+      tag: |-
+        Inside the story text only, {{ap::name::narrator}} may add up to 3 inline annotations: brief author's notes to the reader on a chosen phrase, such as a hidden foreshadowing, an allusion, a deliberate word choice, a character's unspoken thought, or a cultural / factual note.
+
+        Syntax: `{==phrase==}{>>note<<}`. The marked phrase stays part of the story; the note is shown to the reader on hover and removed from the text.
+
+        - Mark a short phrase or a single sentence, never across paragraphs, and never nest marks.
+        - Each note is one or two sentences in the story's language, in {{ap::name::narrator}}'s own voice.
+        - Annotate only where it adds something the prose cannot say itself; no annotation at all is fine. Never put marks in planning, thinking or other structures.
+
+        Example: She set the {==white chrysanthemum==}{>>In her hometown this flower is only brought to funerals, and she knows exactly what it means.<<} on the windowsill.
   memory:
     kind: memory
     tag: Freesia_Memory
@@ -468,6 +482,7 @@ configurationDefaults:
     finalFallback: true
   modules:
     always-reply: false
+    annotations: false
     antifiltering: false
     event-synopsis: true
     options: true
