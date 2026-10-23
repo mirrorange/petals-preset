@@ -74,15 +74,15 @@ modules:
   always-reply:
     name: 始终请求元回复
     description: 每段故事之后，Freesia 都附上一段简短的私人回复。
-  annotations:
-    name: 行内批注
-    description: Freesia 为正文中的少量词句加上批注，显示为虚线下划线，悬停或轻点即可查看。
   antifiltering:
     name: 反过滤 (Gemini)
     description: Gemini 专用——在 top 之后附加一封预先写好的超长情书，填充输入以稀释输入过滤。消耗大量 Token，仅在需要时开启。
   event-synopsis:
     name: 事件摘要
     description: 每段之后输出 <synopsis> 卡片；也是节省 Token 的数据来源（较早的楼层以摘要代替）。
+  freesia-comments:
+    name: Freesia 的评论
+    description: Freesia 回复你时（启用「始终请求元回复」，或输入中含 @Freesia），也会在正文的少量词句上留下评论，显示为虚线下划线，悬停或轻点即可查看。
   options:
     name: 用户选项
     description: 推荐你的下一条输入，以可点击的卡片显示。
