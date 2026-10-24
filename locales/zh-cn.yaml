@@ -18,6 +18,7 @@ groups:
     label: 语言
     description: 未设置的语言沿用故事已有的语言；Workflow 语言未设置时同回复语言。
   length: { label: 长度 }
+  narration: { label: 叙述 }
 
 modules:
   role-freesia:
@@ -127,6 +128,10 @@ params:
   lengthMode:
     label: 长度策略
     options: { "": 未设置, approx: 约等于, atLeast: 不少于, atMost: 不多于 }
+  narrativePerson:
+    label: 叙事人称
+    description: 叙述部分使用的人称，不影响对白。未设置时沿用故事已有的人称。
+    options: { "": 未设置, first: 第一人称, second: 第二人称, third: 第三人称 }
 
 configurations:
   gemini: { name: Gemini }

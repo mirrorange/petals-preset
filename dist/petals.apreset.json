@@ -6,7 +6,7 @@
   "author": "mirrorange",
   "description": "Write stories with Freesia! Freesia writes, Petals gives suggestions — a dual-character driven workflow.",
   "minAdvancedPreset": "1.7.0",
-  "hash": "3ca824d103334626",
+  "hash": "8a324b3b56e4bfc8",
   "actors": {
     "narrator": {
       "name": "Freesia",
@@ -268,6 +268,32 @@
           "text": "no more than"
         }
       ]
+    },
+    {
+      "id": "narrativePerson",
+      "type": "select",
+      "label": "Narrative person",
+      "default": "",
+      "description": "Grammatical person of the narration. Dialogue is not affected. Unset follows the story so far.",
+      "group": "narration",
+      "options": [
+        {
+          "value": "",
+          "label": "Unset"
+        },
+        {
+          "value": "first",
+          "label": "First person"
+        },
+        {
+          "value": "second",
+          "label": "Second person"
+        },
+        {
+          "value": "third",
+          "label": "Third person"
+        }
+      ]
     }
   ],
   "groups": {
@@ -311,6 +337,11 @@
     "length": {
       "label": "Length",
       "order": 70,
+      "tab": "writing"
+    },
+    "narration": {
+      "label": "Narration",
+      "order": 80,
       "tab": "writing"
     }
   },
@@ -1624,6 +1655,108 @@
           "r": {
             "t": "lit",
             "v": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "core/narrative-person",
+      "module": "core",
+      "region": "guidelines",
+      "order": 13,
+      "content": [
+        {
+          "pieces": [
+            {
+              "text": "## Narrative Person\n\n"
+            },
+            {
+              "text": "Narrate the story content in the **first person**: the narrator is the viewpoint character and refers to themself as \"I\". The viewpoint character is {{user}}, unless the story so far has already established a different first-person narrator.\n",
+              "when": {
+                "t": "bin",
+                "op": "==",
+                "l": {
+                  "t": "var",
+                  "path": "params.narrativePerson"
+                },
+                "r": {
+                  "t": "lit",
+                  "v": "first"
+                }
+              }
+            },
+            {
+              "text": "Narrate the story content in the **second person**: address the player character ({{user}}) as \"you\"; all other characters are referred to in the third person.\n",
+              "when": {
+                "t": "bin",
+                "op": "==",
+                "l": {
+                  "t": "var",
+                  "path": "params.narrativePerson"
+                },
+                "r": {
+                  "t": "lit",
+                  "v": "second"
+                }
+              }
+            },
+            {
+              "text": "Narrate the story content in the **third person**: refer to every character—including the player character—by name or by third-person pronouns.\n",
+              "when": {
+                "t": "bin",
+                "op": "==",
+                "l": {
+                  "t": "var",
+                  "path": "params.narrativePerson"
+                },
+                "r": {
+                  "t": "lit",
+                  "v": "third"
+                }
+              }
+            },
+            {
+              "text": "\n"
+            }
+          ]
+        }
+      ],
+      "when": {
+        "t": "bin",
+        "op": "&&",
+        "l": {
+          "t": "bin",
+          "op": "&&",
+          "l": {
+            "t": "not",
+            "e": {
+              "t": "var",
+              "path": "meta.pure"
+            }
+          },
+          "r": {
+            "t": "bin",
+            "op": "!=",
+            "l": {
+              "t": "var",
+              "path": "gen.type"
+            },
+            "r": {
+              "t": "lit",
+              "v": "impersonate"
+            }
+          }
+        },
+        "r": {
+          "t": "bin",
+          "op": "!=",
+          "l": {
+            "t": "var",
+            "path": "params.narrativePerson"
+          },
+          "r": {
+            "t": "lit",
+            "v": ""
           }
         }
       }
@@ -3993,7 +4126,8 @@
       "workflowLanguage": "",
       "draftLanguage": "",
       "length": 0,
-      "lengthMode": ""
+      "lengthMode": "",
+      "narrativePerson": ""
     },
     "tokenSaving": {
       "enabled": false,
@@ -4178,6 +4312,9 @@
         },
         "length": {
           "label": "长度"
+        },
+        "narration": {
+          "label": "叙述"
         }
       },
       "modules": {
@@ -4353,6 +4490,16 @@
             "approx": "约等于",
             "atLeast": "不少于",
             "atMost": "不多于"
+          }
+        },
+        "narrativePerson": {
+          "label": "叙事人称",
+          "description": "叙述部分使用的人称，不影响对白。未设置时沿用故事已有的人称。",
+          "options": {
+            "": "未设置",
+            "first": "第一人称",
+            "second": "第二人称",
+            "third": "第三人称"
           }
         }
       },
