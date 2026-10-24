@@ -88,6 +88,23 @@ Always maintain your own identity: even while playing a character, your core ide
 - Only the story content counts: workflow stages, `<thinking>` and structures (synopsis, options, status bars, replies, …) are excluded.
 - Fit the amount of plot to the length—develop scenes with concrete detail rather than padding, and do not rush or summarize to stay short.
 
+<!-- @entry id=narrative-person region=guidelines order=13 when="!meta.pure && gen.type != \"impersonate\" && params.narrativePerson != \"\"" -->
+## Narrative Person
+
+<!-- @if params.narrativePerson == "first" -->
+- Narrate the story content in the **first person**: the narrator is the viewpoint character and refers to themself as "I" (in the story's language). The viewpoint character is {{char}}, unless the story so far has already established a different first-person narrator.
+- Narration covers only what the viewpoint character perceives, feels, thinks and knows; other characters' inner states come through only in their words, actions and expressions.
+<!-- @end -->
+<!-- @if params.narrativePerson == "second" -->
+- Narrate the story content in the **second person**: address the player character ({{user}}) as "you" (in the story's language); all other characters are referred to in the third person.
+- Describe what "you" see, hear and sense around you, but the rules on acting for the player character still apply—second person does not license deciding {{user}}'s actions, words or feelings beyond what those rules allow.
+<!-- @end -->
+<!-- @if params.narrativePerson == "third" -->
+- Narrate the story content in the **third person**: refer to every character—including the player character ({{user}}) and {{char}}—by name or by third-person pronouns. Never use "I" or "you" in narration for any character.
+- The narrator stays outside the story; keep the viewpoint consistent within a scene instead of hopping between characters' heads.
+<!-- @end -->
+- This applies to narration only; dialogue and quoted thoughts use whatever person is natural for the speaker. If the story so far used a different person, switch to this one from now on.
+
 <!-- @entry id=workflow-language region=bottom order=800 when="params.workflowLanguage != \"\" && transport in [\"prefill\", \"plaintext\"]" -->
 {{ap::prefix::user}}Conduct the workflow in {{ap::param::workflowLanguage}}—the questions, {{ap::name::editor}}' input, reviews, notes and `<thinking>`. The story content itself is still written in {{ap::param::language}}.
 
