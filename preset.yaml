@@ -212,6 +212,18 @@ structures:
         <option title="...">...</option>
         </options>
       field: 'Fill the `options` field with 4 items, each `{ "label": "...", "content": "..." }`.'
+  annotations:
+    kind: annotations
+    history: 0
+    formatPrompt:
+      tag: |-
+        Inline annotations are written inside the story text as `{==phrase==}{>>note<<}`. The marked phrase stays part of the story; the note is shown to the reader on hover and removed from the text.
+
+        - Mark a short phrase or a single sentence, never across paragraphs, and never nest marks.
+        - Put `{>>note<<}` immediately after the `{==phrase==}` it belongs to. Notes are plain text.
+        - Only mark the story text itself, never planning, thinking or other structures.
+
+        Example: She set the {==white chrysanthemum==}{>>In her hometown this flower is only brought to funerals.<<} on the windowsill.
   memory:
     kind: memory
     tag: Freesia_Memory
@@ -470,6 +482,7 @@ configurationDefaults:
     always-reply: false
     antifiltering: false
     event-synopsis: true
+    freesia-comments: false
     options: true
     skip-thought: false
     anti-evasion: true

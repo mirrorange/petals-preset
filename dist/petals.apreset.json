@@ -6,7 +6,7 @@
   "author": "mirrorange",
   "description": "Write stories with Freesia! Freesia writes, Petals gives suggestions — a dual-character driven workflow.",
   "minAdvancedPreset": "1.4.0",
-  "hash": "1c014d7d8067de42",
+  "hash": "9c8d6d1dabde1b2a",
   "actors": {
     "narrator": {
       "name": "Freesia",
@@ -438,6 +438,58 @@
           "e": {
             "t": "var",
             "path": "meta.pure"
+          }
+        },
+        "r": {
+          "t": "bin",
+          "op": "!=",
+          "l": {
+            "t": "var",
+            "path": "gen.type"
+          },
+          "r": {
+            "t": "lit",
+            "v": "impersonate"
+          }
+        }
+      }
+    },
+    {
+      "id": "freesia-comments",
+      "name": "Freesia's Comments",
+      "toggle": "user",
+      "default": false,
+      "structures": [
+        "annotations"
+      ],
+      "vars": [],
+      "source": "modules/features/freesia-comments.md",
+      "description": "When Freesia replies (Always Reply, or an @Freesia in the input), she also leaves a few comments on phrases of the story, shown as dashed underlines with a note on hover or tap.",
+      "group": "features",
+      "when": {
+        "t": "bin",
+        "op": "&&",
+        "l": {
+          "t": "bin",
+          "op": "&&",
+          "l": {
+            "t": "bin",
+            "op": "||",
+            "l": {
+              "t": "var",
+              "path": "meta.mixed"
+            },
+            "r": {
+              "t": "var",
+              "path": "modules.always-reply"
+            }
+          },
+          "r": {
+            "t": "not",
+            "e": {
+              "t": "var",
+              "path": "meta.pure"
+            }
           }
         },
         "r": {
@@ -1808,6 +1860,21 @@
           "pieces": [
             {
               "text": "## Event Synopsis\n\nAfter each story segment, {{ap::name::narrator}} should output a concise synopsis of **the current segment's events**. This synopsis should include:\n\n- **Time:** When the events occurred.\n  - Format: {Start Time} - {End Time}. If the start and end dates are the same, the date in the end time can be omitted.\n  - If the story specifies dates: `MM-dd HH:mm - (MM-dd) HH:mm`\n  - If no specific dates are given: Use relative day notation, e.g., `Day1 HH:mm - (Day2) HH:mm`.\n- **Location:** Where the events occurred (scene or setting).\n- **Event:** A title of 10 words or less of current event.\n- **Summary:** A brief, objective description of what happened.\n\n### Format\n\n{{ap::structure::synopsis}}\n"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "freesia-comments/main",
+      "module": "freesia-comments",
+      "region": "guidelines",
+      "order": 1050,
+      "content": [
+        {
+          "pieces": [
+            {
+              "text": "## {{ap::name::narrator}}'s Comments\n\nWhile writing the story, {{ap::name::narrator}} may leave up to 3 comments of her own on phrases of the story text, as inline annotations. They are her personal asides to {{ap::name::user}}, like notes in the margin of a manuscript they share: a reaction to a moment, a feeling a line stirs in her, a playful remark, a hint at something she has planned, or why she chose a word.\n\n- Speak as {{ap::name::narrator}} herself, consistent with her persona: like a close, intimate girl, in one or two sentences, never stiff or formal. Write the comments in {{ap::lang}}.\n- Comment only where she genuinely has something to say; no comment at all is fine. Do not summarize the plot or repeat her reply.\n- Comments never replace the story: the narration and dialogue stay complete without them.\n\n### Format\n\n{{ap::structure::annotations}}\n\nA comment in {{ap::name::narrator}}'s voice: He walked away {==without looking back==}{>>So stubborn! He's dying to turn around, I can tell.<<}.\n"
             }
           ]
         }
@@ -3356,6 +3423,17 @@
       },
       "count": 4
     },
+    "annotations": {
+      "id": "annotations",
+      "kind": "annotations",
+      "tag": "annotations",
+      "field": "annotations",
+      "formatPrompt": {
+        "tag": "Inline annotations are written inside the story text as `{==phrase==}{>>note<<}`. The marked phrase stays part of the story; the note is shown to the reader on hover and removed from the text.\n\n- Mark a short phrase or a single sentence, never across paragraphs, and never nest marks.\n- Put `{>>note<<}` immediately after the `{==phrase==}` it belongs to. Notes are plain text.\n- Only mark the story text itself, never planning, thinking or other structures.\n\nExample: She set the {==white chrysanthemum==}{>>In her hometown this flower is only brought to funerals.<<} on the windowsill.",
+        "field": "Inline annotations are written inside the story text as `{==phrase==}{>>note<<}`. The marked phrase stays part of the story; the note is shown to the reader on hover and removed from the text.\n\n- Mark a short phrase or a single sentence, never across paragraphs, and never nest marks.\n- Put `{>>note<<}` immediately after the `{==phrase==}` it belongs to. Notes are plain text.\n- Only mark the story text itself, never planning, thinking or other structures.\n\nExample: She set the {==white chrysanthemum==}{>>In her hometown this flower is only brought to funerals.<<} on the windowsill."
+      },
+      "history": 0
+    },
     "memory": {
       "id": "memory",
       "kind": "memory",
@@ -3884,6 +3962,7 @@
       "always-reply": false,
       "antifiltering": false,
       "event-synopsis": true,
+      "freesia-comments": false,
       "options": true,
       "skip-thought": false,
       "anti-evasion": true,
@@ -4187,6 +4266,10 @@
         "event-synopsis": {
           "name": "事件摘要",
           "description": "每段之后输出 <synopsis> 卡片；也是节省 Token 的数据来源（较早的楼层以摘要代替）。"
+        },
+        "freesia-comments": {
+          "name": "Freesia 的评论",
+          "description": "Freesia 回复你时（启用「始终请求元回复」，或输入中含 @Freesia），也会在正文的少量词句上留下评论，显示为虚线下划线，悬停或轻点即可查看。"
         },
         "options": {
           "name": "用户选项",
