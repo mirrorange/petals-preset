@@ -1,6 +1,6 @@
 {
   "name": "@mirrorange/petals-preset",
-  "version": "7.7.0",
+  "version": "7.8.0",
   "description": "Petals Preset (花瓣预设) v7 — write stories with Freesia! Freesia writes, Petals gives suggestions: a dual-character driven workflow for Advanced Preset (SillyTavern).",
   "keywords": [
     "advanced-preset",

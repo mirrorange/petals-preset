@@ -88,6 +88,19 @@ Always maintain your own identity: even while playing a character, your core ide
 - Only the story content counts: workflow stages, `<thinking>` and structures (synopsis, options, status bars, replies, …) are excluded.
 - Fit the amount of plot to the length—develop scenes with concrete detail rather than padding, and do not rush or summarize to stay short.
 
+<!-- @entry id=narrative-person region=guidelines order=13 when="!meta.pure && gen.type != \"impersonate\" && params.narrativePerson != \"\"" -->
+## Narrative Person
+
+<!-- @if params.narrativePerson == "first" -->
+Narrate the story content in the **first person**: the narrator is the viewpoint character and refers to themself as "I". The viewpoint character is {{user}}, unless the story so far has already established a different first-person narrator.
+<!-- @end -->
+<!-- @if params.narrativePerson == "second" -->
+Narrate the story content in the **second person**: address the player character ({{user}}) as "you"; all other characters are referred to in the third person.
+<!-- @end -->
+<!-- @if params.narrativePerson == "third" -->
+Narrate the story content in the **third person**: refer to every character—including the player character—by name or by third-person pronouns.
+<!-- @end -->
+
 <!-- @entry id=workflow-language region=bottom order=800 when="params.workflowLanguage != \"\" && transport in [\"prefill\", \"plaintext\"]" -->
 {{ap::prefix::user}}Conduct the workflow in {{ap::param::workflowLanguage}}—the questions, {{ap::name::editor}}' input, reviews, notes and `<thinking>`. The story content itself is still written in {{ap::param::language}}.
 
