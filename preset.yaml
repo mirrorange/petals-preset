@@ -2,10 +2,10 @@
 formatVersion: 1
 id: petals
 name: Petals Preset
-version: 7.6.1
+version: 7.7.0
 author: mirrorange
 description: Write stories with Freesia! Freesia writes, Petals gives suggestions — a dual-character driven workflow.
-minAdvancedPreset: 1.4.0
+minAdvancedPreset: 1.7.0
 
 actors:
   narrator: { name: Freesia, prefix: "{{ap::name::narrator}}: ", color: primary }
@@ -179,6 +179,18 @@ structures:
     kind: synopsis
     tag: synopsis
     field: synopsis
+    # The last 3 replies keep their synopsis in history: many cards give no explicit time, so earlier
+    # synopses are the only reference for the timeline.
+    history: 3
+    historyTemplate: |-
+      {{content}}
+
+      <synopsis>
+        <time>{{time}}</time>
+        <location>{{location}}</location>
+        <event>{{event}}</event>
+        <summary>{{summary}}</summary>
+      </synopsis>
     description: Synopsis of the events in this story segment.
     properties:
       time: "When the events occurred: `MM-dd HH:mm - (MM-dd) HH:mm`, or `Day1 HH:mm - (Day2) HH:mm` without dates."
@@ -212,6 +224,18 @@ structures:
         <option title="...">...</option>
         </options>
       field: 'Fill the `options` field with 4 items, each `{ "label": "...", "content": "..." }`.'
+  annotations:
+    kind: annotations
+    history: 0
+    formatPrompt:
+      tag: |-
+        Inline annotations are written inside the story text as `{==phrase==}{>>note<<}`. The marked phrase stays part of the story; the note is shown to the reader on hover and removed from the text.
+
+        - Mark a short phrase or a single sentence, never across paragraphs, and never nest marks.
+        - Put `{>>note<<}` immediately after the `{==phrase==}` it belongs to. Notes are plain text.
+        - Only mark the story text itself, never planning, thinking or other structures.
+
+        Example: She set the {==white chrysanthemum==}{>>In her hometown this flower is only brought to funerals.<<} on the windowsill.
   memory:
     kind: memory
     tag: Freesia_Memory
@@ -308,6 +332,8 @@ meta:
 tokenSaving:
   keepFullTurns: 6
   truncateUserAfter: 2000
+  # Expansion mode writes the input into the story (and its synopsis), so older inputs are dropped.
+  userInput: remove
   synopsisTemplate: "[{{time}} · {{location}}] {{event}}: {{summary}}"
 
 syntheticTurns:
@@ -470,6 +496,7 @@ configurationDefaults:
     always-reply: false
     antifiltering: false
     event-synopsis: true
+    freesia-comments: false
     options: true
     skip-thought: false
     anti-evasion: true

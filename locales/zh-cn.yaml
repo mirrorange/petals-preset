@@ -80,6 +80,9 @@ modules:
   event-synopsis:
     name: 事件摘要
     description: 每段之后输出 <synopsis> 卡片；也是节省 Token 的数据来源（较早的楼层以摘要代替）。
+  freesia-comments:
+    name: Freesia 的评论
+    description: Freesia 回复你时（启用「始终请求元回复」，或输入中含 @Freesia），也会在正文的少量词句上留下评论，显示为虚线下划线，悬停或轻点即可查看。
   options:
     name: 用户选项
     description: 推荐你的下一条输入，以可点击的卡片显示。
