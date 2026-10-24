@@ -2,7 +2,7 @@
 formatVersion: 1
 id: petals
 name: Petals Preset
-version: 7.7.0
+version: 7.8.0
 author: mirrorange
 description: Write stories with Freesia! Freesia writes, Petals gives suggestions — a dual-character driven workflow.
 minAdvancedPreset: 1.7.0
