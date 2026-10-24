@@ -103,6 +103,7 @@ groups:
     order: 60
     tab: writing
   length: { label: Length, order: 70, tab: writing }
+  narration: { label: Narration, order: 80, tab: writing }
 
 params:
   - id: language
@@ -153,6 +154,16 @@ params:
       - { value: approx, label: Approximately, text: approximately }
       - { value: atLeast, label: At least, text: at least }
       - { value: atMost, label: At most, text: no more than }
+  - id: narrativePerson
+    type: select
+    label: Narrative person
+    description: Grammatical person of the narration. Dialogue is not affected. Unset follows the story so far.
+    group: narration
+    options:
+      - { value: "", label: Unset }
+      - { value: first, label: First person }
+      - { value: second, label: Second person }
+      - { value: third, label: Third person }
 
 structures:
   reply:
