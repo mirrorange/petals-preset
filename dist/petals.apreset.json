@@ -6,7 +6,7 @@
   "author": "mirrorange",
   "description": "Write stories with Freesia! Freesia writes, Petals gives suggestions — a dual-character driven workflow.",
   "minAdvancedPreset": "1.4.0",
-  "hash": "9c8d6d1dabde1b2a",
+  "hash": "0b839ccc543d27db",
   "actors": {
     "narrator": {
       "name": "Freesia",
@@ -3405,7 +3405,9 @@
         "location": "Scene or setting of the events.",
         "event": "Title of the current event, 10 words or less.",
         "summary": "Brief, objective description of what happened."
-      }
+      },
+      "history": 3,
+      "historyTemplate": "{{content}}\n\n<synopsis>\n  <time>{{time}}</time>\n  <location>{{location}}</location>\n  <event>{{event}}</event>\n  <summary>{{summary}}</summary>\n</synopsis>"
     },
     "options": {
       "id": "options",
@@ -3515,6 +3517,7 @@
   "tokenSaving": {
     "keepFullTurns": 6,
     "truncateUserAfter": 2000,
+    "userInput": "remove",
     "synopsisTemplate": "[{{time}} · {{location}}] {{event}}: {{summary}}"
   },
   "syntheticTurns": [
@@ -3995,7 +3998,8 @@
     "tokenSaving": {
       "enabled": false,
       "keepFullTurns": 6,
-      "truncateUserAfter": 2000
+      "truncateUserAfter": 2000,
+      "userInput": "remove"
     },
     "meta": {
       "recentCount": 3
