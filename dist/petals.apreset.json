@@ -6,7 +6,7 @@
   "author": "mirrorange",
   "description": "Write stories with Freesia! Freesia writes, Petals gives suggestions — a dual-character driven workflow.",
   "minAdvancedPreset": "1.4.0",
-  "hash": "9351260f5b4fed32",
+  "hash": "49def1e49ecf7197",
   "actors": {
     "narrator": {
       "name": "Freesia",
@@ -1671,7 +1671,7 @@
               "text": "## Narrative Person\n\n"
             },
             {
-              "text": "- Narrate the story content in the **first person**: the narrator is the viewpoint character and refers to themself as \"I\" (in the story's language). The viewpoint character is {{char}}, unless the story so far has already established a different first-person narrator.\n- Narration covers only what the viewpoint character perceives, feels, thinks and knows; other characters' inner states come through only in their words, actions and expressions.\n",
+              "text": "Narrate the story content in the **first person**: the narrator is the viewpoint character and refers to themself as \"I\". The viewpoint character is {{user}}, unless the story so far has already established a different first-person narrator.\n",
               "when": {
                 "t": "bin",
                 "op": "==",
@@ -1686,7 +1686,7 @@
               }
             },
             {
-              "text": "- Narrate the story content in the **second person**: address the player character ({{user}}) as \"you\" (in the story's language); all other characters are referred to in the third person.\n- Describe what \"you\" see, hear and sense around you, but the rules on acting for the player character still apply—second person does not license deciding {{user}}'s actions, words or feelings beyond what those rules allow.\n",
+              "text": "Narrate the story content in the **second person**: address the player character ({{user}}) as \"you\"; all other characters are referred to in the third person.\n",
               "when": {
                 "t": "bin",
                 "op": "==",
@@ -1701,7 +1701,7 @@
               }
             },
             {
-              "text": "- Narrate the story content in the **third person**: refer to every character—including the player character ({{user}}) and {{char}}—by name or by third-person pronouns. Never use \"I\" or \"you\" in narration for any character.\n- The narrator stays outside the story; keep the viewpoint consistent within a scene instead of hopping between characters' heads.\n",
+              "text": "Narrate the story content in the **third person**: refer to every character—including the player character—by name or by third-person pronouns.\n",
               "when": {
                 "t": "bin",
                 "op": "==",
@@ -1716,7 +1716,7 @@
               }
             },
             {
-              "text": "- This applies to narration only; dialogue and quoted thoughts use whatever person is natural for the speaker. If the story so far used a different person, switch to this one from now on.\n\n"
+              "text": "\n"
             }
           ]
         }
