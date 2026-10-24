@@ -2,11 +2,11 @@
   "formatVersion": 3,
   "id": "petals",
   "name": "Petals Preset",
-  "version": "7.6.1",
+  "version": "7.7.0",
   "author": "mirrorange",
   "description": "Write stories with Freesia! Freesia writes, Petals gives suggestions — a dual-character driven workflow.",
-  "minAdvancedPreset": "1.4.0",
-  "hash": "0b839ccc543d27db",
+  "minAdvancedPreset": "1.7.0",
+  "hash": "3ca824d103334626",
   "actors": {
     "narrator": {
       "name": "Freesia",
