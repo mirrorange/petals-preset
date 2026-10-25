@@ -2,7 +2,7 @@
 formatVersion: 1
 id: petals
 name: Petals Preset
-version: 7.8.0
+version: 7.8.1
 author: mirrorange
 description: Write stories with Freesia! Freesia writes, Petals gives suggestions — a dual-character driven workflow.
 minAdvancedPreset: 1.7.0
@@ -184,7 +184,7 @@ structures:
 
         Only use `<p>`, `<p special>`, and `<blockquote>` tags in <Freesia_Reply>. No other HTML tags, Markdown syntax or inline styles allowed. All tags are optional, repeatable, and may appear in any order. Reply must contain the main content only. No conversational fillers, headers, or footers allowed.
       field: >-
-        Put the reply in the `reply` field. Only use `<p>`, `<p special>` (highlight) and `<blockquote>` tags inside it.
+        Put the reply in the `{{field}}` field. Only use `<p>`, `<p special>` (highlight) and `<blockquote>` tags inside it.
         No other HTML tags, Markdown syntax or inline styles allowed. No conversational fillers, headers, or footers.
   synopsis:
     kind: synopsis
@@ -216,7 +216,7 @@ structures:
           <event>...</event>
           <summary>...</summary>
         </synopsis>
-      field: Fill the `synopsis` field with `time`, `location`, `event` and `summary`.
+      field: Fill the `{{field}}` field with `time`, `location`, `event` and `summary`.
   options:
     kind: options
     tag: options
@@ -234,7 +234,7 @@ structures:
         <option title="...">...</option>
         <option title="...">...</option>
         </options>
-      field: 'Fill the `options` field with 4 items, each `{ "label": "...", "content": "..." }`.'
+      field: 'Fill the `{{field}}` field with 4 items, each `{ "label": "...", "content": "..." }`.'
   annotations:
     kind: annotations
     history: 0
@@ -282,11 +282,11 @@ structures:
         Only `replace` and `delete` exist. Never append or perform substring edits.
         Escape &, < and > in key/content as &amp;, &lt; and &gt;.
       field: |-
-        Add one item per whole-entry update to `memory_ops`:
+        Add one item per whole-entry update to `{{field}}`:
         `{ "scope": "memory" | "global_memory", "operation": "replace" | "delete", "key": "Exact unique title", "content": "Complete new content" | null }`.
         `replace` creates or fully overwrites this title. `delete` removes this title and requires null content.
         Only these two operations exist; no append or substring edits. `key` is the memory title, not a schema keyword named title.
-        Use normal JSON escaping, not XML entity escaping, for field values. Leave `memory_ops` empty when no updates are requested.
+        Use normal JSON escaping, not XML entity escaping, for field values. Leave `{{field}}` empty when no updates are requested.
   recap:
     kind: recap
     tag: Freesia_Summary
@@ -303,8 +303,8 @@ structures:
         This is a separate plain-text recap, not a titled memory entry or memory operation.
         Replace the entire previous recap with the complete updated recap. Escape &, < and > in the recap as &amp;, &lt; and &gt;.
       field: |-
-        Put the complete updated story recap in the `story_recap` string field.
-        Use plain narrative text, not a title/content object or a `memory_ops` item.
+        Put the complete updated story recap in the `{{field}}` string field.
+        Use plain narrative text, not a title/content object or a memory operation.
         The value replaces the entire previous recap; combine the previous recap and newer events into one complete text.
         Use normal JSON escaping, not XML entity escaping. Use null (or omit this optional field) when no recap update is requested.
   impersonate:
@@ -317,7 +317,7 @@ structures:
         <Freesia_Impersonate>
         [The generated reply content acting as {{ap::name::user}}]
         </Freesia_Impersonate>
-      field: Put the generated reply (acting as {{ap::name::user}}) in the `impersonate` field.
+      field: Put the generated reply (acting as {{ap::name::user}}) in the `{{field}}` field.
 
 regex:
   - id: summary
@@ -531,6 +531,9 @@ configurationDefaults:
     style-kardia: true
     style-kryos: false
     style-melos: false
+  # Cache optimization stays off by default; when switched on, postpone history changes up to 8 requests.
+  cache:
+    maxDeferredTurns: 8
 
 defaultConfiguration: other
 # Configuration ids are stored in users' settings: keep them stable. `deepseek-claude-legacy` is kept

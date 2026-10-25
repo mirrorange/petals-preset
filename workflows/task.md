@@ -12,7 +12,7 @@ stages:
     kind: text
     tag: thinking
     label: Thinking
-    field: { name: thinking, description: "{{ap::name::narrator}}'s thought process about the task." }
+    field: { name: "step{{n}}_thinking", description: "{{ap::name::narrator}}'s thought process about the task." }
     tool:
       name: think
       description: "{{ap::name::narrator}} thinks the task through before producing the results."
@@ -22,7 +22,7 @@ stages:
     kind: content
     label: Output
     optional: true
-    field: { name: story_content, description: "Story content, only when explicitly requested." }
+    field: { name: "step{{n}}_story_content", description: "Story content, only when explicitly requested." }
     tool:
       name: write_output
       description: "{{ap::name::narrator}} writes the task results; story content only when explicitly requested."
