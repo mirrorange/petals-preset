@@ -6,7 +6,7 @@
   "author": "mirrorange",
   "description": "Write stories with Freesia! Freesia writes, Petals gives suggestions — a dual-character driven workflow.",
   "minAdvancedPreset": "1.7.0",
-  "hash": "13d2016eaad71030",
+  "hash": "b526c661eb8f375a",
   "actors": {
     "narrator": {
       "name": "Freesia",
@@ -3430,7 +3430,7 @@
           "label": "Thinking",
           "tag": "thinking",
           "field": {
-            "name": "thinking",
+            "name": "step{{n}}_thinking",
             "description": "{{ap::name::narrator}}'s thought process about the task."
           },
           "tool": {
@@ -3448,7 +3448,7 @@
           "label": "Output",
           "optional": true,
           "field": {
-            "name": "story_content",
+            "name": "step{{n}}_story_content",
             "description": "Story content, only when explicitly requested."
           },
           "tool": {
@@ -3515,10 +3515,10 @@
       "id": "reply",
       "kind": "reply",
       "tag": "Freesia_Reply",
-      "field": "reply",
+      "field": "z_reply",
       "formatPrompt": {
         "tag": "<Freesia_Reply>\n<p>[paragraph]</p>\n<p special>[highlight paragraph]</p>\n<blockquote>[quote]</blockquote>\n</Freesia_Reply>\n\nOnly use `<p>`, `<p special>`, and `<blockquote>` tags in <Freesia_Reply>. No other HTML tags, Markdown syntax or inline styles allowed. All tags are optional, repeatable, and may appear in any order. Reply must contain the main content only. No conversational fillers, headers, or footers allowed.",
-        "field": "Put the reply in the `reply` field. Only use `<p>`, `<p special>` (highlight) and `<blockquote>` tags inside it. No other HTML tags, Markdown syntax or inline styles allowed. No conversational fillers, headers, or footers."
+        "field": "Put the reply in the `z_reply` field. Only use `<p>`, `<p special>` (highlight) and `<blockquote>` tags inside it. No other HTML tags, Markdown syntax or inline styles allowed. No conversational fillers, headers, or footers."
       },
       "description": "{{ap::name::narrator}}'s own reply to {{ap::name::user}}'s @ instruction, spoken as {{ap::name::narrator}} (only <p>, <p special> and <blockquote>).",
       "title": "{{ap::name::narrator}}"
@@ -3527,10 +3527,10 @@
       "id": "synopsis",
       "kind": "synopsis",
       "tag": "synopsis",
-      "field": "synopsis",
+      "field": "z_synopsis",
       "formatPrompt": {
         "tag": "<synopsis>\n  <time>...</time>\n  <location>...</location>\n  <event>...</event>\n  <summary>...</summary>\n</synopsis>",
-        "field": "Fill the `synopsis` field with `time`, `location`, `event` and `summary`."
+        "field": "Fill the `z_synopsis` field with `time`, `location`, `event` and `summary`."
       },
       "description": "Synopsis of the events in this story segment.",
       "properties": {
@@ -3546,10 +3546,10 @@
       "id": "options",
       "kind": "options",
       "tag": "options",
-      "field": "options",
+      "field": "z_options",
       "formatPrompt": {
         "tag": "<options>\n<option title=\"...\">...</option>\n<option title=\"...\">...</option>\n<option title=\"...\">...</option>\n<option title=\"...\">...</option>\n</options>",
-        "field": "Fill the `options` field with 4 items, each `{ \"label\": \"...\", \"content\": \"...\" }`."
+        "field": "Fill the `z_options` field with 4 items, each `{ \"label\": \"...\", \"content\": \"...\" }`."
       },
       "description": "Four diverse options for {{ap::name::user}}'s next input to advance the story.",
       "properties": {
@@ -3573,10 +3573,10 @@
       "id": "memory",
       "kind": "memory",
       "tag": "Freesia_Memory",
-      "field": "memory_ops",
+      "field": "z_memory_ops",
       "formatPrompt": {
         "tag": "Use exactly one block per whole-entry update:\n\n<Freesia_Memory>\n<scope>memory</scope>\n<operation>replace</operation>\n<key>[Exact unique title]</key>\n<content>[Complete new content for this title]</content>\n</Freesia_Memory>\n\n`scope` is `memory` (this chat) or `global_memory` (all chats).\n`replace` creates the title if absent, or replaces its entire content if present.\nTo delete an entire entry:\n\n<Freesia_Memory>\n<scope>memory</scope>\n<operation>delete</operation>\n<key>[Exact existing title]</key>\n</Freesia_Memory>\n\nOnly `replace` and `delete` exist. Never append or perform substring edits.\nEscape &, < and > in key/content as &amp;, &lt; and &gt;.",
-        "field": "Add one item per whole-entry update to `memory_ops`:\n`{ \"scope\": \"memory\" | \"global_memory\", \"operation\": \"replace\" | \"delete\", \"key\": \"Exact unique title\", \"content\": \"Complete new content\" | null }`.\n`replace` creates or fully overwrites this title. `delete` removes this title and requires null content.\nOnly these two operations exist; no append or substring edits. `key` is the memory title, not a schema keyword named title.\nUse normal JSON escaping, not XML entity escaping, for field values. Leave `memory_ops` empty when no updates are requested."
+        "field": "Add one item per whole-entry update to `z_memory_ops`:\n`{ \"scope\": \"memory\" | \"global_memory\", \"operation\": \"replace\" | \"delete\", \"key\": \"Exact unique title\", \"content\": \"Complete new content\" | null }`.\n`replace` creates or fully overwrites this title. `delete` removes this title and requires null content.\nOnly these two operations exist; no append or substring edits. `key` is the memory title, not a schema keyword named title.\nUse normal JSON escaping, not XML entity escaping, for field values. Leave `z_memory_ops` empty when no updates are requested."
       },
       "description": "{{ap::name::narrator}}'s memory updates, one item per whole entry. Empty when {{ap::name::user}} asked for none.",
       "properties": {
@@ -3590,10 +3590,10 @@
       "id": "recap",
       "kind": "recap",
       "tag": "Freesia_Summary",
-      "field": "story_recap",
+      "field": "z_story_recap",
       "formatPrompt": {
         "tag": "<Freesia_Summary>\n[The complete updated story recap as plain narrative text]\n</Freesia_Summary>\n\nThis is a separate plain-text recap, not a titled memory entry or memory operation.\nReplace the entire previous recap with the complete updated recap. Escape &, < and > in the recap as &amp;, &lt; and &gt;.",
-        "field": "Put the complete updated story recap in the `story_recap` string field.\nUse plain narrative text, not a title/content object or a `memory_ops` item.\nThe value replaces the entire previous recap; combine the previous recap and newer events into one complete text.\nUse normal JSON escaping, not XML entity escaping. Use null (or omit this optional field) when no recap update is requested."
+        "field": "Put the complete updated story recap in the `z_story_recap` string field.\nUse plain narrative text, not a title/content object or a memory operation.\nThe value replaces the entire previous recap; combine the previous recap and newer events into one complete text.\nUse normal JSON escaping, not XML entity escaping. Use null (or omit this optional field) when no recap update is requested."
       },
       "description": "The complete updated story recap as plain narrative text; it replaces the previous recap. Null when no recap was requested."
     },
@@ -3601,10 +3601,10 @@
       "id": "impersonate",
       "kind": "impersonate",
       "tag": "Freesia_Impersonate",
-      "field": "impersonate",
+      "field": "z_impersonate",
       "formatPrompt": {
         "tag": "<Freesia_Impersonate>\n[The generated reply content acting as {{ap::name::user}}]\n</Freesia_Impersonate>",
-        "field": "Put the generated reply (acting as {{ap::name::user}}) in the `impersonate` field."
+        "field": "Put the generated reply (acting as {{ap::name::user}}) in the `z_impersonate` field."
       },
       "description": "{{ap::name::user}}'s next reply, ghostwritten by {{ap::name::narrator}} in {{ap::name::user}}'s voice."
     }
@@ -3729,7 +3729,8 @@
       "nudge": "The workflow is not finished. Continue by calling `{{next}}`."
     },
     "callerSchemaHint": "After your thinking, output the result as one JSON code block (```json … ```) that matches this JSON Schema:\n\n```json\n{{schema}}\n```",
-    "jsonStringHint": "(JSON object encoded as a string)"
+    "jsonStringHint": "(JSON object encoded as a string)",
+    "structurePrefix": "z_"
   },
   "theme": {
     "light": {
