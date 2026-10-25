@@ -6,7 +6,7 @@
   "author": "mirrorange",
   "description": "Write stories with Freesia! Freesia writes, Petals gives suggestions — a dual-character driven workflow.",
   "minAdvancedPreset": "1.7.0",
-  "hash": "b526c661eb8f375a",
+  "hash": "b96bc35d4eb49f60",
   "actors": {
     "narrator": {
       "name": "Freesia",
@@ -4135,6 +4135,11 @@
       "keepFullTurns": 6,
       "truncateUserAfter": 2000,
       "userInput": "remove"
+    },
+    "cache": {
+      "enabled": false,
+      "ttlMinutes": 5,
+      "maxDeferredTurns": 8
     },
     "meta": {
       "recentCount": 3
