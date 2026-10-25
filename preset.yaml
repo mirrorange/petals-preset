@@ -531,6 +531,9 @@ configurationDefaults:
     style-kardia: true
     style-kryos: false
     style-melos: false
+  # Cache optimization stays off by default; when switched on, postpone history changes up to 8 requests.
+  cache:
+    maxDeferredTurns: 8
 
 defaultConfiguration: other
 # Configuration ids are stored in users' settings: keep them stable. `deepseek-claude-legacy` is kept
