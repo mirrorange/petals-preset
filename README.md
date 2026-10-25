@@ -45,6 +45,8 @@ npm run dev        # 监视源码并在 http://localhost:4747 提供预设
 
 在 SillyTavern 的 **AP 面板 → 调试 → 开发源** 填入 `http://localhost:4747`，保存源码即热更新。提交前运行 `npx ap check --strict` 与 `npm run build`，CI 会校验 `dist/` 是否最新。
 
+分支约定：`dev` 分支依赖 `"advanced-preset": "dev"`（AP `dev` 分支自动发布的预发布 CLI），可直接使用尚未发布的 CLI 功能；用 `npm update advanced-preset` 更新到最新 dev 版本。合并进 `main` 前需改回已发布的版本范围（如 `^1.7.0`），否则 CI 会报错。
+
 用 AI Agent 修改时，[AGENTS.md](AGENTS.md) 与 `.agents/skills/`（`npm run skills` 更新）会告诉 Agent 如何设计、编写、测试 AP 预设。
 
 | 路径 | 内容 |

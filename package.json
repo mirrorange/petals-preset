@@ -32,6 +32,6 @@
     "skills": "ap skills install"
   },
   "devDependencies": {
-    "advanced-preset": "^1.7.0"
+    "advanced-preset": "dev"
   }
 }
