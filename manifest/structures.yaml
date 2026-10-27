@@ -1,0 +1,155 @@
+# Structures the narrator can output alongside the story (format prompts, fields, history).
+
+structures:
+  reply:
+    kind: reply
+    tag: Freesia_Reply
+    field: reply
+    title: "{{ap::name::narrator}}"
+    description: >-
+      {{ap::name::narrator}}'s own reply to {{ap::name::user}}'s @ instruction, spoken as {{ap::name::narrator}}
+      (only <p>, <p special> and <blockquote>).
+    formatPrompt:
+      tag: |-
+        <Freesia_Reply>
+        <p>[paragraph]</p>
+        <p special>[highlight paragraph]</p>
+        <blockquote>[quote]</blockquote>
+        </Freesia_Reply>
+
+        Only use `<p>`, `<p special>`, and `<blockquote>` tags in <Freesia_Reply>. No other HTML tags, Markdown syntax or inline styles allowed. All tags are optional, repeatable, and may appear in any order. Reply must contain the main content only. No conversational fillers, headers, or footers allowed.
+      field: >-
+        Put the reply in the `{{field}}` field. Only use `<p>`, `<p special>` (highlight) and `<blockquote>` tags inside it.
+        No other HTML tags, Markdown syntax or inline styles allowed. No conversational fillers, headers, or footers.
+  synopsis:
+    kind: synopsis
+    tag: synopsis
+    field: synopsis
+    # The last 3 replies keep their synopsis in history: many cards give no explicit time, so earlier
+    # synopses are the only reference for the timeline.
+    history: 3
+    historyTemplate: |-
+      {{content}}
+
+      <synopsis>
+        <time>{{time}}</time>
+        <location>{{location}}</location>
+        <event>{{event}}</event>
+        <summary>{{summary}}</summary>
+      </synopsis>
+    description: Synopsis of the events in this story segment.
+    properties:
+      time: "When the events occurred: `MM-dd HH:mm - (MM-dd) HH:mm`, or `Day1 HH:mm - (Day2) HH:mm` without dates."
+      location: Scene or setting of the events.
+      event: Title of the current event, 10 words or less.
+      summary: Brief, objective description of what happened.
+    formatPrompt:
+      tag: |-
+        <synopsis>
+          <time>...</time>
+          <location>...</location>
+          <event>...</event>
+          <summary>...</summary>
+        </synopsis>
+      field: Fill the `{{field}}` field with `time`, `location`, `event` and `summary`.
+  options:
+    kind: options
+    tag: options
+    field: options
+    count: 4
+    description: Four diverse options for {{ap::name::user}}'s next input to advance the story.
+    properties:
+      label: Reply type / direction, under 5 words.
+      content: The reply itself, written as {{ap::name::user}}'s next input.
+    formatPrompt:
+      tag: |-
+        <options>
+        <option title="...">...</option>
+        <option title="...">...</option>
+        <option title="...">...</option>
+        <option title="...">...</option>
+        </options>
+      field: 'Fill the `{{field}}` field with 4 items, each `{ "label": "...", "content": "..." }`.'
+  annotations:
+    kind: annotations
+    history: 0
+    formatPrompt:
+      tag: |-
+        Inline annotations are written inside the story text as `{==phrase==}{>>note<<}`. The marked phrase stays part of the story; the note is shown to the reader on hover and removed from the text.
+
+        - Mark a short phrase or a single sentence, never across paragraphs, and never nest marks.
+        - Put `{>>note<<}` immediately after the `{==phrase==}` it belongs to. Notes are plain text.
+        - Only mark the story text itself, never planning, thinking or other structures.
+
+        Example: She set the {==white chrysanthemum==}{>>In her hometown this flower is only brought to funerals.<<} on the windowsill.
+  memory:
+    kind: memory
+    tag: Freesia_Memory
+    field: memory_ops
+    description: >-
+      {{ap::name::narrator}}'s memory updates, one item per whole entry. Empty when {{ap::name::user}} asked for none.
+    properties:
+      scope: "`memory` remembers for this chat, `global_memory` for every chat."
+      operation: "`replace` creates the entry or overwrites all of it; `delete` removes it."
+      key: Exact unique title of the entry.
+      content: Complete new content of the entry; null for `delete`.
+    formatPrompt:
+      tag: |-
+        Use exactly one block per whole-entry update:
+
+        <Freesia_Memory>
+        <scope>memory</scope>
+        <operation>replace</operation>
+        <key>[Exact unique title]</key>
+        <content>[Complete new content for this title]</content>
+        </Freesia_Memory>
+
+        `scope` is `memory` (this chat) or `global_memory` (all chats).
+        `replace` creates the title if absent, or replaces its entire content if present.
+        To delete an entire entry:
+
+        <Freesia_Memory>
+        <scope>memory</scope>
+        <operation>delete</operation>
+        <key>[Exact existing title]</key>
+        </Freesia_Memory>
+
+        Only `replace` and `delete` exist. Never append or perform substring edits.
+        Escape &, < and > in key/content as &amp;, &lt; and &gt;.
+      field: |-
+        Add one item per whole-entry update to `{{field}}`:
+        `{ "scope": "memory" | "global_memory", "operation": "replace" | "delete", "key": "Exact unique title", "content": "Complete new content" | null }`.
+        `replace` creates or fully overwrites this title. `delete` removes this title and requires null content.
+        Only these two operations exist; no append or substring edits. `key` is the memory title, not a schema keyword named title.
+        Use normal JSON escaping, not XML entity escaping, for field values. Leave `{{field}}` empty when no updates are requested.
+  recap:
+    kind: recap
+    tag: Freesia_Summary
+    field: story_recap
+    description: >-
+      The complete updated story recap as plain narrative text; it replaces the previous recap.
+      Null when no recap was requested.
+    formatPrompt:
+      tag: |-
+        <Freesia_Summary>
+        [The complete updated story recap as plain narrative text]
+        </Freesia_Summary>
+
+        This is a separate plain-text recap, not a titled memory entry or memory operation.
+        Replace the entire previous recap with the complete updated recap. Escape &, < and > in the recap as &amp;, &lt; and &gt;.
+      field: |-
+        Put the complete updated story recap in the `{{field}}` string field.
+        Use plain narrative text, not a title/content object or a memory operation.
+        The value replaces the entire previous recap; combine the previous recap and newer events into one complete text.
+        Use normal JSON escaping, not XML entity escaping. Use null (or omit this optional field) when no recap update is requested.
+  impersonate:
+    kind: impersonate
+    tag: Freesia_Impersonate
+    field: impersonate
+    description: "{{ap::name::user}}'s next reply, ghostwritten by {{ap::name::narrator}} in {{ap::name::user}}'s voice."
+    formatPrompt:
+      tag: |-
+        <Freesia_Impersonate>
+        [The generated reply content acting as {{ap::name::user}}]
+        </Freesia_Impersonate>
+      field: Put the generated reply (acting as {{ap::name::user}}) in the `{{field}}` field.
