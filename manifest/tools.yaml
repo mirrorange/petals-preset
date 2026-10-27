@@ -1,0 +1,59 @@
+# Tool / schema texts and synthetic turns.
+
+# Every name and description the model sees in structured-output and tool-calling modes.
+# Stages override their own field / tool texts in workflows/*.md.
+tools:
+  turn:
+    name: petals_workflow
+    description: >-
+      One turn of the writing workflow between {{ap::name::narrator}} and {{ap::name::editor}}: every stage in order,
+      each written by its persona, followed by the requested structures.
+    field: "step{{n}}_{{stage}}"
+    fieldDescription: "Step {{n}} · {{label}}"
+  submit:
+    name: submit_workflow
+    description: >-
+      Hand in this turn's whole workflow in one call: {{ap::name::narrator}} and {{ap::name::editor}}'s stages in order,
+      the story content, then the requested structures. Fill every field in order.
+  stage:
+    name: "{{stage}}"
+    description: "Step {{n}} · {{label}}"
+    param: { name: content, description: "Text of this stage." }
+    patchParam:
+      name: edits
+      description: Exact-string replacements applied to the story content. May be empty.
+  patch:
+    old: Exact text copied from the story content; long enough to match exactly once.
+    new: Replacement text.
+  envelope:
+    thinking: { name: thinking, description: "{{ap::name::narrator}}'s thought process about the task." }
+    result: { name: result, description: "The task result, exactly in the requested format." }
+  results:
+    next: Recorded. Next, call `{{next}}`.
+    done: Recorded. The workflow is complete.
+    unknown: "`{{name}}` is not part of the workflow."
+    nudge: The workflow is not finished. Continue by calling `{{next}}`.
+
+syntheticTurns:
+  - id: init
+    label: Workflow init
+    user: &init-user <!-- Workflow Start -->
+    tool: &init-tool
+      name: start_workflow
+      description: >-
+        Open the writing session of {{ap::name::narrator}} and {{ap::name::editor}} for this turn.
+        Returns how the workflow is delivered.
+    # User-supplied opaque Gemini signature; sent only to Gemini when `sendThoughtSignature` is on. Never edit.
+    thoughtSignature: AY89a19rZjAaoGPoZIQYJVKTJki6wEZ833K90LZvrH0lkrtbJHgi1gs/uato/uKR2MTxgGXruDHi5dCr9axRX2GJBT1Net7a+u2cgwc5xYKL2Fomowpj4czoV5vAq/OYoJ2hefMPtuf7aLRuPSHInA==
+    response: &init-response
+      single: Workflow initialised. Now call `{{submit}}` exactly once, filling every field in order to complete the whole workflow in a single call.
+      multi: Workflow initialised. Complete the workflow by calling the stage tools in order, starting with `{{first}}`. Each tool records one stage.
+      parallel: Workflow initialised. Complete the workflow by calling the stage tools in order, starting with `{{first}}`. You may call several stage tools in one reply (in order) to finish faster.
+  - id: init-skip-thought
+    label: Workflow init (skip thought)
+    # Variant for the `skip-thought` module: the signature matches a thought block that only says
+    # "Skip the internal thought and proceed directly to the workflow." Never edit.
+    user: *init-user
+    tool: *init-tool
+    thoughtSignature: AY89a1+a+MIYy6FPVVZOUYcPe3YWxMtEikrAsPW3VBSHcALLf7nNcDv67a6j4ScvrwCFhMzqsG3rKQi/xYyYbh+CS9n51H4C2SBr8gG/CRkupZPVyA==
+    response: *init-response
