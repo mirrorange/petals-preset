@@ -1,5 +1,5 @@
 ---
-# Module template: shown when the user creates a new module in the panel ("Start from").
+# User module template: shown when the user creates a new module in the panel ("Start from").
 # The copy is the user's own module; the comments below explain how to edit it.
 name: Custom writing style
 description: Your own style guide in the writing style block, plus questions Freesia asks Petals before writing.
