@@ -6,7 +6,7 @@
   "author": "mirrorange",
   "description": "Write stories with Freesia! Freesia writes, Petals gives suggestions — a dual-character driven workflow.",
   "minAdvancedPreset": "1.9.0",
-  "hash": "7ae80c1dda884932",
+  "hash": "ab567a85efa150f5",
   "actors": {
     "narrator": {
       "name": "Freesia",
@@ -2796,6 +2796,99 @@
   ],
   "userModules": [],
   "userModuleTemplates": [
+    {
+      "id": "custom-cot",
+      "name": "Custom CoT",
+      "description": "Your own chain of thought rewritten as Petals CoT — a thinking guide in the guidelines block, plus the questions that lead the thinking.",
+      "entries": [
+        {
+          "point": "guidelines",
+          "text": "<!--#\n━━ How to use this template ━━\nThese lines are notes for you. They are removed before sending; the AI never sees them.\nDelete them whenever you like.\n\nWhat is Petals CoT?\nPetals does not ask for a free-form <thinking> block. It thinks through questions: before writing, Freesia asks\nPetals the planning questions, Petals answers them, and Freesia writes from the answers.\nSo an ordinary CoT (\"1. Analyze… 2. List… 3. Plan…\") should be rewritten as Petals CoT questions.\nThe module has two parts:\n\n1. Thinking guide (this text). It is inserted at \"Guidelines\", inside <guidelines>.\n   Write WHAT to think about and HOW: the method, the angles, the standards a good answer meets.\n   Do not write the steps themselves here; they become the questions below.\n\n2. Questions (the \"Build variables\" section of this module). Write the CoT questions that lead the thinking.\n   · Turn each step of your CoT into one question. Example:\n       \"2. Analyze each character's emotions and motives\"\n     → \"From each present character's own perspective, what do they feel and want right now…?\"\n   · Mandatory questions: asked every turn. Optional questions: Freesia picks the 2–3 most relevant.\n   · Use a new key for each question: reusing a built-in key replaces that built-in question, and leaving its value empty removes it.\n   · Skip steps the built-in questions already cover. Example: \"plan how the plot develops\" is the built-in `outline` question.\n   · Questions are only asked by workflows with a questions stage (Linear, Iterative, Edit); the Task workflow does not ask them.\n\n3. Trigger. The expression `!meta.pure && gen.type != \"impersonate\"` sends the module only when a story is written (not for pure meta instructions or impersonation). Usually leave it as it is.\n\nWant to keep your CoT's own format (e.g. a <thinking> block in the reply), or it is hard to turn into questions?\nYou do not need this module: just turn on \"CoT Compatibility\" under \"Guidelines\" on the Modules page and put the CoT in your character card or settings.\nFreesia will then output the block before the story. This may make the CoT less effective than Petals CoT.\n-->\n\n## Thinking Guide: Character Perspective\n\nWhen planning, think from inside the story rather than from the author's convenience.\n\n- **Scene first**: before deciding what happens, pin down the scene exactly as it stands now: where everyone is, what they hold, what has just been said or done.\n- **Characters' own eyes**: reason about each character only from what that character knows and perceives. They cannot react to things they have not seen, heard or been told.\n- **Motives drive the plot**: let the next events follow from what the characters want and fear, not from what would be dramatically convenient.\n- **Consequences persist**: actions leave traces. Earlier choices, injuries, promises and changes in relationships should keep shaping later scenes."
+        }
+      ],
+      "vars": [
+        {
+          "var": "mandatoryQuestions",
+          "type": "dict",
+          "items": [
+            {
+              "key": "custom-cot-scene",
+              "value": "What is the current state of the scene (time, place, characters present), and what has just changed?"
+            },
+            {
+              "key": "custom-cot-motives",
+              "value": "From each present character's own perspective, limited to what they know, what do they feel and want right now, and how will they react to the latest input of {{ap::name::user}}?"
+            }
+          ]
+        },
+        {
+          "var": "optionalQuestions",
+          "type": "dict",
+          "items": [
+            {
+              "key": "custom-cot-consequences",
+              "value": "What longer-term consequences could the latest action of {{ap::name::user}} have, and which of them should begin to show in this part?"
+            }
+          ]
+        }
+      ],
+      "trigger": {
+        "match": "all",
+        "rules": [
+          {
+            "kind": "expr",
+            "source": "!meta.pure && gen.type != \"impersonate\""
+          }
+        ]
+      },
+      "locales": {
+        "zh-cn": {
+          "name": "自定义思维链",
+          "description": "把你自己的思维链改写为 Petals CoT：在写作指南中加入思考指南，并添加引导思考的问题。",
+          "entries": [
+            {
+              "point": "guidelines",
+              "text": "<!--#\n━━ 使用说明 ━━\n这一段文字是写给你看的注释：发送前会被移除，AI 看不到。改完后可以随意删掉\n\n什么是 Petals CoT？\n花瓣不要求模型自由输出 <thinking> 思考块，而是用问题引导思考：写作前 Freesia 向 Petals 提出规划问题，\nPetals 逐一回答，Freesia 再根据回答写作。\n所以一般的 CoT（「1. 分析…… 2. 列出…… 3. 规划……」）需要改写成 Petals CoT 问题。模组分为两部分：\n\n1. 思考指南（下面的正文）。它插入在「写作指南」位置，位于 <guidelines> 内\n   · 写「思考什么、怎么思考」：方法、角度、好的回答应达到的标准\n   · 不要在这里列思考步骤，步骤改写成下面的问题\n\n2. 问题（下方的「构建变量」）。写引导思考的 CoT 问题\n   · 把 CoT 的每一步改写成一个问题，例如：\n       「2. 分析每个角色的情绪与动机」\n     →「从每个在场角色自己的视角出发，他们此刻有什么感受和想要什么……？」\n   · 必答问题：每轮都会提出。可选问题：Freesia 从中挑选最相关的 2–3 个\n   · 新问题请使用新的键：与内置问题同键会替换该内置问题，值留空则移除它\n   · 内置问题已覆盖的步骤可以省略，例如「规划剧情如何发展」就是内置的 `outline` 问题\n   · 只有带提问阶段的工作流（线性、迭代、编辑）会提出问题，任务工作流不会\n\n3. 触发条件。表达式 `!meta.pure && gen.type != \"impersonate\"` 让模组只在写故事时发送，纯元指令与代写时不发送。一般无需修改。\n\n想保留 CoT 原本的思考格式（例如在回复中输出 <thinking> 块），或者 CoT 难以改写成问答引导式？\n不需要使用这个模组：在模组页「写作指南」中打开「思维链兼容」，并把 CoT 写在角色卡或设定中即可，\nFreesia 会在正文前输出思考块。但这可能降低 CoT 的效果\n-->\n\n## Thinking Guide: 角色视角\n\n规划时从故事内部思考，而不是从作者的便利出发。\n\n- **先看场景**：决定发生什么之前，先准确还原此刻的场景：每个人在哪里、手里有什么、刚刚说了或做了什么。\n- **用角色自己的眼睛**：推断每个角色时，只依据这个角色知道和感知到的信息。没看到、没听到、没被告知的事，他们无法作出反应。\n- **动机推动情节**：让接下来的事件源于角色想要什么、害怕什么，而不是怎样更有戏剧性。\n- **后果会延续**：行动会留下痕迹。之前的选择、伤势、承诺与关系变化，应持续影响之后的场景。"
+            }
+          ],
+          "vars": [
+            {
+              "var": "mandatoryQuestions",
+              "type": "dict",
+              "items": [
+                {
+                  "key": "custom-cot-scene",
+                  "value": "当前场景的状态如何（时间、地点、在场人物）？刚刚发生了什么变化？"
+                },
+                {
+                  "key": "custom-cot-motives",
+                  "value": "从每个在场角色自己的视角出发、仅凭他们所知道的信息，他们此刻有什么感受和想要什么？会如何回应 {{ap::name::user}} 的最新输入？"
+                }
+              ]
+            },
+            {
+              "var": "optionalQuestions",
+              "type": "dict",
+              "items": [
+                {
+                  "key": "custom-cot-consequences",
+                  "value": "最新输入中 {{ap::name::user}} 的行动可能带来哪些长远影响？其中哪些应在这一段开始显现？"
+                }
+              ]
+            }
+          ],
+          "trigger": {
+            "match": "all",
+            "rules": [
+              {
+                "kind": "expr",
+                "source": "!meta.pure && gen.type != \"impersonate\""
+              }
+            ]
+          }
+        }
+      }
+    },
     {
       "id": "custom-style",
       "name": "Custom writing style",
