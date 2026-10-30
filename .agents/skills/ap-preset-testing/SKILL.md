@@ -36,9 +36,10 @@ npx ap preview --meta mixed                 # 元指令 + 故事输入
 npx ap preview --config <每个推荐配置 id>
 npx ap preview --enable <id> --disable <id> # 关键开关、单选集的每个成员
 npx ap preview --workflow <每个故事工作流 id>
+npx ap preview --input "我们去北边"         # 本次输入：检查 inputShaping（包裹 / 提取后放回的位置）
 ```
 
-输出较长时写入文件再查：`npx ap preview --transport plaintext --out /tmp/plaintext.txt`。需要程序化检查时用 `--json`（键：`vars`、`buildVars`、`modules`、`structures`、`stages`、`regions`，以及 `schema` 或 `tools`），例如：
+输出较长时写入文件再查：`npx ap preview --transport plaintext --out /tmp/plaintext.txt`。需要程序化检查时用 `--json`（键：`vars`、`buildVars`、`modules`、`structures`、`stages`、`regions`，以及 `schema` 或 `tools`；`--input` 时还有 `historyInput`），例如：
 
 ```bash
 npx ap preview --json --transport tool-multi | node -e "const d=JSON.parse(require('fs').readFileSync(0,'utf8'));console.log(d.modules, d.tools?.map(t=>t.function?.name ?? t.name))"
@@ -54,7 +55,7 @@ npx ap preview --json --transport tool-multi | node -e "const d=JSON.parse(requi
 - [ ] 参数未设置时相关文字不出现，设置后正确出现；
 - [ ] 没有残留的 `{{ap::…}}`（未展开的宏）。`{{user}}`、`{{char}}` 原样出现是正常的——ST 在之后展开。
 
-预览与真实运行的差别：ST 宏不展开；记忆、总结、最近元指令为空（`memory.*`、`recap.present`、`meta.recent`、`chat.group` 为假）；元指令文本是占位符 `(meta text)`。
+预览与真实运行的差别：ST 宏不展开；记忆、总结、最近元指令为空（`memory.*`、`recap.present`、`meta.recent`、`chat.group` 为假）；元指令文本是占位符 `(meta text)`；没有 `--input` 时没有本次输入（`input.shaped` 为假）。
 
 ## 3. 在 SillyTavern 里实测
 
@@ -69,6 +70,7 @@ npx ap preview --json --transport tool-multi | node -e "const d=JSON.parse(requi
 - [ ] 代写、总结、记忆（如果支持）；
 - [ ] 卡片（选项、事件摘要、自定义结构）显示正常；
 - [ ] 打开省 token 后的长对话（如果支持事件摘要）；
+- [ ] 用户输入整形（如果声明了 `inputShaping`）：发送、重新生成后“最近组装”显示输入已包裹 / 已提取；“继续”时显示未整形；
 - [ ] 新用户默认配置的效果。
 
 ## 4. 排查

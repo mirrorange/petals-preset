@@ -38,8 +38,9 @@ configurationDefaults:
     prefixes: { narrator: "" } # 空字符串 = 使用角色的默认前缀
   modules: { options: true }   # 只能写用户可开关的模组
   params: { length: 600 }
-  tokenSaving: { enabled: false, keepFullTurns: 6, truncateUserAfter: 2000 }
-  meta: { recentCount: 3 }
+  tokenSaving: { enabled: false, keepFullTurns: 6, truncateUserAfter: 2000, userInput: truncate }
+  cache: { enabled: false, ttlMinutes: 5, maxDeferredTurns: 6 }
+  meta: { enabled: true, recentCount: 3 }
 ```
 
 | 段 | 字段 | 默认 | 说明 |
@@ -56,9 +57,11 @@ configurationDefaults:
 | `sampling` | 任意键 | `{}` | ST Chat Completion 预设的设置项，见下 |
 | `identity` | `names.<actor>` / `prefixes.<actor>` | `''` | 覆盖角色名字 / 前缀；空字符串表示用清单 `actors` 的值 |
 | `modules` | `<module id>` | 模组的 `default` | 用户可开关模组的状态 |
-| `params` | `<param id>` | 参数的 `default` | 参数值 |
-| `tokenSaving` | `enabled` / `keepFullTurns` / `truncateUserAfter` | `false` / 清单 `tokenSaving` 的值 | 省 token（[meta-and-tasks.md](meta-and-tasks.md#省-token)） |
-| `meta` | `recentCount` | 清单 `meta.recentCount` | `{{ap::recent_meta}}` 的条数 |
+| `params` | `<param id>` | 参数的 `default` | 参数值（列表参数为字符串数组，合并时整体替换） |
+| `tokenSaving` | `enabled` / `keepFullTurns` / `truncateUserAfter` / `userInput` | `false` / 清单 `tokenSaving` 的值 | 省 token（[meta-and-tasks.md](meta-and-tasks.md#省-token)） |
+| `cache` | `enabled` / `ttlMinutes` / `maxDeferredTurns` | `false` / `5` / `6` | 缓存优化：粘性渲染历史（[meta-and-tasks.md](meta-and-tasks.md#缓存优化粘性渲染)）；`ttlMinutes`、`maxDeferredTurns` 为 0 分别表示不限时、从不推迟 |
+| `meta` | `enabled` | `true` | 元指令总开关；`false` 时不处理元指令（[meta-and-tasks.md](meta-and-tasks.md#元指令)） |
+| | `recentCount` | 清单 `meta.recentCount` | `{{ap::recent_meta}}` 的条数 |
 
 ### sampling
 
@@ -69,7 +72,9 @@ ST 内部有几项的设置名与预设文件不同，AP 自动换算：`tempera
 ### 诊断
 
 - `configurationDefaults.modules` 中不存在或不是用户可开关的模组、`params` 中不存在的参数：错误；
+- `params` 的值与参数类型不符（如列表参数不是字符串数组、数字参数不是数字）：错误（推荐配置的 diff 同样检查）；
 - 未知的段（如 `configurationDefaults.foo`）：警告；
+- `cache.enabled` 不是布尔值、`ttlMinutes` / `maxDeferredTurns` 不是非负数：错误；`cache` 中未知的键：警告；
 - `connection.transport` / `streamToolArguments` 取值非法、`workflow` 不存在或是任务工作流、`syntheticTurn` 不存在：错误（推荐配置的 diff 同样检查）。
 
 ## 推荐配置 `configurations`

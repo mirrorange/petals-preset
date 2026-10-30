@@ -39,6 +39,7 @@
    ```
 
 3. 选择型参数用 `type: select` + `options`（`{ value, label, text }`，`text` 是给模型看的文字）。
+   让用户列出若干项（禁词、关键词）用 `type: list`：`{{ap::param::id}}` 输出逗号连接的各项，`@if params.id` 判断是否填写，逐项排版或与内置项合并用 `@template`（`params.id` 是数组）；`minAdvancedPreset` 至少 1.9.0，预览用 `--param 'id=a,b'`。
 4. 加翻译：`params: { length: { label: 目标字数 } }`。
 
 ## 按传输方式 / 写法区分内容

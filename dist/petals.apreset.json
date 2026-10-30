@@ -6,7 +6,7 @@
   "author": "mirrorange",
   "description": "Write stories with Freesia! Freesia writes, Petals gives suggestions — a dual-character driven workflow.",
   "minAdvancedPreset": "1.9.0",
-  "hash": "24d6670c17b85622",
+  "hash": "7ae80c1dda884932",
   "actors": {
     "narrator": {
       "name": "Freesia",
@@ -93,6 +93,12 @@
       "separator": "\n\n"
     },
     {
+      "id": "input",
+      "role": "user",
+      "merge": "none",
+      "separator": "\n\n"
+    },
+    {
       "id": "questions",
       "role": "system",
       "merge": "join",
@@ -117,6 +123,10 @@
     "tail": "bottom"
   },
   "workflowRegion": "task",
+  "inputShaping": {
+    "mode": "extract",
+    "template": "<input>\n{{content}}\n</input>"
+  },
   "params": [
     {
       "id": "language",
@@ -394,7 +404,7 @@
       "structures": [],
       "vars": [],
       "source": "modules/core/context.md",
-      "description": "Story recap, recent meta conversations and memories supplied by Advanced Preset."
+      "description": "Story recap, recent meta conversations, memories and the latest input supplied by Advanced Preset."
     },
     {
       "id": "role-freesia",
@@ -2252,7 +2262,7 @@
         {
           "pieces": [
             {
-              "text": "<global_memory>\n{{ap::memory::global}}\n</global_memory>\n"
+              "text": "<global_memory>\n{{ap::memory::global}}\n</global_memory>\n\n"
             }
           ]
         }
@@ -2260,6 +2270,25 @@
       "when": {
         "t": "var",
         "path": "memory.hasGlobal"
+      }
+    },
+    {
+      "id": "context/input",
+      "module": "context",
+      "region": "input",
+      "order": 100,
+      "content": [
+        {
+          "pieces": [
+            {
+              "text": "<input>\n{{ap::input::text}}\n</input>\n"
+            }
+          ]
+        }
+      ],
+      "when": {
+        "t": "var",
+        "path": "input.shaped"
       }
     },
     {
@@ -4082,6 +4111,17 @@
         "forbid_overrides": true
       },
       {
+        "identifier": "ap_input",
+        "name": "🌸 Petals · input",
+        "role": "user",
+        "content": "⟦ap:region:input⟧",
+        "system_prompt": false,
+        "marker": false,
+        "injection_position": 0,
+        "injection_depth": 4,
+        "forbid_overrides": true
+      },
+      {
         "identifier": "ap_questions",
         "name": "🌸 Petals · questions",
         "role": "system",
@@ -4190,6 +4230,10 @@
       },
       {
         "identifier": "ap_memory",
+        "enabled": true
+      },
+      {
+        "identifier": "ap_input",
         "enabled": true
       },
       {

@@ -1,6 +1,6 @@
 # `preset.yaml` 清单
 
-`preset.yaml` 是预设的根文件。本页按字段列出全部顶层键；每个键的默认值、取值范围和相关诊断都在对应小节里。涉及较多规则的部分（结构、工具文案、配置、插入点等）给出摘要并链接到专门的页面。
+`preset.yaml` 是预设的根文件。清单较长时，除元数据外的字段可以拆到 `manifest/` 下的多个文件中，见[拆分清单](#拆分清单-manifest)。本页按字段列出全部顶层键；每个键的默认值、取值范围和相关诊断都在对应小节里。涉及较多规则的部分（结构、工具文案、配置、插入点等）给出摘要并链接到专门的页面。
 
 ## 顶层字段一览
 
@@ -34,6 +34,7 @@
 | `regex` | list | `[]` | 正则标记，见[正则标记](#正则标记-regex) |
 | `meta` | map | 见下 | 元指令与内置任务，见 [meta-and-tasks.md](meta-and-tasks.md) |
 | `tokenSaving` | map | 见下 | 省 token 的默认参数 |
+| `inputShaping` | map | — | 用户输入整形（包裹或提取本次输入），见[用户输入整形](#用户输入整形-inputshaping) |
 | `syntheticTurns` | list | `[]` | 工具模式的示范轮次，见 [transports.md](transports.md#示范轮次-syntheticturns) |
 | `tools` | map | 见 transports | 模型可见的工具名、字段名与文案，见 [transports.md](transports.md#tools-文案) |
 | `theme` | map | `{}` | 面板与消息 UI 的配色 |
@@ -65,6 +66,28 @@ workflowRegion: task
 carrier:
   order: [top, { main: false }, worldInfoBefore, charDescription, scenario, worldInfoAfter, dialogueExamples, history, chatHistory, task, tail]
 ```
+
+## 拆分清单 `manifest/`
+
+`manifest/` 下的每个 `*.yaml` / `*.yml`（可以放在子目录里）都是一份**部分清单**：顶层键与 `preset.yaml` 相同，构建时合并进 `preset.yaml`。可以把一整段原样剪切过去，写法不变。
+
+```
+preset.yaml                  元数据、角色、区域、Carrier……
+manifest/structures.yaml     structures:
+manifest/params.yaml         groups: / params: / vars: / insertionPoints:
+manifest/configurations.yaml configurationDefaults: / configurations:
+```
+
+规则：
+
+- **元数据只能写在 `preset.yaml`**：`formatVersion`、`id`、`name`、`version`、`author`、`description`、`minAdvancedPreset`。写在片段中时报错（并被忽略）。其他字段写在哪个文件都可以。
+- **映射逐层合并**：同一个映射可以分在多个文件里，例如 `structures.synopsis` 与 `structures.options` 各占一个文件，`groups` 的不同分组也可以分开写。
+- **标量与列表只能定义一次**：同一个键路径在两个文件中都写了值（字符串、数字、列表等），报错并指出两处位置。列表（`params`、`regions`、`configurations`……）的顺序有意义，所以整个列表必须写在同一个文件里，不会拼接。
+- **合并顺序**：先 `preset.yaml`，再按路径排序的片段。映射中键的顺序随之确定，例如 `groups` 未写 `order` 时按出现顺序排。
+- 片段必须是映射；空文件忽略。以 `.` 开头的文件和目录被忽略。
+- YAML 锚点（`&a` / `*a`）只在同一个文件内有效，引用同一锚点的内容要放在一起。
+
+诊断会指向定义该字段的文件与行，例如 `error manifest/structures.yaml:30 structures.synopsis.history: …`。产物与不拆分时完全相同，拆分不影响已安装的预设。`ap check` 的统计中会显示片段数（`5 manifest fragments`）。
 
 ## 角色 `actors`
 
@@ -154,7 +177,7 @@ workflowRegion: task
 
 ## 参数 `params`
 
-参数是用户在面板里填写或选择的值，提示词用 `{{ap::param::<id>}}` 读取，条件用 `params.<id>` 判断。
+参数是用户在面板（写作页）里填写或选择的值，提示词用 `{{ap::param::<id>}}` 读取，条件用 `params.<id>` 判断。
 
 ```yaml
 params:
@@ -178,28 +201,47 @@ params:
     type: text
     label: Point of view
     fallback: language
+  - id: bannedWords
+    type: list
+    label: Banned words
+    description: Words the narrator must not use.
+    default: [闪过]
 ```
 
 | 字段 | 默认 | 说明 |
 | --- | --- | --- |
 | `id` | — | 必填 |
-| `type` | `text` | `text` \| `number` \| `select` |
+| `type` | `text` | `text` \| `number` \| `select` \| `list`（字符串列表，见下） |
 | `label` | `id` | 面板标签 |
 | `description` | — | 面板说明 |
 | `group` | — | 所属分组（`groups` 的键），未声明给出警告 |
-| `default` | `''`（number 为 `0`） | 默认值 |
+| `default` | `''`（number 为 `0`，list 为 `[]`） | 默认值，须与类型相符（list 为字符串数组） |
 | `unset` | — | 未设置时 `{{ap::param}}` 输出的文本 |
+| `separator` | `", "` | 仅 `list`：`{{ap::param}}` 中项与项之间的文本 |
 | `fallback` | — | 未设置时先尝试读取另一个参数（最多 4 层） |
 | `unit` / `min` / `max` | — | 数字参数的单位与范围（面板用） |
-| `options` | — | `select` 必填；`text` 也可提供，作为输入建议。每项是标量，或 `{ value, label?, text? }` |
+| `options` | — | `select` 必填；`text` 也可提供，作为输入建议。每项是标量，或 `{ value, label?, text? }`；`list` 不使用 |
 
 **取值规则**（`{{ap::param::<id>}}`）：
 
-1. 值取当前配置的 `params.<id>`，没有则取 `default`。
-2. 值为 `''` 或 `0` 视为“未设置”：若有 `fallback` 且那个参数有值，用它；否则输出 `unset`（没有则为空）。
-3. 已设置时，若值匹配某个选项的 `value`，输出该选项的 `text`（没有 `text` 则输出值本身）。
+1. 值取当前配置的 `params.<id>`，没有则取 `default`；形状与类型不符的值（如列表参数存了字符串）按 `default` 处理。
+2. 值为 `''`、`0` 或空列表视为“未设置”：若有 `fallback` 且那个参数有值，用它；否则输出 `unset`（没有则为空）。
+3. 已设置时，列表参数输出用 `separator` 连接的各项；其他参数若值匹配某个选项的 `value`，输出该选项的 `text`（没有 `text` 则输出值本身）。
 
-条件里的 `params.<id>` 是原始值（不经过 `unset`/`fallback`/`text`）。诊断：`fallback` 指向不存在的参数报错；`select` 没有 `options` 报错。
+条件里的 `params.<id>` 是原始值（不经过 `unset`/`fallback`/`text`）。诊断：`fallback` 指向不存在的参数报错；`select` 没有 `options` 报错；`default` 与类型不符报错。
+
+### 列表参数 `type: list`
+
+列表参数是一组字符串，适合禁词表、额外关键词这类“用户自己列出若干项”的设置。面板中以标签输入编辑：输入一项后按 Enter 添加（粘贴多行时每行一项），点 × 删除。
+
+- 值总是去掉首尾空白、去掉空项与重复项（保留第一次出现的位置）后的字符串数组；`default`、`configurationDefaults` 与推荐配置中的值同样按此规范化。
+- `{{ap::param::<id>}}`：各项用 `separator`（默认 `", "`）连接；空列表视为未设置。
+- 条件：空列表为假，因此 `params.bannedWords` 可以直接判断“是否填写了”；`"闪过" in params.bannedWords` 判断是否含某项（[expressions.md](expressions.md)）。
+- [模板](templates.md)中 `params.<id>` 是普通数组，可以循环、合并、去重——列表需要逐项排版或与内置项合并时用模板。
+- 配置层合并时列表整体替换（不拼接）；用户配置只在与基础配置不同时保存整个列表。
+- 用户模组的变量规则对列表参数提供“有内容 / 为空”（`on` / `off`）。
+- 诊断：`options` / `unit` / `min` / `max` 对列表参数无效（警告，忽略）；非列表参数写了 `separator` 警告；列表参数与标量参数互为 `fallback` 警告；声明了列表参数而 `minAdvancedPreset` 低于 1.9.0 时警告（旧版本无法编辑列表）。
+- 预设更新时，类型变化导致形状不符的已存值会被丢弃（回到新默认值）。
 
 ## 分组 `groups`
 
@@ -270,16 +312,50 @@ meta:
 tokenSaving:
   keepFullTurns: 6
   truncateUserAfter: 2000
+  userInput: truncate
   synopsisTemplate: "[{{time}} · {{location}}] {{event}}: {{summary}}"
 ```
 
 | 字段 | 默认 | 说明 |
 | --- | --- | --- |
 | `keepFullTurns` | `6` | 保留最近几轮完整内容 |
-| `truncateUserAfter` | `2000` | 更早的用户消息超过这个字符数就截断并加 `…`（0 表示不截断） |
+| `truncateUserAfter` | `2000` | `userInput: truncate` 时，更早的用户消息超过这个字符数就截断并加 `…`（0 表示不截断） |
+| `userInput` | `truncate` | 更早的用户消息：`keep`（原样）/ `truncate`（截断）/ `remove`（不发送） |
 | `synopsisTemplate` | 如上 | 更早的助手消息替换成事件摘要时的格式 |
 
-是否启用由配置 `tokenSaving.enabled` 决定（默认关闭）；`keepFullTurns` / `truncateUserAfter` 也可在配置中覆盖。规则见 [meta-and-tasks.md](meta-and-tasks.md#省-token)。
+是否启用由配置 `tokenSaving.enabled` 决定（默认关闭）；`keepFullTurns` / `truncateUserAfter` / `userInput` 是配置的默认值，用户可在面板中修改。最近几条消息附带事件摘要由 `synopsis` 结构的 `history` / `historyTemplate` 声明（见 [structures.md](structures.md#synopsis)）。规则见 [meta-and-tasks.md](meta-and-tasks.md#省-token)。
+
+## 用户输入整形 `inputShaping`
+
+预设级的提示词结构功能：聊天历史以用户消息结尾时（即本次输入），把这条消息**包裹**起来，或从历史中**提取**出来、由宏放到别的位置。用户没有开关；不声明时不整形。
+
+```yaml
+# 包裹：历史中的本次输入换成模板，后置指令可以说“<input> 中的内容”
+inputShaping:
+  mode: wrap
+  template: "<input>\n{{content}}\n</input>"
+```
+
+```yaml
+# 提取：本次输入离开聊天历史，由 {{ap::input::text}} 放到某个区域
+inputShaping:
+  mode: extract
+```
+
+| 字段 | 默认 | 说明 |
+| --- | --- | --- |
+| `mode` | — | **必填**。`wrap`（原位包裹）或 `extract`（从历史中取出） |
+| `template` | `<input>\n{{content}}\n</input>` | 仅 `wrap`：替换输入的文字。`{{content}}` 为输入原文；模板中的 `{{ap::…}}` 与 ST 宏会展开，输入原文不再展开 |
+
+- 只有**本次生成的聊天历史以用户消息结尾**时整形：普通发送、重新生成、滑动。`continue`、`/trigger` 或其他扩展在助手消息之后发起的生成不整形；
+- 世界书深度 0 注入、作者注释等 ST 插到这条消息之后的非用户消息**不影响**整形；
+- 整形生效时条件变量 `input.shaped` 为真（[expressions.md](expressions.md)），`{{ap::input::text}}` 为输入原文（[macros.md](macros.md)）；未生效时前者为假、后者为空。`extract` 的预设应当在 `input.shaped` 为真时用 `{{ap::input::text}}` 放回输入，否则输入会丢失；
+- 整形发生在缓存优化之后，不参与粘性渲染（输入位于历史末尾，下一轮它回到历史中按普通消息渲染，只影响这一条消息的缓存）；
+- 需要 Advanced Preset 1.9.0 以上（更早的版本忽略这个字段，`ap check` 在 `minAdvancedPreset` 低于 1.9.0 时警告）。
+
+`ap check` 警告：未知字段；`extract` 写了 `template`（不使用）；`wrap` 的模板没有 `{{content}}`（输入会丢失）；`extract` 却没有提示词使用 `{{ap::input::text}}`；`minAdvancedPreset` 低于 1.9.0。
+
+完整流程见 [meta-and-tasks.md](meta-and-tasks.md#用户输入整形)。
 
 ## 主题 `theme`
 

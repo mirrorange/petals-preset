@@ -1,4 +1,8 @@
-# Meta commands, token saving, regex flags, and the order of modules and workflows.
+# Meta commands, input shaping, token saving, regex flags, and the order of modules and workflows.
+
+# The latest user input leaves the chat history and is placed after the memories (region `input`).
+inputShaping:
+  mode: extract
 
 meta:
   trigger: "@{{ap::name::narrator}}"

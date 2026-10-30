@@ -71,17 +71,18 @@
   "properties": {
     "step1_narrator_think": { "type": "string", "description": "<阶段说明>" },
     "step2_narrator_content": { "type": "string", "description": "…" },
-    "options": { "…结构字段…" },
+    "z_options": { "…结构字段…" },
     "step3_editor_review": { "type": "string" }
   },
-  "required": ["step1_narrator_think", "step2_narrator_content", "options", "step3_editor_review"],
+  "required": ["step1_narrator_think", "step2_narrator_content", "z_options", "step3_editor_review"],
   "additionalProperties": false
 }
 ```
 
 - 属性按生效阶段的顺序排列，字段名来自 `stage.field.name` 或模板 `tools.turn.field`（`{{n}}` 是阶段在**本轮生效阶段**中的序号，见 [workflows.md](workflows.md)）；
 - 字段说明来自 `stage.field.description` 或模板 `tools.turn.fieldDescription`（默认 `{{label}}`）；
-- 结构字段插在锚点阶段之后（没有阶段时放在最后），schema 见 [structures.md](structures.md#指令式json-schema)；
+- 结构字段插在锚点阶段之后（没有阶段时放在最后），字段名带 `tools.structurePrefix`（默认 `z_`），schema 见 [structures.md](structures.md#指令式json-schema)；
+- 字段名应同时**按字母顺序**排列：部分 API（如 Gemini）忽略 schema 顺序、按字母顺序生成字段。默认的 `step{{n}}_…` 与 `z_` 前缀满足这一点（阶段不超过 9 个时）；`ap check` 会对不满足的命名告警，见 [structures.md](structures.md#字段前缀)；
 - `required` 包含所有非可选阶段与必填结构；
 - `patch` 阶段的值是 `{ old_string, new_string }` 数组，说明来自 `tools.patch`。
 
@@ -94,7 +95,7 @@
 Gemini（makersuite / vertexai）只接受 JSON Schema 的 OpenAPI 子集。AP 在发送前自动转换 `json_schema` 与工具参数：
 
 - `type: ["string", "null"]` → `type: "string", nullable: true`；`oneOf` → `anyOf`；`const` → `enum`；
-- 去掉 `additionalProperties` 等不支持的关键字，为对象加 `propertyOrdering`（保持字段顺序）；
+- 去掉 `additionalProperties` 等不支持的关键字，为对象加 `propertyOrdering`（保持字段顺序；部分接口或中转不传递它，此时按字母顺序生成，由字段命名保证顺序）；
 - 自由键对象（如 `kv` 自定义结构）改为字符串字段，说明后追加 `tools.jsonStringHint`，模型写 JSON 字符串，AP 再解析。
 
 `connection.streamToolArguments`：`auto`（默认，仅 Vertex AI 请求流式工具参数）、`on`（所有 Gemini 形态的连接都请求）、`off`。
@@ -162,6 +163,7 @@ tools:
     done: "Recorded. The workflow is complete."
     unknown: "Unknown tool {{name}}."
     nudge: "Continue the workflow: call `{{next}}` now."
+  structurePrefix: z_                          # 结构字段名前缀（构建时应用，"" 为不加）
   jsonStringHint: "(JSON object encoded as a string)"
   callerSchemaHint: "After your thinking, output the result as one JSON code block (```json … ```) that matches this JSON Schema:\n\n```json\n{{schema}}\n```"
 ```
@@ -169,6 +171,7 @@ tools:
 - 模板占位符：`{{n}}`（生效阶段序号）、`{{stage}}`（阶段 id）、`{{actor}}`（角色 id）、`{{label}}`（阶段标签）；工具文本中还有 `{{next}}` `{{first}}` `{{submit}}` `{{name}}`；`callerSchemaHint` 中有 `{{schema}}`；
 - 说明文字支持 `{{ap::…}}` 宏与 ST 宏；**名字不做宏展开**；
 - 单个阶段可以在工作流里覆盖自己的字段名 / 工具名 / 说明（[workflows.md](workflows.md)）；
+- `structurePrefix` 在构建时加到每个结构的 `field` 上，结构说明中的 `{{field}}` 是加前缀后的名字（[structures.md](structures.md#字段前缀)）；
 - 名字规则（报错）：工具名匹配 `^[A-Za-z0-9_-]{1,64}$`，字段名与参数名匹配 `^[A-Za-z_][A-Za-z0-9_]{0,63}$`；信封的两个字段不能同名；提交工具不能与示范轮次工具同名；
 - 旧写法 `stagePrefix`、`stageResult`、`nudge`、`submit: <文字>` 仍能编译但给出警告；未知键给出警告。
 

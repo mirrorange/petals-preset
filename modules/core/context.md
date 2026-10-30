@@ -1,7 +1,7 @@
 ---
 id: context
 name: Context
-description: Story recap, recent meta conversations and memories supplied by Advanced Preset.
+description: Story recap, recent meta conversations, memories and the latest input supplied by Advanced Preset.
 toggle: always
 ---
 <!-- @entry id=recap region=history order=100 when="recap.present" -->
@@ -25,3 +25,8 @@ Recent meta conversations between {{ap::name::user}} and {{ap::name::narrator}},
 <global_memory>
 {{ap::memory::global}}
 </global_memory>
+
+<!-- @entry id=input region=input order=100 when="input.shaped" -->
+<input>
+{{ap::input::text}}
+</input>
