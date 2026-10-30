@@ -19,6 +19,13 @@ groups:
     tab: writing
   length: { label: Length, order: 70, tab: writing }
   narration: { label: Narration, order: 80, tab: writing }
+  banned:
+    label: Custom banned list
+    description: >-
+      Your own banned words, phrases and expressions. With the Banned Expressions module on they are added to its
+      built-in list; otherwise they are sent on their own.
+    order: 90
+    tab: writing
 
 params:
   - id: language
@@ -79,6 +86,21 @@ params:
       - { value: first, label: First person }
       - { value: second, label: Second person }
       - { value: third, label: Third person }
+  - id: bannedWords
+    type: list
+    label: Banned words
+    description: Single words Freesia must not use, e.g. 闪过 or 一丝.
+    group: banned
+  - id: bannedPhrases
+    type: list
+    label: Banned phrases
+    description: Stock phrases and images to avoid, e.g. 指节发白 or 激起涟漪.
+    group: banned
+  - id: bannedExpressions
+    type: list
+    label: Banned expressions
+    description: Sentence patterns and ways of expression to avoid, e.g. 不是……而是…… or 嘴角勾起一抹弧度. Each item is listed on its own line.
+    group: banned
 
 # Questions the narrator asks in the `questions` stage. Active modules add theirs (id → question);
 # `questions-core` reads them with {{ap::var::…::values}}. Ids are stable for user modules.
@@ -91,6 +113,12 @@ vars:
     type: dict
     label: Optional questions
     description: The narrator picks the 2–3 most relevant.
+  # Banned list (`core/banned-list`): the built-in items of `banned-expressions` plus any module's; the
+  # Writing-tab params of the same names are added to the first three.
+  bannedWords: { type: list, label: Banned words, description: Words not to use. }
+  bannedPhrases: { type: list, label: Banned phrases, description: Stock phrases and images not to use. }
+  bannedExpressions: { type: list, label: Banned expressions, description: Sentence patterns and ways of expression not to use. }
+  bannedRules: { type: list, label: Banned list rules, description: Other rules of the list, one sentence each. }
 
 # Where users may add their own modules from the panel. Ids are kept stable across versions;
 # a renamed point must be mapped in `migrations[].rename.insertionPoints`.

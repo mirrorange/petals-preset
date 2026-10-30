@@ -19,6 +19,9 @@ groups:
     description: 未设置的语言沿用故事已有的语言；Workflow 语言未设置时同回复语言。
   length: { label: 长度 }
   narration: { label: 叙述 }
+  banned:
+    label: 自定义禁词表
+    description: 你自己的禁用词语、短语与表达。开启「禁词表」模组时追加到内置列表，关闭时单独发送。
 
 modules:
   role-freesia:
@@ -132,6 +135,15 @@ params:
     label: 叙事人称
     description: 叙述部分使用的人称，不影响对白。未设置时沿用故事已有的人称。
     options: { "": 未设置, first: 第一人称, second: 第二人称, third: 第三人称 }
+  bannedWords:
+    label: 禁用词语
+    description: Freesia 不应使用的单个词语，如「闪过」「一丝」。
+  bannedPhrases:
+    label: 禁用短语
+    description: 应避免的套话与意象，如「指节发白」「激起涟漪」。
+  bannedExpressions:
+    label: 禁用表达
+    description: 应避免的句式与表达方式，如「不是……而是……」「嘴角勾起一抹弧度」。每项单独列为一行。
 
 configurations:
   gemini: { name: Gemini }
@@ -146,6 +158,10 @@ configurations:
 vars:
   mandatoryQuestions: { label: 必答问题, description: 每次提问阶段都会提出。 }
   optionalQuestions: { label: 可选问题, description: 由叙述者挑选最相关的 2–3 个。 }
+  bannedWords: { label: 禁用词语, description: 不应使用的词语。 }
+  bannedPhrases: { label: 禁用短语, description: 不应使用的套话与意象。 }
+  bannedExpressions: { label: 禁用表达, description: 不应使用的句式与表达方式。 }
+  bannedRules: { label: 禁词表规则, description: 禁词表中的其他规则，每项一句。 }
 insertionPoints:
   after-identity: { label: 身份设定之后, description: 紧接在 Freesia 的身份与核心指令之后。 }
   after-role: { label: 角色之后 }
