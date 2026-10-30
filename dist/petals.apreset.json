@@ -5,8 +5,8 @@
   "version": "7.8.1",
   "author": "mirrorange",
   "description": "Write stories with Freesia! Freesia writes, Petals gives suggestions — a dual-character driven workflow.",
-  "minAdvancedPreset": "1.7.0",
-  "hash": "2d5f94ff95e181c8",
+  "minAdvancedPreset": "1.9.0",
+  "hash": "627c046704372b9c",
   "actors": {
     "narrator": {
       "name": "Freesia",
@@ -294,6 +294,30 @@
           "label": "Third person"
         }
       ]
+    },
+    {
+      "id": "bannedWords",
+      "type": "list",
+      "label": "Banned words",
+      "default": [],
+      "description": "Single words Freesia must not use, e.g. 闪过 or 一丝.",
+      "group": "banned"
+    },
+    {
+      "id": "bannedPhrases",
+      "type": "list",
+      "label": "Banned phrases",
+      "default": [],
+      "description": "Stock phrases and images to avoid, e.g. 指节发白 or 激起涟漪.",
+      "group": "banned"
+    },
+    {
+      "id": "bannedExpressions",
+      "type": "list",
+      "label": "Banned expressions",
+      "default": [],
+      "description": "Sentence patterns and ways of expression to avoid, e.g. 不是……而是…… or 嘴角勾起一抹弧度. Each item is listed on its own line.",
+      "group": "banned"
     }
   ],
   "groups": {
@@ -342,6 +366,12 @@
     "narration": {
       "label": "Narration",
       "order": 80,
+      "tab": "writing"
+    },
+    "banned": {
+      "label": "Custom banned list",
+      "order": 90,
+      "description": "Your own banned words, phrases and expressions. With the Banned Expressions module on they are added to its built-in list; otherwise they are sent on their own.",
       "tab": "writing"
     }
   },
@@ -601,7 +631,38 @@
       "toggle": "user",
       "default": false,
       "structures": [],
-      "vars": [],
+      "vars": [
+        {
+          "var": "bannedWords",
+          "type": "list",
+          "items": [
+            "闪过",
+            "一丝",
+            "狡黠",
+            "石子"
+          ]
+        },
+        {
+          "var": "bannedPhrases",
+          "type": "list",
+          "items": [
+            "投入水面",
+            "激起涟漪",
+            "指节发白",
+            "闪烁着~的光芒",
+            "像手术刀"
+          ]
+        },
+        {
+          "var": "bannedRules",
+          "type": "list",
+          "items": [
+            "Avoid using 'not [A], but [B]' (不是...而是...) constructions. Reduce the use of adversative transitions",
+            "Avoid using intensifying adverbs like: 极其, 非常",
+            "Avoid using em dashes (—)"
+          ]
+        }
+      ],
       "source": "modules/guidelines/banned-expressions.md",
       "description": "Avoid cliché expressions, overused words and constructions, intensifying adverbs and em dashes.",
       "group": "guidelines"
@@ -1912,15 +1973,22 @@
       ]
     },
     {
-      "id": "banned-expressions/main",
-      "module": "banned-expressions",
+      "id": "core/banned-list",
+      "module": "core",
       "region": "guidelines",
       "order": 650,
       "content": [
         {
           "pieces": [
             {
-              "text": "## Avoid Using Cliché Expressions\n\n- Use novel and varied expressions, avoiding cliché expressions.\n- Refrain from using the words: 闪过, 一丝, 狡黠, 石子\n- Avoid using expressions like: 投入水面, 激起涟漪, 指节发白, 闪烁着~的光芒, 像手术刀\n- Avoid using 'not [A], but [B]' (不是...而是...) constructions. Reduce the use of adversative transitions\n- Avoid using intensifying adverbs like: 极其, 非常\n- Avoid using em dashes (—)\n"
+              "text": "<%_\nconst merge = (...lists) => [...new Set(lists.flat().map((x) => String(x).trim()).filter(Boolean))];\nconst words = merge(vars.bannedWords ?? [], params.bannedWords ?? []);\nconst phrases = merge(vars.bannedPhrases ?? [], params.bannedPhrases ?? []);\nconst expressions = merge(vars.bannedExpressions ?? [], params.bannedExpressions ?? []);\nconst rules = merge(vars.bannedRules ?? []);\nconst builtIn = modules['banned-expressions'];\n_%>\n<%_ if (builtIn || words.length || phrases.length || expressions.length || rules.length) { _%>\n## Avoid Using Cliché Expressions\n\n<%_ if (builtIn) { _%>\n- Use novel and varied expressions, avoiding cliché expressions.\n<%_ } _%>\n<%_ if (words.length) { _%>\n- Refrain from using the words: <%- words.join(', ') %>\n<%_ } _%>\n<%_ if (phrases.length) { _%>\n- Avoid using expressions like: <%- phrases.join(', ') %>\n<%_ } _%>\n<%_ if (expressions.length) { _%>\n- Avoid these sentence patterns and ways of expression:\n<%_ for (const x of expressions) { _%>\n  - <%- x %>\n<%_ } _%>\n<%_ } _%>\n<%_ for (const x of rules) { _%>\n- <%- x %>\n<%_ } _%>\n<%_ } _%>\n",
+              "template": {
+                "file": "modules/core/core.md",
+                "line": 110
+              }
+            },
+            {
+              "text": "\n"
             }
           ]
         }
@@ -2796,6 +2864,30 @@
       "type": "dict",
       "label": "Optional questions",
       "description": "The narrator picks the 2–3 most relevant."
+    },
+    {
+      "id": "bannedWords",
+      "type": "list",
+      "label": "Banned words",
+      "description": "Words not to use."
+    },
+    {
+      "id": "bannedPhrases",
+      "type": "list",
+      "label": "Banned phrases",
+      "description": "Stock phrases and images not to use."
+    },
+    {
+      "id": "bannedExpressions",
+      "type": "list",
+      "label": "Banned expressions",
+      "description": "Sentence patterns and ways of expression not to use."
+    },
+    {
+      "id": "bannedRules",
+      "type": "list",
+      "label": "Banned list rules",
+      "description": "Other rules of the list"
     }
   ],
   "workflows": [
@@ -4215,7 +4307,10 @@
       "draftLanguage": "",
       "length": 0,
       "lengthMode": "",
-      "narrativePerson": ""
+      "narrativePerson": "",
+      "bannedWords": [],
+      "bannedPhrases": [],
+      "bannedExpressions": []
     },
     "tokenSaving": {
       "enabled": false,
@@ -4409,6 +4504,10 @@
         },
         "narration": {
           "label": "叙述"
+        },
+        "banned": {
+          "label": "自定义禁词表",
+          "description": "你自己的禁用词语、短语与表达。开启「禁词表」模组时追加到内置列表，关闭时单独发送。"
         }
       },
       "modules": {
@@ -4595,6 +4694,18 @@
             "second": "第二人称",
             "third": "第三人称"
           }
+        },
+        "bannedWords": {
+          "label": "禁用词语",
+          "description": "Freesia 不应使用的单个词语，如「闪过」「一丝」。"
+        },
+        "bannedPhrases": {
+          "label": "禁用短语",
+          "description": "应避免的套话与意象，如「指节发白」「激起涟漪」。"
+        },
+        "bannedExpressions": {
+          "label": "禁用表达",
+          "description": "应避免的句式与表达方式，如「不是……而是……」「嘴角勾起一抹弧度」。每项单独列为一行。"
         }
       },
       "configurations": {
@@ -4632,6 +4743,22 @@
         "optionalQuestions": {
           "label": "可选问题",
           "description": "由叙述者挑选最相关的 2–3 个。"
+        },
+        "bannedWords": {
+          "label": "禁用词语",
+          "description": "不应使用的词语。"
+        },
+        "bannedPhrases": {
+          "label": "禁用短语",
+          "description": "不应使用的套话与意象。"
+        },
+        "bannedExpressions": {
+          "label": "禁用表达",
+          "description": "不应使用的句式与表达方式。"
+        },
+        "bannedRules": {
+          "label": "禁词表规则",
+          "description": "禁词表中的其他规则，每项一句。"
         }
       },
       "insertionPoints": {

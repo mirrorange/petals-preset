@@ -101,6 +101,44 @@ Narrate the story content in the **second person**: address the player character
 Narrate the story content in the **third person**: refer to every character—including the player character—by name or by third-person pronouns.
 <!-- @end -->
 
+<!-- @entry id=banned-list region=guidelines order=650 -->
+<!--#
+Banned list: the build variables (built-in items of `banned-expressions`, items from other modules)
+merged with the user's lists from the Writing tab. Nothing is sent when every list is empty.
+-->
+<!-- @template -->
+<%_
+const merge = (...lists) => [...new Set(lists.flat().map((x) => String(x).trim()).filter(Boolean))];
+const words = merge(vars.bannedWords ?? [], params.bannedWords ?? []);
+const phrases = merge(vars.bannedPhrases ?? [], params.bannedPhrases ?? []);
+const expressions = merge(vars.bannedExpressions ?? [], params.bannedExpressions ?? []);
+const rules = merge(vars.bannedRules ?? []);
+const builtIn = modules['banned-expressions'];
+_%>
+<%_ if (builtIn || words.length || phrases.length || expressions.length || rules.length) { _%>
+## Avoid Using Cliché Expressions
+
+<%_ if (builtIn) { _%>
+- Use novel and varied expressions, avoiding cliché expressions.
+<%_ } _%>
+<%_ if (words.length) { _%>
+- Refrain from using the words: <%- words.join(', ') %>
+<%_ } _%>
+<%_ if (phrases.length) { _%>
+- Avoid using expressions like: <%- phrases.join(', ') %>
+<%_ } _%>
+<%_ if (expressions.length) { _%>
+- Avoid these sentence patterns and ways of expression:
+<%_ for (const x of expressions) { _%>
+  - <%- x %>
+<%_ } _%>
+<%_ } _%>
+<%_ for (const x of rules) { _%>
+- <%- x %>
+<%_ } _%>
+<%_ } _%>
+<!-- @end -->
+
 <!-- @entry id=workflow-language region=bottom order=800 when="params.workflowLanguage != \"\" && transport in [\"prefill\", \"plaintext\"]" -->
 {{ap::prefix::user}}Conduct the workflow in {{ap::param::workflowLanguage}}—the questions, {{ap::name::editor}}' input, reviews, notes and `<thinking>`. The story content itself is still written in {{ap::param::language}}.
 
