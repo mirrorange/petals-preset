@@ -55,7 +55,7 @@ npm run dev        # 监视源码并在 http://localhost:4747 提供预设
 | `manifest/*.yaml` | 清单片段，构建时合并：`params`（分组、参数、构建变量、插入点）、`structures`、`tools`（工具文案、示范轮次）、`configurations`（配置默认值、推荐配置）、`behavior`（元指令、省 token、正则、排序） |
 | `modules/**/*.md` | 模组（`<!-- @entry -->` 切分条目） |
 | `workflows/*.md` | 工作流（`<!-- @section -->` 按阶段与风格） |
-| `module-templates/*.md` | 模组模板：新建「我的模组」时可选的示例（`<id>.zh-cn.md` 为中文版） |
+| `user-module-templates/*.md` | 用户模组模板：新建「我的模组」时可选的示例（`<id>.zh-cn.md` 为中文版） |
 | `locales/zh-cn.yaml` | 面板文案（含预设名称与描述） |
 | `dist/petals.apreset.json` | 构建产物（提交进仓库） |
 
