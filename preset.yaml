@@ -36,6 +36,7 @@ regions:
   - { id: settings, native: true }
   - { id: history, role: system, anchor: historyStart }
   - { id: memory, role: system, merge: join, anchor: historyEnd }
+  - { id: input, role: user }
   - { id: questions, role: system, merge: join }
   - { id: task, role: system }
   - { id: bottom, role: system, anchor: tail }
@@ -67,6 +68,7 @@ carrier:
     - chatHistory
     - jailbreak: false
     - memory
+    - input
     - questions
     - task
     - bottom
