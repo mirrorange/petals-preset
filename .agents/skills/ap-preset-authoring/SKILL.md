@@ -1,6 +1,6 @@
 ---
 name: ap-preset-authoring
-description: Write and edit Advanced Preset (AP) source files for SillyTavern — preset.yaml, modules/*.md, workflows/*.md, locales/*.yaml — following the AP format reference bundled with this skill. Use for implementing a DESIGN.md, adding or changing modules, params, workflows, structures, configurations, insertion points or translations, and fixing `ap check` errors. 编写或修改 AP 预设源码（模组、工作流、参数、结构、推荐配置、翻译）、修复构建报错时使用。
+description: Write and edit Advanced Preset (AP) source files for SillyTavern — preset.yaml, manifest/*.yaml, modules/*.md, workflows/*.md, user-modules/*.md, user-module-templates/*.md, locales/*.yaml — following the AP format reference bundled with this skill. Use for implementing a DESIGN.md, adding or changing modules, params, workflows, structures, configurations, insertion points, bundled user modules, user module templates or translations, and fixing `ap check` errors. 编写或修改 AP 预设源码（模组、工作流、参数、结构、推荐配置、随预设的用户模组与模板、翻译）、修复构建报错时使用。
 ---
 
 # 编写 Advanced Preset 预设
@@ -10,7 +10,7 @@ description: Write and edit Advanced Preset (AP) source files for SillyTavern �
 ## 开始之前
 
 1. 读 `DESIGN.md`（如果有）。没有设计稿、而改动涉及新增角色 / 工作流 / 大量模组时，先建议用户用 `ap-preset-design` 技能。
-2. 读 `preset.yaml`，`ls -R modules workflows locales`，了解现有 id、区域、分组。
+2. 读 `preset.yaml` 与 `manifest/`（如果有），`ls -R manifest modules workflows user-modules user-module-templates locales`，了解现有 id、区域、分组。
 3. 运行 `npx ap check`，记下已有的错误和警告，不要把它们算到你的改动上。
 4. 如果用户正在用 `npm run dev` 实时预览，保持它运行；每次保存都会自动重新构建。
 
@@ -27,18 +27,19 @@ description: Write and edit Advanced Preset (AP) source files for SillyTavern �
 
 | 要做的事 | 参考 |
 | --- | --- |
-| 改 `preset.yaml` 任一顶层字段（角色、写法、区域、参数、分组、正则、元指令、主题……） | [manifest.md](references/manifest.md) |
+| 改清单（`preset.yaml` 或 `manifest/` 片段）任一顶层字段（角色、写法、区域、参数、分组、正则、元指令、主题……） | [manifest.md](references/manifest.md) |
 | 新建 / 修改模组，开关与单选，排序 | [modules.md](references/modules.md) |
 | 新建 / 修改工作流、阶段、字段名与工具名 | [workflows.md](references/workflows.md) |
-| `@entry` `@section` `@as` `@style` `@if` | [directives.md](references/directives.md) |
+| `@entry` `@section` `@as` `@style` `@if`、注释 `<!--# … -->` | [directives.md](references/directives.md) |
 | `when` / `@if` 条件与可用变量 | [expressions.md](references/expressions.md) |
 | `{{ap::…}}` 宏 | [macros.md](references/macros.md) |
+| `@template` EJS 模板（循环、计算等条件与宏做不到的逻辑） | [templates.md](references/templates.md) |
 | 多个模组共同填写的清单 | [build-variables.md](references/build-variables.md) |
 | 回复、记忆、总结、代写、事件摘要、选项、自定义结构 | [structures.md](references/structures.md) |
 | 传输方式、schema / 工具、`tools` 文案、示范轮次 | [transports.md](references/transports.md) |
-| 元指令、任务工作流、生成来源、省 token | [meta-and-tasks.md](references/meta-and-tasks.md) |
+| 元指令、任务工作流、生成来源、省 token、用户输入整形 | [meta-and-tasks.md](references/meta-and-tasks.md) |
 | `configurationDefaults`、推荐配置、Carrier、迁移 | [configuration.md](references/configuration.md) |
-| 插入点、用户模组 | [user-modules.md](references/user-modules.md) |
+| 插入点、用户模组、`user-modules/` 与 `user-module-templates/` | [user-modules.md](references/user-modules.md) |
 | 面板翻译 | [locales.md](references/locales.md) |
 | 一次生成的完整组装流程（排查“为什么出现 / 没出现”） | [assembly.md](references/assembly.md) |
 | `ap` 命令 | [cli.md](references/cli.md) |
@@ -48,7 +49,7 @@ description: Write and edit Advanced Preset (AP) source files for SillyTavern �
 
 ## 速查
 
-**源码**：`preset.yaml`（清单）、`modules/**/*.md`（一个文件一个模组，子目录随意）、`workflows/*.md`（只认一层）、`locales/<lang>.yaml`。以 `.` 开头的文件、`node_modules/`、`dist/` 被忽略；其他文件（README、DESIGN.md）不参与编译。
+**源码**：`preset.yaml`（清单）、`manifest/**/*.yaml`（可选的清单片段：顶层键同 `preset.yaml`，映射逐层合并，标量 / 列表只能定义一次，元数据只能在 `preset.yaml`）、`modules/**/*.md`（一个文件一个模组，子目录随意）、`workflows/*.md`（只认一层）、`locales/<lang>.yaml`。以 `.` 开头的文件、`node_modules/`、`dist/` 被忽略；其他文件（README、DESIGN.md）不参与编译。
 
 **模组**：
 
@@ -101,9 +102,9 @@ Outline the next scene.
 Write the story content.
 ```
 
-**指令**：`@entry`（模组）、`@section preamble|intro|outro|stage:<id> [style=…]`（工作流）、`@as system|user|assistant`（新消息）、`@style dialogue|imperative … @end`、`@if <expr> … @else … @end`。其他 HTML 注释原样留给模型。
+**指令**：`@entry`（模组）、`@section preamble|intro|outro|stage:<id> [style=…]`（工作流）、`@as system|user|assistant`（新消息）、`@style dialogue|imperative … @end`、`@if <expr> … @else … @end`、`@template … @end`（EJS 模板，可执行代码，安装需用户信任，需 `minAdvancedPreset: 1.9.0`；输出用 `<%-`，`<%=` 会 HTML 转义）。`<!--# … -->` 是作者注释（可跨行，内部指令不执行，不发送）；其他 HTML 注释原样留给模型。
 
-**常用条件变量**：`transport`、`style`、`workflow`、`gen.origin`（story/task）、`gen.type`、`meta.present` / `meta.pure` / `meta.mixed` / `meta.task`、`modules.<id>`、`params.<id>`、`flags.<id>`、`stages.<id>`、`memory.hasChat`、`recap.present`、`features.tokenSaving`、`chat.group`。
+**常用条件变量**：`transport`、`style`、`workflow`、`gen.origin`（story/task）、`gen.type`、`meta.present` / `meta.pure` / `meta.mixed` / `meta.task`、`modules.<id>`、`params.<id>`、`flags.<id>`、`stages.<id>`、`memory.hasChat`、`recap.present`、`features.tokenSaving`、`chat.group`、`input.shaped`（预设声明了 `inputShaping` 且本次输入已整形）。
 
 **常用宏**：`{{ap::name::<actor>}}`、`{{ap::prefix::<actor>}}`、`{{ap::param::<id>}}`、`{{ap::lang}}`、`{{ap::structure::<id>}}`、`{{ap::var::<id>}}`（`::keys` / `::values` / `::<key>`）、`{{ap::workflow::summary}}`、`{{ap::input::meta}}`、`{{ap::memory::chat}}`、`{{ap::recap}}`、`{{ap::recent_meta}}`。ST 宏（`{{user}}`、`{{char}}`）在 AP 宏之后展开。
 

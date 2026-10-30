@@ -55,7 +55,7 @@ Remember the pacing guideline while writing.
 
 属性值可以不加引号（不含空格时），也可以用双引号或单引号；引号内用反斜杠转义。条件表达式里有双引号时，外层用单引号最方便：`when='transport == "prefill"'`。
 
-条目内容中可以使用 `@as`、`@style`、`@if` 指令（见 [directives.md](directives.md)）和 `{{ap::…}}` 宏（见 [macros.md](macros.md)）。三个以上连续换行会压成两个，块首尾空白会被去掉，空块被丢弃。
+条目内容中可以使用 `@as`、`@style`、`@if` 指令与 `<!--# … -->` 注释（见 [directives.md](directives.md)）和 `{{ap::…}}` 宏（见 [macros.md](macros.md)）。三个以上连续换行会压成两个，块首尾空白会被去掉，空块被丢弃。
 
 ## 激活规则
 

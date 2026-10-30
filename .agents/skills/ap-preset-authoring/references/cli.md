@@ -6,8 +6,10 @@
 ap build   [dir] [--out dist] [--strict]
 ap check   [dir] [--strict]
 ap dev     [dir] [--port 4747] [--host 127.0.0.1] [--out dist]
-ap preview [dir] [--transport t] [--workflow w] [--config c] [--meta pure|mixed]
-                 [--enable a,b] [--disable c] [--user-modules file] [--json] [--out file]
+ap preview [dir] [--transport t] [--workflow w] [--config c] [--meta pure|mixed] [--param id=value …]
+                 [--enable a,b] [--disable c] [--user-modules file]
+                 [--bundled-modules a,b|all|none] [--user-module-templates a,b|all]
+                 [--lang zh-cn] [--json] [--out file]
 ap init    <dir> [--id x] [--name "My Preset"] [--author me]
 ap skills  list
 ap skills  install [dir] [--target .agents/skills]
@@ -22,11 +24,11 @@ ap --version
 
 ```
 error modules/pacing.md:12 entries.reminder: unknown region `tasks`
-warn  preset.yaml groups: module `x` has no group
+warn  preset.yaml:41 groups: module `x` has no group
 2 errors, 1 warning
 ```
 
-格式为 `<级别> <文件>:<行> <路径>: <消息>`（文件、行、路径在已知时出现）。**错误**使构建失败；**警告**只在 `--strict` 时导致失败。建议提交前和 CI 中总是使用 `--strict`。
+格式为 `<级别> <文件>:<行> <路径>: <消息>`（文件、行、路径在已知时出现；清单字段指向定义它的 `preset.yaml` 或 `manifest/` 片段）。**错误**使构建失败；**警告**只在 `--strict` 时导致失败。建议提交前和 CI 中总是使用 `--strict`。
 
 ## ap build
 
@@ -46,9 +48,11 @@ warn  preset.yaml groups: module `x` has no group
 ✓ my-preset 0.1.0: 12 modules, 18 entries, 2 workflows
 ```
 
+使用了[清单片段](manifest.md#拆分清单-manifest)时还会显示片段数，例如 `, 5 manifest fragments`。
+
 ## ap dev
 
-开发服务器：先构建一次，然后监视源码（`preset.yaml`、`modules/`、`workflows/`、`locales/`），变化后约 120 ms 重新构建并写入 `dist/`。构建失败时继续提供上一次成功的产物。
+开发服务器：先构建一次，然后监视源码（`preset.yaml`、`manifest/`、`modules/`、`workflows/`、`user-modules/`、`user-module-templates/`、`locales/`），变化后约 120 ms 重新构建并写入 `dist/`。构建失败时继续提供上一次成功的产物。
 
 | 端点 | 内容 |
 | --- | --- |
@@ -73,8 +77,13 @@ warn  preset.yaml groups: module `x` has no group
 | `--meta pure` | 模拟纯元指令：来源 `task`，使用任务工作流 |
 | `--meta mixed` | 模拟混合元指令：来源 `story` |
 | `--enable a,b` / `--disable c` | 打开 / 关闭模组（逗号分隔的 id） |
+| `--param id=value` | 设置参数值（可重复）。数字参数须为数字；列表参数写逗号分隔的项（`words=闪过,一丝`）、JSON 数组（`'words=["a, b","c"]'`，项中含逗号时使用），或 `words=` 表示空列表 |
 | `--user-modules <file>` | 合并用户模组文件（[user-modules.md](user-modules.md#导入导出格式)） |
-| `--json` | 输出 JSON：`vars`、`buildVars`、`skipped`、`modules`、`structures`、`stages`、`regions`，以及 `schema`（structured）或 `tools`（工具传输） |
+| `--bundled-modules <ids>` | 合并哪些[随预设安装的用户模组](user-modules.md#预设携带的用户模组-user-modules)（逗号分隔的 id，`all` 为全部，`none` 为不合并）；默认按全新安装，合并 `enabled` 不为 `false` 的。它们排在最前 |
+| `--user-module-templates <ids>` | 把[用户模组模板](user-modules.md#用户模组模板-user-module-templates)当作新建的用户模组合并（逗号分隔的 id，`all` 为全部），排在 `--user-modules` 之后 |
+| `--input <text>` | 模拟本次输入（聊天历史以这条用户消息结尾）：预设声明了 `inputShaping` 时 `input.shaped` 为真、`{{ap::input::text}}` 为这段文字，`historyStart` 区域后多出一节 `chat history (ST) · last user message`，显示历史中这条消息的样子（`wrap` 为包裹后的文字，`extract` 为已提取）。摘要中有一行 `input shaping: <mode>` |
+| `--lang <lang>` | 按该面板语言选用随预设安装的用户模组与模板的翻译 |
+| `--json` | 输出 JSON：`vars`、`buildVars`、`skipped`、`modules`、`structures`、`stages`、`regions`、`historyInput`（`--input` 时历史中那条消息的样子，提取时为 `null`），以及 `schema`（structured）或 `tools`（工具传输） |
 | `--out <file>` | 写入文件而不是标准输出 |
 
 文本输出的开头是摘要（预设、传输方式与写法、工作流、配置、生效模组、构建变量、结构、阶段），然后按 `regions` 顺序列出每个区域的消息，最后是 schema / 工具。
@@ -83,9 +92,10 @@ warn  preset.yaml groups: module `x` has no group
 
 - ST 宏（`{{user}}`、`{{char}}`……）不展开；
 - 运行时数据为空：记忆、总结、最近元指令、聊天文本；`memory.*`、`recap.present`、`chat.group`、`meta.recent` 为假；用户模组的关键词规则看到空文本；
-- 元指令文本为占位符 `(meta text)`；`meta.task` 为 `null`。
+- 元指令文本为占位符 `(meta text)`；`meta.task` 为 `null`；
+- 没有 `--input` 时没有本次输入，`input.shaped` 为假。
 
-常用的预览矩阵：每种传输方式各一次；`--meta pure`；每个推荐配置；关键模组开 / 关。
+常用的预览矩阵：每种传输方式各一次；`--meta pure`；每个推荐配置；关键模组开 / 关；关键参数设置 / 未设置（`--param`）。
 
 ## ap init
 
