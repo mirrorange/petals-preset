@@ -11,15 +11,16 @@
 | [manifest.md](manifest.md) | `preset.yaml` 的每个顶层字段 |
 | [modules.md](modules.md) | 模组文件：frontmatter、条目、激活规则、排序 |
 | [workflows.md](workflows.md) | 工作流文件：阶段、分节、字段名与工具名 |
-| [directives.md](directives.md) | `@entry` `@section` `@as` `@style` `@if` 指令 |
+| [directives.md](directives.md) | `@entry` `@section` `@as` `@style` `@if` `@template` 指令 |
 | [expressions.md](expressions.md) | 条件表达式语法与全部条件变量 |
 | [macros.md](macros.md) | `{{ap::…}}` 宏 |
+| [templates.md](templates.md) | `@template` EJS 模板：语法、作用域、信任 |
 | [build-variables.md](build-variables.md) | 构建变量 `vars` |
 | [structures.md](structures.md) | 结构（回复、记忆、总结、代写、事件摘要、选项、自定义） |
 | [transports.md](transports.md) | 五种传输方式、JSON Schema / 工具生成、`tools` 文案、示范轮次 |
 | [meta-and-tasks.md](meta-and-tasks.md) | 元指令、生成来源、任务工作流、历史改写与省 token |
 | [configuration.md](configuration.md) | 配置层、推荐配置、Carrier、迁移 |
-| [user-modules.md](user-modules.md) | 插入点与用户模组（含导入导出格式） |
+| [user-modules.md](user-modules.md) | 插入点、用户模组（含导入导出格式）、预设携带的用户模组与用户模组模板 |
 | [locales.md](locales.md) | 面板文字翻译 |
 | [assembly.md](assembly.md) | 一次生成的完整组装流程 |
 | [cli.md](cli.md) | `ap` 命令行 |
@@ -27,12 +28,14 @@
 
 ## 源码结构
 
-预设仓库里只有四类文件是源码，其余文件（README、`package.json`、`.github/`、`.agents/` 等）都会被编译器忽略：
+预设仓库里只有五类文件是源码，其余文件（README、`package.json`、`.github/`、`.agents/` 等）都会被编译器忽略：
 
 ```
 preset.yaml              清单：身份、角色、区域、参数、结构、配置……
 modules/**/*.md          模组：每个文件一个模组（可以放在任意深度的子目录里）
 workflows/*.md           工作流：每个文件一个工作流（只认 workflows/ 下一层）
+user-modules/*.md        随预设安装的用户模组（可选，只认下一层）
+user-module-templates/*.md 用户模组模板：新建用户模组时可选的示例（可选，只认下一层）
 locales/<lang>.yaml      面板翻译（可选）
 ```
 

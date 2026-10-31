@@ -1,0 +1,154 @@
+# Panel groups and params, build variables, and insertion points for user modules.
+
+# Writing tab. '' / 0 = not set; prompts for unset params are left out.
+groups:
+  role: { label: Role, order: 10 }
+  mode: { label: Mode, order: 20 }
+  guidelines: { label: Guidelines, order: 30 }
+  narrative: { label: Narrative agency, allowNone: true }
+  style:
+    label: Writing Style
+    description: One main style (or none); Eros can be added on top for NSFW scenes.
+    order: 40
+  main-style: { label: Main style, allowNone: true }
+  features: { label: Features, order: 50 }
+  language:
+    label: Language
+    description: Unset languages follow the story so far; the workflow language falls back to the reply language.
+    order: 60
+    tab: writing
+  length: { label: Length, order: 70, tab: writing }
+  narration: { label: Narration, order: 80, tab: writing }
+  banned:
+    label: Custom banned list
+    description: >-
+      Your own banned words, phrases and expressions. With the Banned Expressions module on they are added to its
+      built-in list; otherwise they are sent on their own.
+    order: 90
+    tab: writing
+
+params:
+  - id: language
+    type: text
+    label: Reply language
+    description: Language of the story and of Freesia's replies.
+    group: language
+    unset: the language used in the story so far
+    options: [简体中文, 繁體中文, English, 日本語, 한국어]
+  - id: dialogueLanguage
+    type: text
+    label: Dialogue language
+    description: >-
+      Language spoken by the characters. When it differs from the reply language, each line of dialogue is
+      followed by a translation in the reply language.
+    group: language
+    fallback: language
+    options: [简体中文, 繁體中文, English, 日本語, 한국어]
+  - id: workflowLanguage
+    type: text
+    label: Workflow language
+    description: Language of the workflow (Freesia ↔ Petals discussion, notes and thinking). English can save tokens.
+    group: language
+    fallback: language
+    options: [English, 简体中文, 繁體中文, 日本語, 한국어]
+  - id: draftLanguage
+    type: text
+    label: Draft language
+    description: Iterative workflow only — write the internal draft in this language, then revise in the reply language.
+    group: language
+    options: [English, 简体中文, 日本語]
+  - id: length
+    type: number
+    label: Reply length
+    description: Target length of the story content of each reply (workflow stages and structures excluded).
+    group: length
+    unit: words
+    min: 50
+    max: 10000
+    options: [400, 600, 800, 1200]
+  - id: lengthMode
+    type: select
+    label: Length strategy
+    group: length
+    unset: approximately
+    options:
+      - { value: "", label: Unset }
+      - { value: approx, label: Approximately, text: approximately }
+      - { value: atLeast, label: At least, text: at least }
+      - { value: atMost, label: At most, text: no more than }
+  - id: narrativePerson
+    type: select
+    label: Narrative person
+    description: Grammatical person of the narration. Dialogue is not affected. Unset follows the story so far.
+    group: narration
+    options:
+      - { value: "", label: Unset }
+      - { value: first, label: First person }
+      - { value: second, label: Second person }
+      - { value: third, label: Third person }
+  - id: bannedWords
+    type: list
+    label: Banned words
+    description: Single words Freesia must not use, e.g. 闪过 or 一丝.
+    group: banned
+  - id: bannedPhrases
+    type: list
+    label: Banned phrases
+    description: Stock phrases and images to avoid, e.g. 指节发白 or 激起涟漪.
+    group: banned
+  - id: bannedExpressions
+    type: list
+    label: Banned expressions
+    description: Sentence patterns and ways of expression to avoid, e.g. 不是……而是…… or 嘴角勾起一抹弧度. Each item is listed on its own line.
+    group: banned
+
+# Questions the narrator asks in the `questions` stage. Active modules add theirs (id → question);
+# `questions-core` reads them with {{ap::var::…::values}}. Ids are stable for user modules.
+vars:
+  mandatoryQuestions:
+    type: dict
+    label: Mandatory questions
+    description: Asked in every questions stage.
+  optionalQuestions:
+    type: dict
+    label: Optional questions
+    description: The narrator picks the 2–3 most relevant.
+  # Banned list (`core/banned-list`): the built-in items of `banned-expressions` plus any module's; the
+  # Writing-tab params of the same names are added to the first three.
+  bannedWords: { type: list, label: Banned words, description: Words not to use. }
+  bannedPhrases: { type: list, label: Banned phrases, description: Stock phrases and images not to use. }
+  bannedExpressions: { type: list, label: Banned expressions, description: Sentence patterns and ways of expression not to use. }
+  bannedRules: { type: list, label: Banned list rules, description: Other rules of the list, one sentence each. }
+
+# Where users may add their own modules from the panel. Ids are kept stable across versions;
+# a renamed point must be mapped in `migrations[].rename.insertionPoints`.
+insertionPoints:
+  - id: after-identity
+    label: After identity
+    description: Right after Freesia's identity and the core instructions.
+    region: top
+    order: 1000
+  - id: after-role
+    label: After role
+    region: role
+    order: 1000
+  - id: guidelines
+    label: Guidelines
+    description: Inside the guidelines block, after the built-in guidelines.
+    region: guidelines
+    order: 2000
+  - id: writing-style
+    label: Writing style
+    description: Inside the writing style block, after the selected style.
+    region: writing_style
+    order: 1000
+  - id: after-history
+    label: After history
+    description: Right after the chat history and memories; good for current state or reminders.
+    region: memory
+    order: 1000
+  - id: before-task
+    label: Before task
+    description: Right before the workflow instructions.
+    region: task
+    order: 5

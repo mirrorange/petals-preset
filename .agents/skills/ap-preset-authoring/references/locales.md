@@ -37,6 +37,10 @@ structures:
   status: { title: 状态栏 }
 insertionPoints:
   guidelines: { label: 写作准则, description: 内置准则之后 }
+userModules:
+  my-reminder: { name: 我的提醒 }
+userModuleTemplates:
+  my-guideline: { name: 我的写作要求, description: 在写作指南中加入你自己的规则 }
 vars:
   questions: { label: 问题列表, description: 叙述者每轮要回答的问题 }
 ```
@@ -52,6 +56,8 @@ vars:
 | `configurations` | 推荐配置 id | `name` `description` |
 | `structures` | 结构 id | `title` |
 | `insertionPoints` | 插入点 id | `label` `description` |
+| `userModules` | 随预设安装的用户模组 id | `name`（正文的翻译用 `user-modules/<id>.<lang>.md`，见 [user-modules.md](user-modules.md#文件格式)） |
+| `userModuleTemplates` | 用户模组模板 id | `name` `description`（正文的翻译用 `user-module-templates/<id>.<lang>.md`） |
 | `vars` | 构建变量 id | `label` `description` |
 
 - 任何字段都可以省略，缺失的显示原文；

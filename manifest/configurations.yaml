@@ -1,0 +1,132 @@
+# Configuration defaults and recommended configurations.
+
+configurationDefaults:
+  # Empty names / prefixes use the actor defaults (Freesia / Petals / {{user}}).
+  sampling:
+    temperature: 1
+    frequency_penalty: 0
+    presence_penalty: 0
+    top_p: 1
+    top_k: 0
+    top_a: 0
+    min_p: 0
+    repetition_penalty: 1
+    openai_max_context: 1000000
+    openai_max_tokens: 16384
+    max_context_unlocked: true
+    stream_openai: true
+    names_behavior: 0
+    send_if_empty: ""
+    impersonation_prompt: "[Write the next reply as {{user}}, not as {{char}}.]"
+    new_chat_prompt: "[Start a new Chat]"
+    new_group_chat_prompt: "[Start a new group chat. Group members: {{group}}]"
+    new_example_chat_prompt: "[Example Chat]"
+    continue_nudge_prompt: "[Continue your last message without repeating its original content.]"
+    bias_preset_selected: Default (none)
+    wi_format: "{0}"
+    scenario_format: "{{scenario}}"
+    personality_format: "{{personality}}"
+    group_nudge_prompt: "[Write the next reply only as {{char}}.]"
+    assistant_prefill: ""
+    assistant_impersonation: ""
+    use_sysprompt: true
+    squash_system_messages: false
+    media_inlining: true
+    inline_image_quality: auto
+    continue_prefill: false
+    continue_postfix: " "
+    function_calling: true
+    tool_call_recurse_limit: 5
+    show_thoughts: true
+    reasoning_effort: low
+    verbosity: auto
+    enable_web_search: false
+    seed: -1
+    n: 1
+  connection:
+    transport: structured
+    workflow: linear
+    forceTool: true
+    parallelTools: false
+    syntheticTurn: init
+    sendThoughtSignature: false
+    maxSteps: 6
+    finalFallback: true
+  modules:
+    always-reply: false
+    antifiltering: false
+    event-synopsis: true
+    freesia-comments: false
+    options: true
+    skip-thought: false
+    anti-evasion: true
+    banned-expressions: true
+    character-enhancement: true
+    cot-compatibility: false
+    emotional-stability: false
+    narrative-boundaries: false
+    narrative-proactivity: false
+    no-wrap-up: true
+    nsfw-protocol: false
+    output-structure: false
+    pacing-control: true
+    mode-continuation: false
+    mode-expansion: true
+    mode-preface: true
+    role-freesia: true
+    style-aisthesis: false
+    style-antheia: false
+    style-eros: false
+    style-kardia: true
+    style-kryos: false
+    style-melos: false
+  # Cache optimization stays off by default; when switched on, postpone history changes up to 8 requests.
+  cache:
+    maxDeferredTurns: 8
+
+defaultConfiguration: other
+# Configuration ids are stored in users' settings: keep them stable. `deepseek-claude-legacy` is kept
+# as the id of "Claude ≤ 4.5" (still prefill) so existing selections keep working.
+configurations:
+  - id: gemini
+    name: Gemini
+    diff:
+      sampling: { use_sysprompt: false }
+      connection: { transport: tool-single, sendThoughtSignature: true, parallelTools: true, syntheticTurn: init-skip-thought }
+      modules: { skip-thought: true }
+  - id: deepseek-tool
+    name: DeepSeek (tool calling)
+    diff:
+      sampling: { reasoning_effort: auto, show_thoughts: false }
+      connection: { transport: tool-single }
+  - id: deepseek-prefill
+    name: DeepSeek (prefill)
+    description: Prefill only works with the official DeepSeek API.
+    diff:
+      sampling: { reasoning_effort: auto, show_thoughts: false }
+      connection: { transport: prefill }
+  - id: deepseek-claude-legacy
+    name: Claude ≤ 4.5
+    diff:
+      sampling: { reasoning_effort: auto, show_thoughts: false }
+      connection: { transport: prefill }
+  - id: claude-4-6-5
+    name: Claude 4.6 – 5
+    diff:
+      sampling: { reasoning_effort: auto, show_thoughts: true }
+      connection: { transport: plaintext }
+  - id: claude-5-5-plus
+    name: Claude ≥ 5.5
+    diff:
+      sampling: { reasoning_effort: low, show_thoughts: true }
+      connection: { transport: tool-single, parallelTools: true, forceTool: false, syntheticTurn: init }
+  - id: other
+    name: Other (structured output)
+    diff:
+      sampling: { reasoning_effort: auto, show_thoughts: false }
+      connection: { transport: structured }
+  - id: other-tool
+    name: Other (tool calling)
+    diff:
+      sampling: { reasoning_effort: auto, show_thoughts: false }
+      connection: { transport: tool-single }

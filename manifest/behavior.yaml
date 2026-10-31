@@ -1,0 +1,50 @@
+# Meta commands, input shaping, token saving, regex flags, and the order of modules and workflows.
+
+# The latest user input leaves the chat history and is placed after the memories (region `input`).
+inputShaping:
+  mode: extract
+
+meta:
+  trigger: "@{{ap::name::narrator}}"
+  wrap: true
+  recentCount: 3
+  tasks:
+    summary: flags.summary
+    impersonate: flags.impersonate
+  impersonatePrompt: "@{{ap::name::narrator}} Please ghostwrite my next reply."
+
+tokenSaving:
+  keepFullTurns: 6
+  truncateUserAfter: 2000
+  # Expansion mode writes the input into the story (and its synopsis), so older inputs are dropped.
+  userInput: remove
+  synopsisTemplate: "[{{time}} · {{location}}] {{event}}: {{summary}}"
+
+regex:
+  - id: summary
+    pattern: (总结|概括|梗概|摘要|summarize|summary|recap|digest)
+    flags: i
+    target: meta
+    requires: meta.pure
+  - id: impersonate
+    pattern: (代写|代拟|帮我(写|回)|替我(写|回|说)|扮演我|impersonat|ghostwrit|write (my|the) (next )?(reply|message|response) for me)
+    flags: i
+    target: meta
+    requires: meta.pure
+
+moduleOrder:
+  - core
+  - context
+  - role-freesia
+  - mode-continuation
+  - mode-expansion
+  - "*"
+  - style-kardia
+  - style-aisthesis
+  - style-antheia
+  - style-kryos
+  - style-melos
+  - style-eros
+  - questions-core
+
+workflowOrder: [linear, iterative, edit, task]

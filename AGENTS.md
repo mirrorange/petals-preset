@@ -15,7 +15,8 @@ This repository is an **Advanced Preset (AP)** for SillyTavern: 花瓣预设 Pet
 ## 仓库结构
 
 ```
-preset.yaml          清单：角色、区域、参数、结构、推荐配置……
+preset.yaml          清单根文件：元数据、角色、区域、Carrier……
+manifest/*.yaml      清单片段（参数、结构、工具、推荐配置、行为），构建时合并
 modules/**/*.md      模组（一个文件一个）
 workflows/*.md       工作流
 locales/*.yaml       面板翻译

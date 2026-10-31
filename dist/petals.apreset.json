@@ -2,11 +2,11 @@
   "formatVersion": 3,
   "id": "petals",
   "name": "Petals Preset",
-  "version": "7.8.1",
+  "version": "7.9.0",
   "author": "mirrorange",
   "description": "Write stories with Freesia! Freesia writes, Petals gives suggestions — a dual-character driven workflow.",
-  "minAdvancedPreset": "1.7.0",
-  "hash": "3ef16f5ddca2dbdd",
+  "minAdvancedPreset": "1.9.0",
+  "hash": "1526b16e6c772cc1",
   "actors": {
     "narrator": {
       "name": "Freesia",
@@ -93,6 +93,12 @@
       "separator": "\n\n"
     },
     {
+      "id": "input",
+      "role": "user",
+      "merge": "none",
+      "separator": "\n\n"
+    },
+    {
       "id": "questions",
       "role": "system",
       "merge": "join",
@@ -117,6 +123,10 @@
     "tail": "bottom"
   },
   "workflowRegion": "task",
+  "inputShaping": {
+    "mode": "extract",
+    "template": "<input>\n{{content}}\n</input>"
+  },
   "params": [
     {
       "id": "language",
@@ -294,6 +304,30 @@
           "label": "Third person"
         }
       ]
+    },
+    {
+      "id": "bannedWords",
+      "type": "list",
+      "label": "Banned words",
+      "default": [],
+      "description": "Single words Freesia must not use, e.g. 闪过 or 一丝.",
+      "group": "banned"
+    },
+    {
+      "id": "bannedPhrases",
+      "type": "list",
+      "label": "Banned phrases",
+      "default": [],
+      "description": "Stock phrases and images to avoid, e.g. 指节发白 or 激起涟漪.",
+      "group": "banned"
+    },
+    {
+      "id": "bannedExpressions",
+      "type": "list",
+      "label": "Banned expressions",
+      "default": [],
+      "description": "Sentence patterns and ways of expression to avoid, e.g. 不是……而是…… or 嘴角勾起一抹弧度. Each item is listed on its own line.",
+      "group": "banned"
     }
   ],
   "groups": {
@@ -343,6 +377,12 @@
       "label": "Narration",
       "order": 80,
       "tab": "writing"
+    },
+    "banned": {
+      "label": "Custom banned list",
+      "order": 90,
+      "description": "Your own banned words, phrases and expressions. With the Banned Expressions module on they are added to its built-in list; otherwise they are sent on their own.",
+      "tab": "writing"
     }
   },
   "modules": [
@@ -364,7 +404,7 @@
       "structures": [],
       "vars": [],
       "source": "modules/core/context.md",
-      "description": "Story recap, recent meta conversations and memories supplied by Advanced Preset."
+      "description": "Story recap, recent meta conversations, memories and the latest input supplied by Advanced Preset."
     },
     {
       "id": "role-freesia",
@@ -601,7 +641,38 @@
       "toggle": "user",
       "default": false,
       "structures": [],
-      "vars": [],
+      "vars": [
+        {
+          "var": "bannedWords",
+          "type": "list",
+          "items": [
+            "闪过",
+            "一丝",
+            "狡黠",
+            "石子"
+          ]
+        },
+        {
+          "var": "bannedPhrases",
+          "type": "list",
+          "items": [
+            "投入水面",
+            "激起涟漪",
+            "指节发白",
+            "闪烁着~的光芒",
+            "像手术刀"
+          ]
+        },
+        {
+          "var": "bannedRules",
+          "type": "list",
+          "items": [
+            "Avoid using 'not [A], but [B]' (不是...而是...) constructions. Reduce the use of adversative transitions",
+            "Avoid using intensifying adverbs like: 极其, 非常",
+            "Avoid using em dashes (—)"
+          ]
+        }
+      ],
       "source": "modules/guidelines/banned-expressions.md",
       "description": "Avoid cliché expressions, overused words and constructions, intensifying adverbs and em dashes.",
       "group": "guidelines"
@@ -1912,15 +1983,22 @@
       ]
     },
     {
-      "id": "banned-expressions/main",
-      "module": "banned-expressions",
+      "id": "core/banned-list",
+      "module": "core",
       "region": "guidelines",
       "order": 650,
       "content": [
         {
           "pieces": [
             {
-              "text": "## Avoid Using Cliché Expressions\n\n- Use novel and varied expressions, avoiding cliché expressions.\n- Refrain from using the words: 闪过, 一丝, 狡黠, 石子\n- Avoid using expressions like: 投入水面, 激起涟漪, 指节发白, 闪烁着~的光芒, 像手术刀\n- Avoid using 'not [A], but [B]' (不是...而是...) constructions. Reduce the use of adversative transitions\n- Avoid using intensifying adverbs like: 极其, 非常\n- Avoid using em dashes (—)\n"
+              "text": "<%_\nconst merge = (...lists) => [...new Set(lists.flat().map((x) => String(x).trim()).filter(Boolean))];\nconst words = merge(vars.bannedWords ?? [], params.bannedWords ?? []);\nconst phrases = merge(vars.bannedPhrases ?? [], params.bannedPhrases ?? []);\nconst expressions = merge(vars.bannedExpressions ?? [], params.bannedExpressions ?? []);\nconst rules = merge(vars.bannedRules ?? []);\nconst builtIn = modules['banned-expressions'];\n_%>\n<%_ if (builtIn || words.length || phrases.length || expressions.length || rules.length) { _%>\n## Avoid Using Cliché Expressions\n\n<%_ if (builtIn) { _%>\n- Use novel and varied expressions, avoiding cliché expressions.\n<%_ } _%>\n<%_ if (words.length) { _%>\n- Refrain from using the words: <%- words.join(', ') %>\n<%_ } _%>\n<%_ if (phrases.length) { _%>\n- Avoid using expressions like: <%- phrases.join(', ') %>\n<%_ } _%>\n<%_ if (expressions.length) { _%>\n- Avoid these sentence patterns and ways of expression:\n<%_ for (const x of expressions) { _%>\n  - <%- x %>\n<%_ } _%>\n<%_ } _%>\n<%_ for (const x of rules) { _%>\n- <%- x %>\n<%_ } _%>\n<%_ } _%>\n",
+              "template": {
+                "file": "modules/core/core.md",
+                "line": 110
+              }
+            },
+            {
+              "text": "\n"
             }
           ]
         }
@@ -2184,7 +2262,7 @@
         {
           "pieces": [
             {
-              "text": "<global_memory>\n{{ap::memory::global}}\n</global_memory>\n"
+              "text": "<global_memory>\n{{ap::memory::global}}\n</global_memory>\n\n"
             }
           ]
         }
@@ -2192,6 +2270,25 @@
       "when": {
         "t": "var",
         "path": "memory.hasGlobal"
+      }
+    },
+    {
+      "id": "context/input",
+      "module": "context",
+      "region": "input",
+      "order": 100,
+      "content": [
+        {
+          "pieces": [
+            {
+              "text": "<input>\n{{ap::input::text}}\n</input>\n"
+            }
+          ]
+        }
+      ],
+      "when": {
+        "t": "var",
+        "path": "input.shaped"
       }
     },
     {
@@ -2697,6 +2794,187 @@
       "description": "Right before the workflow instructions."
     }
   ],
+  "userModules": [],
+  "userModuleTemplates": [
+    {
+      "id": "custom-cot",
+      "name": "Custom CoT",
+      "description": "Your own chain of thought rewritten as Petals CoT — a thinking guide in the guidelines block, plus the questions that lead the thinking.",
+      "entries": [
+        {
+          "point": "guidelines",
+          "text": "<!--#\n━━ How to use this template ━━\nThese lines are notes for you. They are removed before sending; the AI never sees them.\nDelete them whenever you like.\n\nWhat is Petals CoT?\nPetals does not ask for a free-form <thinking> block. It thinks through questions: before writing, Freesia asks\nPetals the planning questions, Petals answers them, and Freesia writes from the answers.\nSo an ordinary CoT (\"1. Analyze… 2. List… 3. Plan…\") should be rewritten as Petals CoT questions.\nThe module has two parts:\n\n1. Thinking guide (this text). It is inserted at \"Guidelines\", inside <guidelines>.\n   Write WHAT to think about and HOW: the method, the angles, the standards a good answer meets.\n   Do not write the steps themselves here; they become the questions below.\n\n2. Questions (the \"Build variables\" section of this module). Write the CoT questions that lead the thinking.\n   · Turn each step of your CoT into one question. Example:\n       \"2. Analyze each character's emotions and motives\"\n     → \"From each present character's own perspective, what do they feel and want right now…?\"\n   · Mandatory questions: asked every turn. Optional questions: Freesia picks the 2–3 most relevant.\n   · Use a new key for each question: reusing a built-in key replaces that built-in question, and leaving its value empty removes it.\n   · Skip steps the built-in questions already cover. Example: \"plan how the plot develops\" is the built-in `outline` question.\n   · Questions are only asked by workflows with a questions stage (Linear, Iterative, Edit); the Task workflow does not ask them.\n\n3. Trigger. The expression `!meta.pure && gen.type != \"impersonate\"` sends the module only when a story is written (not for pure meta instructions or impersonation). Usually leave it as it is.\n\nWant to keep your CoT's own format (e.g. a <thinking> block in the reply), or it is hard to turn into questions?\nYou do not need this module: just turn on \"CoT Compatibility\" under \"Guidelines\" on the Modules page and put the CoT in your character card or settings.\nFreesia will then output the block before the story. This may make the CoT less effective than Petals CoT.\n-->\n\n## Thinking Guide: Character Perspective\n\nWhen planning, think from inside the story rather than from the author's convenience.\n\n- **Scene first**: before deciding what happens, pin down the scene exactly as it stands now: where everyone is, what they hold, what has just been said or done.\n- **Characters' own eyes**: reason about each character only from what that character knows and perceives. They cannot react to things they have not seen, heard or been told.\n- **Motives drive the plot**: let the next events follow from what the characters want and fear, not from what would be dramatically convenient.\n- **Consequences persist**: actions leave traces. Earlier choices, injuries, promises and changes in relationships should keep shaping later scenes."
+        }
+      ],
+      "vars": [
+        {
+          "var": "mandatoryQuestions",
+          "type": "dict",
+          "items": [
+            {
+              "key": "custom-cot-scene",
+              "value": "What is the current state of the scene (time, place, characters present), and what has just changed?"
+            },
+            {
+              "key": "custom-cot-motives",
+              "value": "From each present character's own perspective, limited to what they know, what do they feel and want right now, and how will they react to the latest input of {{ap::name::user}}?"
+            }
+          ]
+        },
+        {
+          "var": "optionalQuestions",
+          "type": "dict",
+          "items": [
+            {
+              "key": "custom-cot-consequences",
+              "value": "What longer-term consequences could the latest action of {{ap::name::user}} have, and which of them should begin to show in this part?"
+            }
+          ]
+        }
+      ],
+      "trigger": {
+        "match": "all",
+        "rules": [
+          {
+            "kind": "expr",
+            "source": "!meta.pure && gen.type != \"impersonate\""
+          }
+        ]
+      },
+      "locales": {
+        "zh-cn": {
+          "name": "自定义思维链",
+          "description": "把你自己的思维链改写为 Petals CoT：在写作指南中加入思考指南，并添加引导思考的问题。",
+          "entries": [
+            {
+              "point": "guidelines",
+              "text": "<!--#\n━━ 使用说明 ━━\n这一段文字是写给你看的注释：发送前会被移除，AI 看不到。改完后可以随意删掉\n\n什么是 Petals CoT？\n花瓣不要求模型自由输出 <thinking> 思考块，而是用问题引导思考：写作前 Freesia 向 Petals 提出规划问题，\nPetals 逐一回答，Freesia 再根据回答写作。\n所以一般的 CoT（「1. 分析…… 2. 列出…… 3. 规划……」）需要改写成 Petals CoT 问题。模组分为两部分：\n\n1. 思考指南（下面的正文）。它插入在「写作指南」位置，位于 <guidelines> 内\n   · 写「思考什么、怎么思考」：方法、角度、好的回答应达到的标准\n   · 不要在这里列思考步骤，步骤改写成下面的问题\n\n2. 问题（下方的「构建变量」）。写引导思考的 CoT 问题\n   · 把 CoT 的每一步改写成一个问题，例如：\n       「2. 分析每个角色的情绪与动机」\n     →「从每个在场角色自己的视角出发，他们此刻有什么感受和想要什么……？」\n   · 必答问题：每轮都会提出。可选问题：Freesia 从中挑选最相关的 2–3 个\n   · 新问题请使用新的键：与内置问题同键会替换该内置问题，值留空则移除它\n   · 内置问题已覆盖的步骤可以省略，例如「规划剧情如何发展」就是内置的 `outline` 问题\n   · 只有带提问阶段的工作流（线性、迭代、编辑）会提出问题，任务工作流不会\n\n3. 触发条件。表达式 `!meta.pure && gen.type != \"impersonate\"` 让模组只在写故事时发送，纯元指令与代写时不发送。一般无需修改。\n\n想保留 CoT 原本的思考格式（例如在回复中输出 <thinking> 块），或者 CoT 难以改写成问答引导式？\n不需要使用这个模组：在模组页「写作指南」中打开「思维链兼容」，并把 CoT 写在角色卡或设定中即可，\nFreesia 会在正文前输出思考块。但这可能降低 CoT 的效果\n-->\n\n## Thinking Guide: 角色视角\n\n规划时从故事内部思考，而不是从作者的便利出发。\n\n- **先看场景**：决定发生什么之前，先准确还原此刻的场景：每个人在哪里、手里有什么、刚刚说了或做了什么。\n- **用角色自己的眼睛**：推断每个角色时，只依据这个角色知道和感知到的信息。没看到、没听到、没被告知的事，他们无法作出反应。\n- **动机推动情节**：让接下来的事件源于角色想要什么、害怕什么，而不是怎样更有戏剧性。\n- **后果会延续**：行动会留下痕迹。之前的选择、伤势、承诺与关系变化，应持续影响之后的场景。"
+            }
+          ],
+          "vars": [
+            {
+              "var": "mandatoryQuestions",
+              "type": "dict",
+              "items": [
+                {
+                  "key": "custom-cot-scene",
+                  "value": "当前场景的状态如何（时间、地点、在场人物）？刚刚发生了什么变化？"
+                },
+                {
+                  "key": "custom-cot-motives",
+                  "value": "从每个在场角色自己的视角出发、仅凭他们所知道的信息，他们此刻有什么感受和想要什么？会如何回应 {{ap::name::user}} 的最新输入？"
+                }
+              ]
+            },
+            {
+              "var": "optionalQuestions",
+              "type": "dict",
+              "items": [
+                {
+                  "key": "custom-cot-consequences",
+                  "value": "最新输入中 {{ap::name::user}} 的行动可能带来哪些长远影响？其中哪些应在这一段开始显现？"
+                }
+              ]
+            }
+          ],
+          "trigger": {
+            "match": "all",
+            "rules": [
+              {
+                "kind": "expr",
+                "source": "!meta.pure && gen.type != \"impersonate\""
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "custom-style",
+      "name": "Custom writing style",
+      "description": "Your own style guide in the writing style block, plus questions Freesia asks Petals before writing.",
+      "entries": [
+        {
+          "point": "writing-style",
+          "text": "<!--#\n━━ How to use this template ━━\nThese lines are notes for you. They are removed before sending; the AI never sees them.\nDelete them whenever you like.\n\n1. Style guide (this text). It is inserted at \"Writing style\"\n   · To use only your own style: turn off \"Main style\" under \"Writing Style\" on the Modules page.\n   · To layer it on a main style: keep the main style on and describe only what should differ.\n   The text below is a complete example (\"Baimiao\", plain line drawing). Rewrite it into your own style,\n\n2. Questions (the \"Build variables\" section of this module). Before writing, Freesia asks Petals the planning questions and Petals answers them.\n   · Mandatory questions: asked every turn. Optional questions: Freesia picks the 2–3 most relevant.\n   · Use a new key for each question: reusing a built-in key replaces that built-in question, and leaving its value empty removes it.\n\n3. Trigger. The expression `!meta.pure && gen.type != \"impersonate\"` sends the style only when a story is written (not for pure meta instructions or impersonation), like the built-in styles. Usually leave it as it is.\n-->\n\n## Writing Style: Baimiao\n\nBaimiao (白描, \"plain line drawing\") is a restrained style: it renders people and scenes with a few precise strokes, lets actions and objects carry the emotion, and leaves the rest unsaid.\n\n### Aesthetic Pillars\n\n- **Few strokes, exact strokes** — choose the one detail that defines a moment instead of describing everything.\n- **Emotion through action** — never name a feeling; show it through what characters do, say and leave undone.\n- **Space and silence** — end scenes early and let pauses and gaps speak.\n\n### Language\n\n- **Vocabulary**: plain, concrete nouns and verbs; few adjectives and adverbs; no ornate or abstract words.\n- **Sentences**: mostly short and clear; an occasional longer sentence for rhythm.\n- **Dialogue**: brief and natural, with no explanatory tags beyond \"said\".\n\n### Rules\n\n1. At most one figure of speech per paragraph, and only when it is more precise than a plain statement.\n2. Open each scene with a concrete image (an object, a sound, a gesture), not with a summary.\n3. Do not explain characters' motives or the meaning of a scene; trust the reader."
+        }
+      ],
+      "vars": [
+        {
+          "var": "mandatoryQuestions",
+          "type": "dict",
+          "items": [
+            {
+              "key": "custom-style",
+              "value": "How should this part of the story apply the custom writing style in `<writing_style>`? Name the techniques to use and the habits to avoid."
+            }
+          ]
+        },
+        {
+          "var": "optionalQuestions",
+          "type": "dict",
+          "items": [
+            {
+              "key": "custom-style-sensory",
+              "value": "Which concrete details or images in this scene best carry the custom style?"
+            }
+          ]
+        }
+      ],
+      "trigger": {
+        "match": "all",
+        "rules": [
+          {
+            "kind": "expr",
+            "source": "!meta.pure && gen.type != \"impersonate\""
+          }
+        ]
+      },
+      "locales": {
+        "zh-cn": {
+          "name": "自定义文风",
+          "description": "在文风块中加入你自己的文风指南，并添加 Freesia 写作前向 Petals 提出的规划问题。",
+          "entries": [
+            {
+              "point": "writing-style",
+              "text": "<!--#\n━━ 使用说明 ━━\n这一段文字是写给你看的注释：发送前会被移除，AI 看不到。改完后可以随意删掉\n\n1. 文风指南（下面的正文）。它插入在「文风」位置\n   · 只用自己的文风：在模组页「文风」区块关闭「主文风」\n   · 在主文风上叠加：保持主文风开启，只写需要不同的地方\n   · 下面是一份示例文风「白描」，把它改写成你想要的文风即可\n\n2. 问题（下方的「构建变量」）。写作前 Freesia 会向 Petals 提出问题，由 Petals 回答\n   · 必答问题：每轮都会提出。可选问题：Freesia 从中挑选最相关的 2–3 个\n   · 新问题请使用新的键：与内置问题同键会替换该内置问题，值留空则移除它\n\n3. 触发条件。表达式 `!meta.pure && gen.type != \"impersonate\"` 让文风只在写故事时发送，纯元指令与代写时不发送。与内置文风一致，一般无需修改。\n-->\n\n## Writing Style: 白描\n\n白描是一种克制的文风：用寥寥几笔勾勒人物与场景，让动作和物件承载情绪，其余留给读者。\n\n### 美学支柱\n\n- **少而准** — 每个时刻只选一个最能定义它的细节，不面面俱到。\n- **以动作写情绪** — 不直接点明情绪，通过人物做了什么、说了什么、没做什么来呈现。\n- **留白** — 场景宁早收不晚收，让停顿与空白说话。\n\n### 语言特征\n\n- **词汇**：朴素、具体的名词与动词；少用形容词和副词；不用华丽或抽象的词语。\n- **句式**：以简短清晰的句子为主，偶尔用一个长句调节节奏。\n- **对话**：简短自然，提示语只用「说」，不加解释性修饰。\n\n### 写作规则\n\n1. 每段至多一处修辞，且只在比直白陈述更准确时使用。\n2. 每个场景以一个具体的意象（物件、声音、动作）开篇，而不是概述。\n3. 不解释人物的动机或场景的意义，相信读者。"
+            }
+          ],
+          "vars": [
+            {
+              "var": "mandatoryQuestions",
+              "type": "dict",
+              "items": [
+                {
+                  "key": "custom-style",
+                  "value": "这一段故事应如何运用 `<writing_style>` 中的自定义文风？说明要使用的手法与需要避免的习惯。"
+                }
+              ]
+            },
+            {
+              "var": "optionalQuestions",
+              "type": "dict",
+              "items": [
+                {
+                  "key": "custom-style-sensory",
+                  "value": "这个场景中，哪些具体的细节或意象最能体现自定义文风？"
+                }
+              ]
+            }
+          ],
+          "trigger": {
+            "match": "all",
+            "rules": [
+              {
+                "kind": "expr",
+                "source": "!meta.pure && gen.type != \"impersonate\""
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
   "vars": [
     {
       "id": "mandatoryQuestions",
@@ -2709,6 +2987,30 @@
       "type": "dict",
       "label": "Optional questions",
       "description": "The narrator picks the 2–3 most relevant."
+    },
+    {
+      "id": "bannedWords",
+      "type": "list",
+      "label": "Banned words",
+      "description": "Words not to use."
+    },
+    {
+      "id": "bannedPhrases",
+      "type": "list",
+      "label": "Banned phrases",
+      "description": "Stock phrases and images not to use."
+    },
+    {
+      "id": "bannedExpressions",
+      "type": "list",
+      "label": "Banned expressions",
+      "description": "Sentence patterns and ways of expression not to use."
+    },
+    {
+      "id": "bannedRules",
+      "type": "list",
+      "label": "Banned list rules",
+      "description": "Other rules of the list"
     }
   ],
   "workflows": [
@@ -3902,6 +4204,17 @@
         "forbid_overrides": true
       },
       {
+        "identifier": "ap_input",
+        "name": "🌸 Petals · input",
+        "role": "user",
+        "content": "⟦ap:region:input⟧",
+        "system_prompt": false,
+        "marker": false,
+        "injection_position": 0,
+        "injection_depth": 4,
+        "forbid_overrides": true
+      },
+      {
         "identifier": "ap_questions",
         "name": "🌸 Petals · questions",
         "role": "system",
@@ -4010,6 +4323,10 @@
       },
       {
         "identifier": "ap_memory",
+        "enabled": true
+      },
+      {
+        "identifier": "ap_input",
         "enabled": true
       },
       {
@@ -4128,7 +4445,10 @@
       "draftLanguage": "",
       "length": 0,
       "lengthMode": "",
-      "narrativePerson": ""
+      "narrativePerson": "",
+      "bannedWords": [],
+      "bannedPhrases": [],
+      "bannedExpressions": []
     },
     "tokenSaving": {
       "enabled": false,
@@ -4322,6 +4642,10 @@
         },
         "narration": {
           "label": "叙述"
+        },
+        "banned": {
+          "label": "自定义禁词表",
+          "description": "你自己的禁用词语、短语与表达。开启「禁词表」模组时追加到内置列表，关闭时单独发送。"
         }
       },
       "modules": {
@@ -4508,6 +4832,18 @@
             "second": "第二人称",
             "third": "第三人称"
           }
+        },
+        "bannedWords": {
+          "label": "禁用词语",
+          "description": "Freesia 不应使用的单个词语，如「闪过」「一丝」。"
+        },
+        "bannedPhrases": {
+          "label": "禁用短语",
+          "description": "应避免的套话与意象，如「指节发白」「激起涟漪」。"
+        },
+        "bannedExpressions": {
+          "label": "禁用表达",
+          "description": "应避免的句式与表达方式，如「不是……而是……」「嘴角勾起一抹弧度」。每项单独列为一行。"
         }
       },
       "configurations": {
@@ -4545,6 +4881,22 @@
         "optionalQuestions": {
           "label": "可选问题",
           "description": "由叙述者挑选最相关的 2–3 个。"
+        },
+        "bannedWords": {
+          "label": "禁用词语",
+          "description": "不应使用的词语。"
+        },
+        "bannedPhrases": {
+          "label": "禁用短语",
+          "description": "不应使用的套话与意象。"
+        },
+        "bannedExpressions": {
+          "label": "禁用表达",
+          "description": "不应使用的句式与表达方式。"
+        },
+        "bannedRules": {
+          "label": "禁词表规则",
+          "description": "禁词表中的其他规则，每项一句。"
         }
       },
       "insertionPoints": {

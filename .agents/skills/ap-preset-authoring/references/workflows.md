@@ -104,7 +104,7 @@ Write the story content.
 | `stage:<id>` | 某个阶段的说明，`<id>` 必须是已声明的阶段 |
 | `outro` | 阶段说明之后的收尾 |
 
-除 `preamble` 外都可以加 `style=dialogue` 或 `style=imperative`；不加则两种写法共用同一份。同一分节在同一写法下只能出现一次。分节内可以使用 `@as`、`@style`、`@if` 和宏。
+除 `preamble` 外都可以加 `style=dialogue` 或 `style=imperative`；不加则两种写法共用同一份。同一分节在同一写法下只能出现一次。分节内可以使用 `@as`、`@style`、`@if`、`<!--# … -->` 注释和宏。
 
 **渲染顺序**：`preamble` → 当前写法的 `intro` → 每个激活阶段（按顺序）的当前写法分节 → 当前写法的 `outro`。指令式写法下，每个阶段分节前自动加 `stageHeading` 标题（见 [manifest.md](manifest.md#指令式阶段标题-stageheading)）。未激活（`when` 为假）的阶段，其分节不渲染。
 
