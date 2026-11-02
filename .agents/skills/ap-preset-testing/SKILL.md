@@ -37,6 +37,7 @@ npx ap preview --config <每个推荐配置 id>
 npx ap preview --enable <id> --disable <id> # 关键开关、单选集的每个成员
 npx ap preview --workflow <每个故事工作流 id>
 npx ap preview --input "我们去北边"         # 本次输入：检查 inputShaping（包裹 / 提取后放回的位置）
+npx ap preview --storyline 回忆 --storyline-new   # 故事线：检查支线（storyline.*）上的提示词
 ```
 
 输出较长时写入文件再查：`npx ap preview --transport plaintext --out /tmp/plaintext.txt`。需要程序化检查时用 `--json`（键：`vars`、`buildVars`、`modules`、`structures`、`stages`、`regions`，以及 `schema` 或 `tools`；`--input` 时还有 `historyInput`），例如：
@@ -55,7 +56,7 @@ npx ap preview --json --transport tool-multi | node -e "const d=JSON.parse(requi
 - [ ] 参数未设置时相关文字不出现，设置后正确出现；
 - [ ] 没有残留的 `{{ap::…}}`（未展开的宏）。`{{user}}`、`{{char}}` 原样出现是正常的——ST 在之后展开。
 
-预览与真实运行的差别：ST 宏不展开；记忆、总结、最近元指令为空（`memory.*`、`recap.present`、`meta.recent`、`chat.group` 为假）；元指令文本是占位符 `(meta text)`；没有 `--input` 时没有本次输入（`input.shaped` 为假）。
+预览与真实运行的差别：ST 宏不展开；记忆、总结、最近元指令为空（`memory.*`、`recap.present`、`meta.recent`、`chat.group` 为假）；元指令文本是占位符 `(meta text)`；没有 `--input` 时没有本次输入（`input.shaped` 为假）；没有 `--storyline` 时在主线上（`storyline.main` 为真）。
 
 ## 3. 在 SillyTavern 里实测
 
@@ -71,6 +72,7 @@ npx ap preview --json --transport tool-multi | node -e "const d=JSON.parse(requi
 - [ ] 卡片（选项、事件摘要、自定义结构）显示正常；
 - [ ] 打开省 token 后的长对话（如果支持事件摘要）；
 - [ ] 用户输入整形（如果声明了 `inputShaping`）：发送、重新生成后“最近组装”显示输入已包裹 / 已提取；“继续”时显示未整形；
+- [ ] 故事线（如果声明了 `storylines`）：输入末尾写 `#支线`，消息顶部出现故事线卡片、标签被隐藏；“最近组装”中各组前有分隔，当前线在最后；`if` 开头的线不出现在主线的历史里；
 - [ ] 新用户默认配置的效果。
 
 ## 4. 排查

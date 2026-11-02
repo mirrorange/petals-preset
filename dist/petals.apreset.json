@@ -6,7 +6,7 @@
   "author": "mirrorange",
   "description": "Write stories with Freesia! Freesia writes, Petals gives suggestions — a dual-character driven workflow.",
   "minAdvancedPreset": "1.10.0",
-  "hash": "970d0f815d877071",
+  "hash": "3c546f1ff3cba65a",
   "actors": {
     "narrator": {
       "name": "Freesia",
@@ -126,6 +126,10 @@
   "inputShaping": {
     "mode": "extract",
     "template": "<input>\n{{content}}\n</input>"
+  },
+  "storylines": {
+    "separator": "<!-- Start of Storyline {{storyline}} -->",
+    "mainSeparator": "<!-- Start of the main storyline -->"
   },
   "params": [
     {
@@ -404,7 +408,7 @@
       "structures": [],
       "vars": [],
       "source": "modules/core/context.md",
-      "description": "Story recap, recent meta conversations, memories and the latest input supplied by Advanced Preset."
+      "description": "Story recap, recent meta conversations, the current storyline, memories and the latest input supplied by Advanced Preset."
     },
     {
       "id": "role-freesia",
@@ -2246,6 +2250,55 @@
           ]
         }
       ]
+    },
+    {
+      "id": "context/storyline",
+      "module": "context",
+      "region": "history",
+      "order": 50,
+      "content": [
+        {
+          "pieces": [
+            {
+              "text": "<storyline>\nThis chat has more than one storyline. The chat history is grouped by storyline: each group opens with a `Start of Storyline …` marker, and the main storyline's group with `Start of the main storyline`. The other storylines come first; the storyline being written comes last.\n\n"
+            },
+            {
+              "text": "Current storyline: \"{{ap::storyline}}\", an if-line — an alternate \"what if\" branching off the main storyline. Its events never happen in the main storyline or in any other storyline, and they may contradict them.\n",
+              "when": {
+                "t": "var",
+                "path": "storyline.if"
+              }
+            },
+            {
+              "text": "Current storyline: \"{{ap::storyline}}\", a side story set in the same world as the main storyline. Its events are real for the main storyline as well, so keep them consistent with it.\n",
+              "when": {
+                "t": "not",
+                "e": {
+                  "t": "var",
+                  "path": "storyline.if"
+                }
+              }
+            },
+            {
+              "text": "This storyline starts now: open it from {{ap::name::user}}'s input and make clear when and where it takes place relative to the main storyline.\n",
+              "when": {
+                "t": "var",
+                "path": "storyline.new"
+              }
+            },
+            {
+              "text": "Write only the current storyline. Do not advance the main storyline or other storylines, and do not carry their scenes into this one.\n</storyline>\n\n"
+            }
+          ]
+        }
+      ],
+      "when": {
+        "t": "not",
+        "e": {
+          "t": "var",
+          "path": "storyline.main"
+        }
+      }
     },
     {
       "id": "context/recap",
@@ -4648,6 +4701,9 @@
     "meta": {
       "enabled": true,
       "recentCount": 3
+    },
+    "storylines": {
+      "enabled": true
     }
   },
   "configurations": [

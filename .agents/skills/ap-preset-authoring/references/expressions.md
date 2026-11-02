@@ -53,13 +53,19 @@ transport in ["structured", "tool-single", "tool-multi"]
 | `chat.group` | 布尔 | 群聊 |
 | `memory.hasChat` / `memory.hasGlobal` | 布尔 | 聊天记忆 / 全局记忆非空 |
 | `recap.present` | 布尔 | 当前有生效的总结 |
+| `last.<id>` | 布尔 | `custom` / `status` 结构在聊天中已有先前的值（`{{ap::structure::<id>::last}}` 非空） |
 | `input.shaped` | 布尔 | 本次生成做了[用户输入整形](manifest.md#用户输入整形-inputshaping)（预设声明了 `inputShaping`，且聊天历史以用户消息结尾） |
+| `storyline.name` | 字符串 | 当前[故事线](meta-and-tasks.md#故事线)的名称；在主线上为主线的名称（未命名时为空字符串） |
+| `storyline.main` | 布尔 | 当前是主线（预设没有声明 `storylines` 或用户关闭了故事线时总为真） |
+| `storyline.if` | 布尔 | 当前是 if 线 |
+| `storyline.new` | 布尔 | 当前故事线还没有消息（这一轮开始它） |
 
 注意：
 
 - 阶段的 `when` 在 `stages.*` 计算之前求值，所以阶段条件里不要引用 `stages.*`。
 - 正则标记的 `requires` 与 `meta.tasks` 在组装之前求值，只能可靠地使用 `meta.*` 与 `flags.*`（`input.shaped` 在那里总为假）。
-- `ap preview` 中 `memory.*`、`recap.present`、`chat.group`、`meta.recent` 总为假；`input.shaped` 只在给了 `--input` 且预设声明了 `inputShaping` 时为真。
+- 结构 [`history.when`](structures.md#历史回传) 在历史改写时求值：`stages.*` 为空，`input.shaped` 为假，其余变量可用。
+- `ap preview` 中 `memory.*`、`recap.present`、`chat.group`、`meta.recent`、`last.*` 总为假；`input.shaped` 只在给了 `--input` 且预设声明了 `inputShaping` 时为真；`storyline.*` 由 `--storyline` / `--storyline-new` 决定（默认主线）。
 - 这些变量同样是[模板](templates.md#作用域)作用域里的对象（`params.length`、`gen.type`……）。
 
 ## 诊断

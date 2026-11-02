@@ -35,6 +35,7 @@
 | `meta` | map | 见下 | 元指令与内置任务，见 [meta-and-tasks.md](meta-and-tasks.md) |
 | `tokenSaving` | map | 见下 | 省 token 的默认参数 |
 | `inputShaping` | map | — | 用户输入整形（包裹或提取本次输入），见[用户输入整形](#用户输入整形-inputshaping) |
+| `storylines` | `true` \| map | — | 支持故事线（支线故事与 if 线），见[故事线](#故事线-storylines) |
 | `syntheticTurns` | list | `[]` | 工具模式的示范轮次，见 [transports.md](transports.md#示范轮次-syntheticturns) |
 | `tools` | map | 见 transports | 模型可见的工具名、字段名与文案，见 [transports.md](transports.md#tools-文案) |
 | `theme` | map | `{}` | 面板与消息 UI 的配色 |
@@ -323,7 +324,7 @@ tokenSaving:
 | `userInput` | `truncate` | 更早的用户消息：`keep`（原样）/ `truncate`（截断）/ `remove`（不发送） |
 | `synopsisTemplate` | 如上 | 更早的助手消息替换成事件摘要时的格式 |
 
-是否启用由配置 `tokenSaving.enabled` 决定（默认关闭）；`keepFullTurns` / `truncateUserAfter` / `userInput` 是配置的默认值，用户可在面板中修改。最近几条消息附带事件摘要由 `synopsis` 结构的 `history` / `historyTemplate` 声明（见 [structures.md](structures.md#synopsis)）。规则见 [meta-and-tasks.md](meta-and-tasks.md#省-token)。
+是否启用由配置 `tokenSaving.enabled` 决定（默认关闭）；`keepFullTurns` / `truncateUserAfter` / `userInput` 是配置的默认值，用户可在面板中修改。最近几条消息附带事件摘要（及其他结构）由结构的 `history` 声明（见 [structures.md](structures.md#历史回传)）。规则见 [meta-and-tasks.md](meta-and-tasks.md#省-token)。
 
 ## 用户输入整形 `inputShaping`
 
@@ -356,6 +357,34 @@ inputShaping:
 `ap check` 警告：未知字段；`extract` 写了 `template`（不使用）；`wrap` 的模板没有 `{{content}}`（输入会丢失）；`extract` 却没有提示词使用 `{{ap::input::text}}`；`minAdvancedPreset` 低于 1.9.0。
 
 完整流程见 [meta-and-tasks.md](meta-and-tasks.md#用户输入整形)。
+
+## 故事线 `storylines`
+
+声明预设支持**故事线**：用户在输入末尾写 `#名称` 来写支线故事（`#if…` 为 if 线），AP 按故事线整理聊天历史，并在每组历史前插入一条分隔消息。不声明时 `#标签` 只是普通文字、历史保持原顺序；声明后配置中多一个开关 `storylines.enabled`（默认开启，用户可在面板关闭）。
+
+```yaml
+storylines: true            # 使用默认分隔消息
+```
+
+```yaml
+storylines:
+  separator: "<!-- Start of Storyline {{storyline}} -->"   # 支线组之前
+  mainSeparator: "<!-- Start of the main storyline -->"   # 主线组之前
+```
+
+| 字段 | 默认 | 说明 |
+| --- | --- | --- |
+| `separator` | `<!-- Start of Storyline {{storyline}} -->` | 支线（含 if 线）历史组之前的 system 消息。`{{storyline}}` 为故事线名称 |
+| `mainSeparator` | `<!-- Start of the main storyline -->` | 主线历史组之前的 system 消息。`{{storyline}}` 为主线名称（可能为空） |
+
+- 分隔消息中的 `{{ap::…}}` 与 ST 宏照常展开；`{{storyline}}` 在展开之后才换成名称，名称按原样插入。分隔消息展开后为空时不插入；
+- 只有历史中出现两条以上可见的故事线时才分组、插入分隔消息；只有主线时历史不变；
+- 提示词可以用条件变量 `storyline.name` / `storyline.main` / `storyline.if` / `storyline.new`（[expressions.md](expressions.md)）与宏 `{{ap::storyline}}` / `{{ap::storyline::main}}`（[macros.md](macros.md)）说明当前在写哪条故事线；
+- 需要 Advanced Preset 1.10.0 以上（更早的版本忽略这个字段：`#标签` 作为文字发送，历史保持原顺序）。
+
+`ap check`：`storylines` 不是 `true` 或映射时报错；未知字段、`separator` 没有 `{{storyline}}`（各条支线无法区分）、`minAdvancedPreset` 低于 1.10.0 时警告；没有声明 `storylines` 却使用了 `storyline.*` 或 `{{ap::storyline}}` 时警告（它们总是描述主线）。
+
+完整规则见 [meta-and-tasks.md](meta-and-tasks.md#故事线)。
 
 ## 主题 `theme`
 
