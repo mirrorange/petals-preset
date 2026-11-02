@@ -5,7 +5,8 @@ inputShaping:
   mode: extract
 
 # Side stories and if-lines: `#name` at the end of an input; default group separators.
-# The `storyline` entry of the context module tells Freesia which storyline she is writing.
+# Context module: `storylines` (history) explains the grouped history; `storyline` (input, above the
+# input) tells Freesia which storyline she is writing and that its state is independent.
 storylines: true
 
 meta:

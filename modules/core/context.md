@@ -1,23 +1,17 @@
 ---
 id: context
 name: Context
-description: Story recap, recent meta conversations, the current storyline, memories and the latest input supplied by Advanced Preset.
+description: Storylines, story recap, recent meta conversations, memories, the current storyline and the latest input supplied by Advanced Preset.
 toggle: always
 ---
-<!-- @entry id=storyline region=history order=50 when="!storyline.main" -->
-<storyline>
-This chat has more than one storyline. The chat history is grouped by storyline: each group opens with a `Start of Storyline …` marker, and the main storyline's group with `Start of the main storyline`. The other storylines come first; the storyline being written comes last.
+<!-- @entry id=storylines region=history order=50 when="storyline.grouped" -->
+<storylines>
+This chat has more than one storyline, and the chat history is grouped by storyline. Each group opens with a marker: `<!-- Start of Storyline NAME -->` for a side storyline, `<!-- Start of the main storyline -->` for the main one. The groups are not in story order: the other storylines come first, and the storyline being written comes last.
 
-<!-- @if storyline.if -->
-Current storyline: "{{ap::storyline}}", an if-line — an alternate "what if" branching off the main storyline. Its events never happen in the main storyline or in any other storyline, and they may contradict them.
-<!-- @else -->
-Current storyline: "{{ap::storyline}}", a side story set in the same world as the main storyline. Its events are real for the main storyline as well, so keep them consistent with it.
-<!-- @end -->
-<!-- @if storyline.new -->
-This storyline starts now: open it from {{ap::name::user}}'s input and make clear when and where it takes place relative to the main storyline.
-<!-- @end -->
-Write only the current storyline. Do not advance the main storyline or other storylines, and do not carry their scenes into this one.
-</storyline>
+- **Main storyline**: the story itself.
+- **Side stories**: set in the same world; their events are real for every storyline.
+- **If-lines** (names starting with "if"): alternate "what if" versions of the story; their events happen only in that if-line. Only the if-line being written is shown.
+</storylines>
 
 <!-- @entry id=recap region=history order=100 when="recap.present" -->
 <story_recap>
@@ -40,6 +34,21 @@ Recent meta conversations between {{ap::name::user}} and {{ap::name::narrator}},
 <global_memory>
 {{ap::memory::global}}
 </global_memory>
+
+<!-- @entry id=storyline region=input order=30 when="!storyline.main" -->
+<current_storyline>
+<!-- @if storyline.if -->
+This turn belongs to the if-line "{{ap::storyline}}", an alternate "what if" of the main storyline. What happens here never happens in the main storyline or in any other storyline, and it may contradict them.
+<!-- @else -->
+This turn belongs to the side story "{{ap::storyline}}". It is set in the same world as the main storyline, and its events are real there too, so keep them consistent with it.
+<!-- @end -->
+<!-- @if storyline.new -->
+The storyline starts with this turn: make clear when and where it takes place relative to the main storyline.
+<!-- @end -->
+
+- Write only this storyline. Do not advance the main storyline or other storylines, and do not carry their scenes into this one.
+- The state of this storyline is independent: do not update variables, write to databases or cause any other side effect, even if the settings ask for it (no variable update blocks). Output only the story content and the parts this workflow asks for.
+</current_storyline>
 
 <!-- @entry id=input region=input order=100 when="input.shaped" -->
 <input>
