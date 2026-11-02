@@ -75,8 +75,8 @@ structures:
     description: Where and when this story segment begins, shown as a status bar above the story.
     properties:
       date: "Story date as `MM-dd` (or the story's own calendar); `DayN` when the story gives no dates."
-      weekday: Day of the week; empty when the setting has no weeks.
-      time: "Time as `HH:mm`, or a period of the day (dawn, dusk) when no clock fits."
+      weekday: Day of the week.
+      time: "Time as `HH:mm`."
       location: Current scene or setting, a few words.
       weather: Current weather in a few words (or the indoor atmosphere).
     formatPrompt:
