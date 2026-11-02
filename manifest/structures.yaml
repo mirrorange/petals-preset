@@ -25,18 +25,19 @@ structures:
     kind: synopsis
     tag: synopsis
     field: synopsis
-    # The last 3 replies keep their synopsis in history: many cards give no explicit time, so earlier
-    # synopses are the only reference for the timeline.
-    history: 3
-    historyTemplate: |-
-      {{content}}
-
-      <synopsis>
-        <time>{{time}}</time>
-        <location>{{location}}</location>
-        <event>{{event}}</event>
-        <summary>{{summary}}</summary>
-      </synopsis>
+    # The last 3 replies keep their synopsis in history (after the story): many cards give no explicit
+    # time, so earlier synopses are the only reference for the timeline — unless the status bar gives
+    # it. In plaintext / prefill the synopses in history also show the output format.
+    history:
+      depth: 3
+      template: |-
+        <synopsis>
+          <time>{{time}}</time>
+          <location>{{location}}</location>
+          <event>{{event}}</event>
+          <summary>{{summary}}</summary>
+        </synopsis>
+      when: '!modules.status-bar || transport in ["plaintext", "prefill"]'
     description: Synopsis of the events in this story segment.
     properties:
       time: "When the events occurred: `MM-dd HH:mm - (MM-dd) HH:mm`, or `Day1 HH:mm - (Day2) HH:mm` without dates."
@@ -58,6 +59,19 @@ structures:
     field: status
     # Written before the story (after the planning): the scene's time and place are settled first.
     order: { before: "@content" }
+    # Plaintext / prefill: the last reply carries its status before the story (format example and
+    # continuity). Other transports get a "previous status" message before the input (status-bar module).
+    history:
+      depth: 1
+      template: |-
+        <status>
+          <date>{{date}}</date>
+          <weekday>{{weekday}}</weekday>
+          <time>{{time}}</time>
+          <location>{{location}}</location>
+          <weather>{{weather}}</weather>
+        </status>
+      when: 'transport in ["plaintext", "prefill"]'
     description: Where and when this story segment begins, shown as a status bar above the story.
     properties:
       date: "Story date as `MM-dd` (or the story's own calendar); `DayN` when the story gives no dates."

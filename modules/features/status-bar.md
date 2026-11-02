@@ -18,8 +18,13 @@ Before writing the story content, {{ap::name::narrator}} records where and when 
 - **Location:** The current scene or setting, in a few words.
 - **Weather:** The current weather in a few words (or the indoor atmosphere).
 
-Continue from the previous status and the story so far: time only moves forward, and the date, weekday and weather stay consistent unless the story changes them. Previous status (empty at the start of the story): {{ap::structure::status::last}}
+Continue from the previous status and the story so far: time only moves forward, and the date, weekday and weather stay consistent unless the story changes them.
 
 ### Format
 
 {{ap::structure::status}}
+
+<!-- @entry id=previous-status region=input order=50 when='transport != "plaintext" && transport != "prefill" && last.status' -->
+<previous_status>
+{{ap::structure::status::last}}
+</previous_status>
