@@ -38,6 +38,7 @@ npx ap preview --enable <id> --disable <id> # 关键开关、单选集的每个�
 npx ap preview --workflow <每个故事工作流 id>
 npx ap preview --input "我们去北边"         # 本次输入：检查 inputShaping（包裹 / 提取后放回的位置）
 npx ap preview --storyline 回忆 --storyline-new   # 故事线：检查支线（storyline.*）上的提示词
+npx ap preview --storyline-grouped                # 故事线：分组历史下的主线（storyline.grouped）
 ```
 
 输出较长时写入文件再查：`npx ap preview --transport plaintext --out /tmp/plaintext.txt`。需要程序化检查时用 `--json`（键：`vars`、`buildVars`、`modules`、`structures`、`stages`、`regions`，以及 `schema` 或 `tools`；`--input` 时还有 `historyInput`），例如：
@@ -72,7 +73,7 @@ npx ap preview --json --transport tool-multi | node -e "const d=JSON.parse(requi
 - [ ] 卡片（选项、事件摘要、自定义结构）显示正常；
 - [ ] 打开省 token 后的长对话（如果支持事件摘要）；
 - [ ] 用户输入整形（如果声明了 `inputShaping`）：发送、重新生成后“最近组装”显示输入已包裹 / 已提取；“继续”时显示未整形；
-- [ ] 故事线（如果声明了 `storylines`）：输入末尾写 `#支线`，消息顶部出现故事线卡片、标签被隐藏；“最近组装”中各组前有分隔，当前线在最后；`if` 开头的线不出现在主线的历史里；
+- [ ] 故事线（如果声明了 `storylines`）：输入末尾写 `#支线`，消息顶部出现故事线卡片、标签被隐藏；“最近组装”中各组前有分隔，当前线在最后；`if` 开头的线不出现在主线的历史里；切到支线后状态栏等结构接着这条线的上一条；开着“支线轮次不更新变量”时，支线回复后 MVU / 酒馆助手变量保持不变；
 - [ ] 新用户默认配置的效果。
 
 ## 4. 排查

@@ -84,6 +84,7 @@ warn  preset.yaml:41 groups: module `x` has no group
 | `--input <text>` | 模拟本次输入（聊天历史以这条用户消息结尾）：预设声明了 `inputShaping` 时 `input.shaped` 为真、`{{ap::input::text}}` 为这段文字，`historyStart` 区域后多出一节 `chat history (ST) · last user message`，显示历史中这条消息的样子（`wrap` 为包裹后的文字，`extract` 为已提取）。摘要中有一行 `input shaping: <mode>` |
 | `--storyline <name>` | 模拟在故事线 `<name>` 上生成（预设声明了 `storylines` 时）：`storyline.name` 为它、`storyline.main` 为假，名称以 `if` 开头时 `storyline.if` 为真。摘要中有一行 `storyline: …` |
 | `--storyline-new` | 当前故事线还没有消息（`storyline.new` 为真） |
+| `--storyline-grouped` | 在主线上模拟分组的历史（`storyline.grouped` 为真；给了 `--storyline` 时总为真） |
 | `--lang <lang>` | 按该面板语言选用随预设安装的用户模组与模板的翻译 |
 | `--json` | 输出 JSON：`vars`、`buildVars`、`skipped`、`modules`、`structures`、`stages`、`regions`、`historyInput`（`--input` 时历史中那条消息的样子，提取时为 `null`），以及 `schema`（structured）或 `tools`（工具传输） |
 | `--out <file>` | 写入文件而不是标准输出 |

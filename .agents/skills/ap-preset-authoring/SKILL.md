@@ -104,7 +104,7 @@ Write the story content.
 
 **指令**：`@entry`（模组）、`@section preamble|intro|outro|stage:<id> [style=…]`（工作流）、`@as system|user|assistant`（新消息）、`@style dialogue|imperative … @end`、`@if <expr> … @else … @end`、`@template … @end`（EJS 模板，可执行代码，安装需用户信任，需 `minAdvancedPreset: 1.9.0`；输出用 `<%-`，`<%=` 会 HTML 转义）。`<!--# … -->` 是作者注释（可跨行，内部指令不执行，不发送）；其他 HTML 注释原样留给模型。
 
-**常用条件变量**：`transport`、`style`、`workflow`、`gen.origin`（story/task）、`gen.type`、`meta.present` / `meta.pure` / `meta.mixed` / `meta.task`、`modules.<id>`、`params.<id>`、`flags.<id>`、`stages.<id>`、`memory.hasChat`、`recap.present`、`features.tokenSaving`、`chat.group`、`input.shaped`（预设声明了 `inputShaping` 且本次输入已整形）、`storyline.main` / `storyline.if` / `storyline.new` / `storyline.name`（预设声明了 `storylines`；宏 `{{ap::storyline}}`、`{{ap::storyline::main}}`）。
+**常用条件变量**：`transport`、`style`、`workflow`、`gen.origin`（story/task）、`gen.type`、`meta.present` / `meta.pure` / `meta.mixed` / `meta.task`、`modules.<id>`、`params.<id>`、`flags.<id>`、`stages.<id>`、`memory.hasChat`、`recap.present`、`features.tokenSaving`、`chat.group`、`input.shaped`（预设声明了 `inputShaping` 且本次输入已整形）、`storyline.main` / `storyline.if` / `storyline.new` / `storyline.name` / `storyline.grouped`（预设声明了 `storylines`；宏 `{{ap::storyline}}`、`{{ap::storyline::main}}`）。
 
 **常用宏**：`{{ap::name::<actor>}}`、`{{ap::prefix::<actor>}}`、`{{ap::param::<id>}}`、`{{ap::lang}}`、`{{ap::structure::<id>}}`、`{{ap::var::<id>}}`（`::keys` / `::values` / `::<key>`）、`{{ap::workflow::summary}}`、`{{ap::input::meta}}`、`{{ap::memory::chat}}`、`{{ap::recap}}`、`{{ap::recent_meta}}`。ST 宏（`{{user}}`、`{{char}}`）在 AP 宏之后展开。
 

@@ -106,7 +106,7 @@
 | 事件摘要 | 每段之后的 `<synopsis>`，默认打开，同时为节省 Token 提供数据 |
 | 选项 | 每轮 4 个方向不同的选项，默认打开 |
 | 用户输入整形 | `inputShaping: extract`：聊天记录以用户消息结尾时，把它从聊天记录中取出，由 `input` 区域的条目（`when="input.shaped"`）放进 `<input>` |
-| 故事线 | `storylines: true`（默认分隔）；`context` 模组在 `history` 区域开头放一个条目（`when="!storyline.main"`），说明历史按故事线分组、当前写的是哪条线：支线与主线同一世界、事件对主线也成立；if 线是另一种可能，不影响其他线；`storyline.new` 时提醒交代时间地点 |
+| 故事线 | `storylines: true`（默认分隔）；`context` 模组拆成两个条目：`history` 区域的 `storylines`（`when="storyline.grouped"`）介绍历史按故事线分组、分隔消息、主线 / 支线 / if 线的含义；`input` 区域用户输入之前的 `storyline`（`when="!storyline.main"`）说明本轮写的是哪条线、`storyline.new` 时交代时间地点，并要求只写这条线、状态独立——不更新变量、不写数据库、不产生故事正文和流程要求之外的副作用 |
 
 ## 第八步：推荐配置
 
