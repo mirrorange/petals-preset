@@ -52,7 +52,7 @@ warn  preset.yaml:41 groups: module `x` has no group
 
 ## ap dev
 
-开发服务器：先构建一次，然后监视源码（`preset.yaml`、`manifest/`、`modules/`、`workflows/`、`user-modules/`、`user-module-templates/`、`locales/`），变化后约 120 ms 重新构建并写入 `dist/`。构建失败时继续提供上一次成功的产物。
+开发服务器：先构建一次，然后监视源码（`preset.yaml`、`manifest/`、`modules/`、`workflows/`、`user-modules/`、`user-module-templates/`、`locales/`、`ui/`），变化后约 120 ms 重新构建并写入 `dist/`。构建失败时继续提供上一次成功的产物。
 
 | 端点 | 内容 |
 | --- | --- |
@@ -86,7 +86,7 @@ warn  preset.yaml:41 groups: module `x` has no group
 | `--json` | 输出 JSON：`vars`、`buildVars`、`skipped`、`modules`、`structures`、`stages`、`regions`、`historyInput`（`--input` 时历史中那条消息的样子，提取时为 `null`），以及 `schema`（structured）或 `tools`（工具传输） |
 | `--out <file>` | 写入文件而不是标准输出 |
 
-文本输出的开头是摘要（预设、传输方式与写法、工作流、配置、生效模组、构建变量、结构、阶段），然后按 `regions` 顺序列出每个区域的消息，最后是 schema / 工具。
+文本输出的开头是摘要（预设、传输方式与写法、工作流、配置、生效模组、构建变量、结构、阶段；指令式传输还有一行 `fields:`，按生成顺序列出本轮的阶段与结构字段名，含排序前缀），然后按 `regions` 顺序列出每个区域的消息，最后是 schema / 工具。
 
 预览与真实运行的差别：
 

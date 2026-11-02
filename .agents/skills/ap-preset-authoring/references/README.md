@@ -37,6 +37,7 @@ workflows/*.md           工作流：每个文件一个工作流（只认 workfl
 user-modules/*.md        随预设安装的用户模组（可选，只认下一层）
 user-module-templates/*.md 用户模组模板：新建用户模组时可选的示例（可选，只认下一层）
 locales/<lang>.yaml      面板翻译（可选）
+ui/**                    自定义结构组件的模板 / 模块 / 样式（可选，由结构的 ui 字段以 ./ui/… 引用）
 ```
 
 编译器读取源码时跳过以 `.` 开头的文件和目录、`node_modules/` 和 `dist/`。`preset.yml` 等同于 `preset.yaml`。

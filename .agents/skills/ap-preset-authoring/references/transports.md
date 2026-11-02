@@ -50,7 +50,7 @@
 
 ## tool-multi
 
-每个**生效阶段**一个工具（[阶段工具](#回合-schema-与阶段工具)）；结构作为[锚点阶段](workflows.md#结构的位置)工具的附加参数。AP 在一次生成内部循环：
+每个**生效阶段**一个工具（[阶段工具](#回合-schema-与阶段工具)）；结构作为[携带它的阶段](workflows.md#结构的位置)工具的附加参数。AP 在一次生成内部循环：
 
 1. 发送请求，读取模型的工具调用；
 2. 对每个属于本轮的调用，记录阶段值，并回一条工具结果：还有未完成阶段时为 `tools.results.next`（`{{next}}` = 下一个工具名），否则 `tools.results.done`；不认识的工具回 `tools.results.unknown`（`{{name}}` = 被调用的名字）；
@@ -81,12 +81,12 @@
 
 - 属性按生效阶段的顺序排列，字段名来自 `stage.field.name` 或模板 `tools.turn.field`（`{{n}}` 是阶段在**本轮生效阶段**中的序号，见 [workflows.md](workflows.md)）；
 - 字段说明来自 `stage.field.description` 或模板 `tools.turn.fieldDescription`（默认 `{{label}}`）；
-- 结构字段插在锚点阶段之后（没有阶段时放在最后），字段名带 `tools.structurePrefix`（默认 `z_`），schema 见 [structures.md](structures.md#指令式json-schema)；
-- 字段名应同时**按字母顺序**排列：部分 API（如 Gemini）忽略 schema 顺序、按字母顺序生成字段。默认的 `step{{n}}_…` 与 `z_` 前缀满足这一点（阶段不超过 9 个时）；`ap check` 会对不满足的命名告警，见 [structures.md](structures.md#字段前缀)；
+- 结构字段按[统一顺序](structures.md#字段名与顺序)插在阶段之间（默认在终结正文阶段之后），字段名带 `tools.orderPrefix` 生成的前缀，或旧的 `tools.structurePrefix`（默认 `z_`），schema 见 [structures.md](structures.md#指令式json-schema)；
+- 字段名应同时**按字母顺序**排列：部分 API（如 Gemini）忽略 schema 顺序、按字母顺序生成字段。`tools.orderPrefix`（`1_…`、`2_…`，按字段数补零）总能满足；旧的 `step{{n}}_…` 与 `z_` 前缀在阶段不超过 9 个、结构都在正文之后时满足；`ap check` 会对不满足的命名告警，见 [structures.md](structures.md#字段名与顺序)；
 - `required` 包含所有非可选阶段与必填结构；
 - `patch` 阶段的值是 `{ old_string, new_string }` 数组，说明来自 `tools.patch`。
 
-**阶段工具**（tool-multi）：名称来自 `stage.tool.name` 或模板 `tools.stage.name`（默认 `ap_stage_{{stage}}`），说明来自 `stage.tool.description` 或 `tools.stage.description`。参数只有一个：`tools.stage.param.name`（默认 `content`，字符串），`patch` 阶段为 `tools.stage.patchParam.name`（默认 `edits`，数组）；锚点阶段的工具另带结构参数。
+**阶段工具**（tool-multi）：名称来自 `stage.tool.name` 或模板 `tools.stage.name`（默认 `ap_stage_{{stage}}`），说明来自 `stage.tool.description` 或 `tools.stage.description`。参数只有一个：`tools.stage.param.name`（默认 `content`，字符串），`patch` 阶段为 `tools.stage.patchParam.name`（默认 `edits`，数组）；携带结构的阶段工具另带结构参数（按统一顺序排列；使用 `orderPrefix` 时工具自身的参数也带前缀）。
 
 解析时字段名宽松匹配：找不到精确字段时，接受键名等于阶段 id 或以 `_<阶段 id>` 结尾的字段（模型丢掉序号前缀时仍能读出）。
 
@@ -163,7 +163,8 @@ tools:
     done: "Recorded. The workflow is complete."
     unknown: "Unknown tool {{name}}."
     nudge: "Continue the workflow: call `{{next}}` now."
-  structurePrefix: z_                          # 结构字段名前缀（构建时应用，"" 为不加）
+  structurePrefix: z_                          # 旧的结构字段名前缀（构建时应用，"" 为不加）
+  orderPrefix: "{{n}}_"                        # 统一排序前缀（运行时生成；缺省不启用，true = "{{n}}_"）
   jsonStringHint: "(JSON object encoded as a string)"
   callerSchemaHint: "After your thinking, output the result as one JSON code block (```json … ```) that matches this JSON Schema:\n\n```json\n{{schema}}\n```"
 ```
@@ -171,8 +172,9 @@ tools:
 - 模板占位符：`{{n}}`（生效阶段序号）、`{{stage}}`（阶段 id）、`{{actor}}`（角色 id）、`{{label}}`（阶段标签）；工具文本中还有 `{{next}}` `{{first}}` `{{submit}}` `{{name}}`；`callerSchemaHint` 中有 `{{schema}}`；
 - 说明文字支持 `{{ap::…}}` 宏与 ST 宏；**名字不做宏展开**；
 - 单个阶段可以在工作流里覆盖自己的字段名 / 工具名 / 说明（[workflows.md](workflows.md)）；
-- `structurePrefix` 在构建时加到每个结构的 `field` 上，结构说明中的 `{{field}}` 是加前缀后的名字（[structures.md](structures.md#字段前缀)）；
-- 名字规则（报错）：工具名匹配 `^[A-Za-z0-9_-]{1,64}$`，字段名与参数名匹配 `^[A-Za-z_][A-Za-z0-9_]{0,63}$`；信封的两个字段不能同名；提交工具不能与示范轮次工具同名；
+- `orderPrefix`（I-135）：阶段与结构字段统一加上按本轮位置生成的前缀（`{{n}}` 按字段数补零），替代 `step{{n}}_` 阶段前缀与 `structurePrefix`；设置后 `structurePrefix` 被忽略（告警），结构说明中的 `{{field}}` 在运行时替换（[structures.md](structures.md#字段名与顺序)）；
+- `structurePrefix` 在构建时加到每个结构的 `field` 上，结构说明中的 `{{field}}` 是加前缀后的名字（[structures.md](structures.md#旧的结构前缀)）；
+- 名字规则（报错）：工具名匹配 `^[A-Za-z0-9_-]{1,64}$`，字段名与参数名匹配 `^[A-Za-z_][A-Za-z0-9_]{0,63}$`（带 `orderPrefix` 的名字允许数字开头）；信封的两个字段不能同名；提交工具不能与示范轮次工具同名；
 - 旧写法 `stagePrefix`、`stageResult`、`nudge`、`submit: <文字>` 仍能编译但给出警告；未知键给出警告。
 
 ## 示范轮次 `syntheticTurns`

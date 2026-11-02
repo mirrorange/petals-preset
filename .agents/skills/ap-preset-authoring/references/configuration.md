@@ -148,6 +148,7 @@ carrier:
 
 - 组装时 ST 按 Carrier 的顺序拼出提示词，AP 在每个锚点处换入区域内容（[assembly.md](assembly.md)）。锚点永远不会原样发给模型；
 - 安装或更新预设后，如果产物哈希变化，Carrier 被**重建**。用户手动改过 Carrier 的提示词时，重建会覆盖并提示；`chat_completion_source`、`reverse_proxy`、`proxy_password` 这些与连接绑定的字段会保留；
+- 重建的 Carrier 如果正被选中，会立即重新应用到 ST 当前设置（ST 按已应用的设置而不是磁盘上的预设拼提示词），新增的区域锚点马上生效。区域有内容但提示词里没有它的锚点时，组装调试会警告 `region <id>: its anchor is not in the prompt …`；
 - 所以要改提示词内容，请改预设源码，而不是改 Carrier。
 
 ## 迁移

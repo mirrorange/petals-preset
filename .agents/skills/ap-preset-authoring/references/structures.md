@@ -1,6 +1,6 @@
 # 结构
 
-**结构**是模型在正文之外交回的附加数据：叙述者的回复、记忆更新、剧情总结、代写、事件摘要、选项、行内批注，以及预设自定义的块。结构的**机制**（数据形状、解析、保存、卡片 UI）由 AP 内置；预设只为它们**命名**（标签名 / 字段名）并提供**说明文字**。
+**结构**是模型在正文之外交回的附加数据：叙述者的回复、记忆更新、剧情总结、代写、事件摘要、选项、顶部状态栏、行内批注，以及预设自定义的块。结构的**机制**（数据形状、解析、保存、卡片 UI）由 AP 内置；预设只为它们**命名**（标签名 / 字段名）并提供**说明文字**。
 
 ```yaml
 structures:
@@ -27,9 +27,9 @@ structures:
 
 | 字段 | 默认 | 说明 |
 | --- | --- | --- |
-| `kind` | 结构 id | 种类：`reply` `memory` `recap` `impersonate` `synopsis` `options` `annotations` `custom`。其他值报错 |
+| `kind` | 结构 id | 种类：`reply` `memory` `recap` `impersonate` `synopsis` `options` `status` `annotations` `custom`。其他值报错 |
 | `tag` | 结构 id | 对话式写法中的 XML 标签名，须匹配 `^[A-Za-z_][\w.-]*$` |
-| `field` | 结构 id | 指令式写法中的 JSON 字段名 / 工具参数名，须匹配 `^[A-Za-z_]\w*$`。模型实际看到的名字会加上 `tools.structurePrefix`（默认 `z_`，即 `z_options`），见 [字段前缀](#字段前缀) |
+| `field` | 结构 id | 指令式写法中的 JSON 字段名 / 工具参数名，须匹配 `^[A-Za-z_]\w*$`。模型实际看到的名字会加上排序前缀：`tools.orderPrefix`（如 `3_options`）或旧的 `tools.structurePrefix`（默认 `z_`，即 `z_options`），见 [字段名与顺序](#字段名与顺序) |
 | `description` | — | 字段整体的说明，进入 JSON Schema 的 `description`（模型可见，支持宏；`{{field}}` 为实际字段名） |
 | `properties` | — | 子字段说明，键只能是该种类的固定子字段（见下表），其他键报错 |
 | `count` | — | 仅 `options`：要求的选项数，写入 schema 的 `minItems` / `maxItems` |
@@ -41,20 +41,55 @@ structures:
 | `shape` | `text` | 仅 `custom`：`text`（一段文字）或 `kv`（键值对） |
 | `display` | `card` | 仅 `custom`：`card`（消息下方显示可折叠卡片）或 `hidden`（只保存，不显示） |
 | `history` | `0` | 仅 `annotations`：把批注以 CriticMarkup 重新注入最近 N 条助手消息的历史（见 [annotations](#annotations)） |
+| `order` | 终结正文阶段之后 | 结构在一轮输出中的位置（指令式）：数字排序键，或 `{ before: <阶段> }` / `{ after: <阶段> }`（也可写 `before:<阶段>` / `after:<阶段>`），`<阶段>` 为阶段 id 或 `@content`（终结正文阶段）。工作流可以覆盖，见 [字段名与顺序](#字段名与顺序)。行内结构忽略 |
+| `ui` | — | 卡片：`position`（`top` 消息顶部 / `bottom` 消息底部）、`order`（区域内排序键）；`custom` 还可以带自己的组件 `template` / `module` / `style`，见 [卡片](#卡片) |
 
 约束（报错）：
 
 - 除 `custom` 外，**每种 kind 最多一个**结构；
-- 结构之间的 `field` 不能重复；结构字段（加前缀后）也不能与工作流阶段字段、锚点阶段工具的参数同名（见 [workflows.md](workflows.md)）。
+- 结构之间的 `field` 不能重复；结构字段（加前缀后）也不能与工作流阶段字段、携带它的阶段工具的参数同名（见 [workflows.md](workflows.md)）。
 
-## 字段前缀
+使用 `order`、`ui`、`status` 或 `tools.orderPrefix` 的预设应声明 `minAdvancedPreset: 1.10.0`（否则 `ap check` 告警）：更早的 AP 会忽略这些设置，按旧规则把结构放在正文之后。
 
-部分 API（如 Gemini）不论 schema 中的顺序，都按**字母顺序**生成对象字段。结构字段如果排在阶段字段（`step1_…`）之前，模型会在开始规划和写正文之前先写出选项、摘要等，结果与正文不一致。
+## 字段名与顺序
 
-因此 `ap build` 会给每个结构字段加上 `tools.structurePrefix`（默认 `z_`，见 [transports.md](transports.md#tools-文案)），让它排在工作流字段之后：`options` → `z_options`。前缀在构建时写入产物的 `field`，结构化输出、单步工具与锚点阶段工具的参数都使用加前缀后的名字；对话式的标签名不受影响。`structurePrefix: ""` 表示不加前缀。
+部分 API（如 Gemini）不论 schema 中的顺序，都按**字母顺序**生成对象字段。结构字段如果排在阶段字段之前，模型会在开始规划和写正文之前先写出选项、摘要等，结果与正文不一致。反过来，有些结构（如状态栏）本就应该**先于正文**写出。
+
+### 统一排序（推荐）
+
+一轮输出中的阶段与结构按同一个顺序排列（I-134）：
+
+- 阶段按声明顺序，排序键为 `order`（默认 100 × 序号：100、200、300…），显式写的键必须递增；
+- 结构的位置依次取：工作流 frontmatter 的 `structures.order.<id>` → 结构的 `order` → 旧的 `structures.after`（工作流）→ 终结正文阶段之后；
+- 位置写成数字时与阶段的键比较（相同键时阶段在前）；写成 `{ before: 阶段 }` / `{ after: 阶段 }` 时紧贴该阶段；同一位置的多个结构按声明顺序；
+- `@content` 指终结正文阶段；引用的阶段本轮未激活时退回默认位置。
+
+例：思考 → 状态栏 → 正文 → 摘要：
+
+```yaml
+structures:
+  status: { kind: status, order: { before: "@content" } }
+  synopsis: { kind: synopsis }          # 默认：正文之后
+```
+
+清单设置 `tools.orderPrefix` 后（I-135），AP 在指令式传输中给每个字段加上**统一排序前缀**：模板中的 `{{n}}` 为该字段在本轮中的位置，按本轮字段总数补零（10 个以上为 `01_`…），于是字母顺序就是工作流顺序：
+
+```text
+1_thinking  2_status  3_story  4_synopsis
+```
+
+- `orderPrefix: true` 等同 `"{{n}}_"`；自定义模板必须含 `{{n}}`，且只能用字母、数字、`_`；
+- 前缀由 AP 在每轮按激活的阶段 / 结构生成，替代旧的阶段序号前缀（`step{{n}}_`，此时 `tools.turn.field` 宜写成 `{{stage}}`）与 `structurePrefix`（被忽略并告警）；
+- 结构说明中的 `{{field}}` 在构建时**保留**，运行时替换为本轮的实际字段名；直接写未加前缀的字段名（如 `` `status` ``）会告警；
+- 多工具模式下，结构由它**前面最近的阶段**的工具携带（没有则由后面最近的阶段）；携带结构的工具，其自身参数也带前缀（`2_content`、`3_status`），保证参数同样按字母顺序；
+- 解析时宽松匹配：模型丢掉前缀、只写 `status` 也能识别。
+
+### 旧的结构前缀
+
+未设置 `orderPrefix` 时，`ap build` 会给每个结构字段加上 `tools.structurePrefix`（默认 `z_`，见 [transports.md](transports.md#tools-文案)），让它排在工作流字段之后：`options` → `z_options`。前缀在构建时写入产物的 `field`，结构化输出、单步工具与携带结构的阶段工具的参数都使用加前缀后的名字；对话式的标签名不受影响。`structurePrefix: ""` 表示不加前缀。
 
 - `formatPrompt.field`、`description` 与 `properties` 中的 `{{field}}` 会替换为实际字段名，说明文字里提到字段名时都用它：`Fill the \`{{field}}\` field …`；
-- `ap check` 告警：上述文字直接写了未加前缀的字段名（如 `` `options` ``）；结构字段按字母顺序排在锚点阶段及其之前的阶段字段、或锚点阶段工具的参数之前；阶段字段本身不按字母顺序排列（如 `step10_…` 排在 `step2_…` 之前、或只用阶段 id 作字段名）。
+- `ap check` 告警：上述文字直接写了未加前缀的字段名（如 `` `options` ``）；结构字段按字母顺序排在它之前的阶段字段、或携带它的阶段工具的参数之前；显式放在某阶段之前的结构排在该阶段之后；阶段字段本身不按字母顺序排列（如 `step10_…` 排在 `step2_…` 之前、或只用阶段 id 作字段名）。
 
 ## 种类一览
 
@@ -66,8 +101,9 @@ structures:
 | `impersonate` | `string` | — | 是 | 代写的用户下一条输入，卡片可“填入输入框” |
 | `synopsis` | `{ time, location, event, summary }` | `time` `location` `event` `summary` | 是 | 本段的事件摘要卡片；省 token 时替代旧回复 |
 | `options` | `{ label, content }[]` | `label` `content` | 是 | 选项卡片，点击填入输入框 |
+| `status` | `{ date, weekday, time, location, weather }` | `date` `weekday` `time` `location` `weather` | 是 | 顶部状态栏：故事日期（或 `第N天`）、星期、时间、地点、天气 |
 | `annotations` | 正文内标记 → `Annotation[]` | — | — | **行内**结构：写在正文里，解析后从正文移除，显示为虚线下划线与气泡 |
-| `custom` | `string` 或 `Record<string, string>` | — | 是 | 预设自定义的块（状态栏等） |
+| `custom` | `string` 或 `Record<string, string>` | — | 是 | 预设自定义的块，可带自己的卡片组件 |
 
 “必填”指生成的 JSON Schema 中该字段是否进入 `required`。`memory` 与 `recap` 是可选的：模型可以不写。
 
@@ -87,7 +123,7 @@ structures: [options]
 
 请求的结构：
 
-- 指令式：作为字段加入回合 schema（结构化、单工具），或作为锚点阶段工具的附加参数（多工具），位置见 [workflows.md](workflows.md#结构的位置)；
+- 指令式：作为字段加入回合 schema（结构化、单工具），或作为携带它的阶段工具的附加参数（多工具），位置见 [workflows.md](workflows.md#结构的位置)；
 - 对话式：AP 从模型输出中提取对应标签；
 - 行内结构（`annotations`）：两种写法相同，AP 从正文中解析标记；
 
@@ -115,6 +151,9 @@ structures: [options]
 // synopsis
 { "type": "object", "properties": { "time": {…}, "location": {…}, "event": {…}, "summary": {…} },
   "required": ["time", "location", "event", "summary"], "additionalProperties": false }
+// status
+{ "type": "object", "properties": { "date": {…}, "weekday": {…}, "time": {…}, "location": {…}, "weather": {…} },
+  "required": ["date", "weekday", "time", "location", "weather"], "additionalProperties": false }
 // options（count: 4 时加 minItems / maxItems）
 { "type": "array", "items": { "type": "object",
   "properties": { "label": {…}, "content": {…} },
@@ -136,6 +175,7 @@ Gemini 不支持自由键的对象：`kv` 形式会改为 JSON 字符串字段�
 | `reply` `recap` `impersonate` `custom(text)` | `<tag>文字</tag>` |
 | `memory` | 每个操作一个块：`<tag><scope>memory</scope><operation>replace</operation><key>标题</key><content>内容</content></tag>`，可重复 |
 | `synopsis` | `<tag><time>…</time><location>…</location><event>…</event><summary>…</summary></tag>` |
+| `status` | `<tag><date>…</date><weekday>…</weekday><time>…</time><location>…</location><weather>…</weather></tag>` |
 | `options` | `<tag><option title="类型">内容</option>…</tag>`（也接受 `label="…"`） |
 | `custom(kv)` | `<tag><键>值</键>…</tag>`，每个子标签一个键 |
 
@@ -149,6 +189,7 @@ Gemini 不支持自由键的对象：`kv` 形式会改为 JSON 字符串字段�
 - `recap`：空串或 `null` 视为“无总结”；
 - `memory`：单个对象视为一项；`key` 缺失时读 `title`；`scope` 写 `global` 视为 `global_memory`，其他值视为 `memory`；`operation` 非 `delete` 一律视为 `replace`；`delete` 的 `content` 置为 `null`；没有 `key` 的项丢弃；
 - `options`：每项接受 `label` / `title` 与 `content` / `text`；字符串项视为 `content`；两者都为空的项丢弃；
+- `status`：字符串值先尝试 `JSON.parse`；子字段也接受别名（`day` → `date`，`week` / `dayOfWeek` → `weekday`，`clock` → `time`，`place` → `location`），缺失的子字段为空串；
 - `custom(kv)`：字符串值先尝试 `JSON.parse`；所有值转成字符串。
 
 ## 运行期语义
@@ -200,9 +241,28 @@ structures:
 
 显示为选项卡片：点击把内容填入输入框；按住 Ctrl / ⌘ / Shift / Alt 点击则直接发送。
 
+### status
+
+顶部状态栏（I-136）：AP 内置的卡片显示在消息**顶部**（思考等阶段卡片之下、正文之上），一行显示 `日期 星期 · 时间 · 地点 · 天气`（天气按关键词配图标），流式生成时随输出实时更新。用户可以点铅笔编辑五个字段，保存后覆盖该楼层的结构值（同 synopsis）。
+
+宜把它放在正文之前生成：`order: { before: "@content" }`。`{{ap::structure::status::last}}` 输出聊天中最近一次的状态（`日期 星期 时间 | 地点 | 天气`），便于让模型延续时间线：
+
+```yaml
+structures:
+  status:
+    kind: status
+    order: { before: "@content" }
+    properties:
+      date: Story date, or `Day N` when the story has no calendar.
+      weather: Current weather, a few words.
+    formatPrompt:
+      tag: "<status><date>…</date><weekday>…</weekday><time>…</time><location>…</location><weather>…</weather></status>"
+      field: "Fill `{{field}}` before the story."
+```
+
 ### custom
 
-`display: card` 显示可折叠卡片（标题为 `title`）；`hidden` 只保存在 sidecar 中，供脚本或 `{{ap::structure::<id>::last}}` 读取（聊天中最近一次的非空值，`kv` 形式为 JSON）。适合状态栏这类需要逐轮延续的数据：
+`display: card` 显示可折叠卡片（标题为 `title`）；`hidden` 只保存在 sidecar 中，供脚本或 `{{ap::structure::<id>::last}}` 读取（聊天中最近一次的非空值，`kv` 形式为 JSON）。适合需要逐轮延续的数据：
 
 ```yaml
 structures:
@@ -221,6 +281,40 @@ structures:
 ```markdown
 Previous status: {{ap::structure::status::last}}
 ```
+
+## 卡片
+
+结构卡片分两个区域：**顶部**（阶段卡片与正文之间）与**底部**（正文之下）。每种内置结构有默认区域与排序键，区域内按键从小到大排列，键相同时按结构声明顺序：
+
+| 区域 | 内置卡片（排序键） |
+| --- | --- |
+| `top` | `status`（100） |
+| `bottom` | `reply`（100）、`impersonate`（200）、`options`（300）、`synopsis`（400）、`memory`（500）、`recap`（600）、`custom`（700） |
+
+`ui.position` / `ui.order` 覆盖默认值，例如把选项放到摘要之后：`options: { kind: options, ui: { order: 450 } }`。顶部区域在流式生成时就显示（实时值），底部区域在生成结束后显示。
+
+### 自定义组件
+
+`custom` 结构可以带自己的前端组件（I-137），替代通用卡片，挂载在自己的 Shadow DOM 中（样式与页面互不影响）：
+
+```yaml
+structures:
+  mood:
+    kind: custom
+    shape: kv
+    ui:
+      position: top
+      order: 50
+      template: ./ui/mood.ejs        # 或内联源码
+      style: ./ui/mood.css
+```
+
+- **模板模式** `template`：EJS 模板（语法同 [templates.md](templates.md)），每次值变化时重新渲染为 HTML。可用变量：`value`（结构值）、`structure`（`{ id, kind, title }`）、`structures`（本条消息所有结构值）、`message`（`{ id, streaming, editable }`）、`preset`（`{ id, name, version }`）、`lang`。点击带 `data-ap-fill="文字"` 的元素会把文字填入输入框（按住修饰键直接发送）。适合简单 UI；
+- **模块模式** `module`：ES 模块源码，可以打包任意前端框架。导出 `mount(root, context)`（或默认导出函数 / `{ mount }`），`root` 是组件的 Shadow Root；返回清理函数或 `{ update(context), unmount() }`，没有 `update` 时值变化会重新挂载。`context` 含上面的变量，另有 `setValue(value)`（覆盖该楼层的结构值，仅生成结束后可用）与 `fillInput(text, send?)`；
+- `style`：放进 Shadow Root 的 CSS（两种模式通用）；
+- 三个字段都可以写内联源码，或写 `./ui/…` 单行路径引用预设目录 `ui/` 下的文件（构建时内联进产物）；`template` 与 `module` 二选一；`ap check` 检查模板语法、模块是否有导出；
+- **信任**：组件是预设附带的代码。安装 / 更新带组件的预设时，AP 弹窗询问“信任并启用”或“暂不启用”；未启用时组件**不显示**（也不显示通用卡片），之后可在面板 **配置 → 自定义 UI** 中开启。信任绑定组件代码的指纹，更新改动了组件代码时重新询问。内置预设与 `ap dev` 源默认启用；
+- 组件出错时卡片位置显示一行错误信息，不影响其他卡片。
 
 ### annotations
 

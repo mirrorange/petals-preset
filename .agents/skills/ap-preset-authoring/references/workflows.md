@@ -38,7 +38,8 @@ Write the story content.
 | `kind` | `story` | `story`：故事工作流（用户可选）；`task`：任务工作流（元指令、脚本调用时使用） |
 | `hint` | — | `{{ap::workflow::hint}}` 的值，通常是一句对工作流的概括 |
 | `stages` | — | **必填**，至少一个阶段 |
-| `structures.after` | 终结正文阶段 | 结构字段放在哪个阶段之后（见下） |
+| `structures.after` | 终结正文阶段 | 结构字段默认放在哪个阶段之后（见下） |
+| `structures.order` | — | 本工作流中各结构的位置：`{ <结构 id>: <数字> \| { before: <阶段> } \| { after: <阶段> } }`，覆盖结构自己的 `order`（见下） |
 
 故事工作流必须至少有一个 `content` 阶段（报错）。预设没有任务工作流时给出警告：元指令回复与脚本调用会退回到主工作流。
 
@@ -52,6 +53,7 @@ Write the story content.
 | `label` | `id` | 面板与阶段卡片上的名字，也是 `{{label}}` 占位符的值 |
 | `optional` | `false` | 可选阶段：不进入 schema 的 `required`；摘要中标注 `[optional]`；多工具模式不催促 |
 | `when` | — | 条件；为假时本轮去掉这个阶段（编号、字段名随之重排） |
+| `order` | 100 × 序号 | 排序键，用于与结构统一排序（见 [结构的位置](#结构的位置)）；必须大于前一阶段的键 |
 | `tag` | — | 对话式输出中把阶段包在 `<tag>…</tag>` 里（如 `<thinking>`） |
 | `field` | — | 结构化 / 单工具模式的字段：`{ name, description }`，或只写字符串作为 description |
 | `tool` | — | 多工具模式的工具：`{ name, description, param: { name, description } }`，或只写字符串作为 description |
@@ -89,9 +91,11 @@ Write the story content.
 
 模板占位符：`{{n}}`（在本轮**激活**阶段中的序号，从 1 开始）、`{{stage}}`（阶段 id）、`{{actor}}`（角色 id）、`{{label}}`。说明文字还会做宏展开；名称不会。
 
-名称必须合法且不冲突（报错）：字段名、参数名匹配 `^[A-Za-z_][A-Za-z0-9_]{0,63}$`，工具名匹配 `^[A-Za-z0-9_-]{1,64}$`；字段名不能与结构字段或其他阶段重复；工具名不能与其他阶段、提交工具或示范轮次工具重复。
+名称必须合法且不冲突（报错）：字段名、参数名匹配 `^[A-Za-z_][A-Za-z0-9_]{0,63}$`（使用 `tools.orderPrefix` 时为加前缀后的名字，允许以数字开头：`^[A-Za-z0-9_]{1,64}$`），工具名匹配 `^[A-Za-z0-9_-]{1,64}$`；字段名不能与结构字段或其他阶段重复；工具名不能与其他阶段、提交工具或示范轮次工具重复。
 
 > 让字段名带上 `{{n}}` 有助于模型按顺序输出字段。解析时也会容忍模型丢掉数字前缀：键名等于阶段 id 或以 `_<阶段id>` 结尾都能识别。
+>
+> 设置了 `tools.orderPrefix` 时，阶段与结构共用 AP 生成的统一排序前缀（`1_thinking`、`2_status`、`3_story`），字段名模板写 `{{stage}}` 即可，见 [structures.md](structures.md#字段名与顺序)。
 
 ## 分节 `@section`
 
@@ -114,7 +118,26 @@ Write the story content.
 
 ## 结构的位置
 
-结构（选项、事件摘要等）在 schema 和多工具中跟在某个阶段之后：默认是终结正文阶段，可以用 `structures: { after: <stage id> }` 改为其他阶段（例如审阅阶段之后）。多工具模式下，结构作为这个阶段工具的附加参数。
+结构（选项、事件摘要、状态栏等）与阶段在一轮输出中统一排序（I-134）。默认位置是终结正文阶段之后，可以用 `structures: { after: <stage id> }` 改为其他阶段（例如审阅阶段之后）。
+
+结构也可以有自己的位置：结构声明中的 `order`，或工作流中的 `structures.order`（优先）：
+
+```yaml
+---
+id: linear
+stages:
+  - { id: thinking, actor: narrator, kind: text }
+  - { id: story, actor: narrator, kind: content }
+structures:
+  order:
+    status: { before: story }     # 思考 → 状态栏 → 正文
+    synopsis: { after: story }
+---
+```
+
+- 数字与阶段的排序键比较（阶段默认 100、200、300…，可用阶段的 `order` 指定），`{ before | after: <阶段 id | @content> }` 紧贴该阶段；
+- `structures.order` 引用的阶段必须属于本工作流（报错），未知结构告警；
+- 多工具模式下，结构作为它**前面最近的阶段**工具的附加参数（结构排在所有阶段之前时由第一个阶段携带）。
 
 ## 工作流摘要
 

@@ -83,7 +83,11 @@ AP 接管的每条助手消息在 `message.extra.advanced_preset` 中保存一�
 - 阶段 `status`：`done`（完成）、`missing`（必需阶段没有输出）、`interrupted`（生成被中断）；
 - 消息正文 `mes` 只包含终结正文（或纯轮次的回复文字），阶段与结构不写进正文，所以切换预设或关闭 AP 后聊天记录仍然干净；
 - 用户在 UI 中切换原稿 / 修订稿时，`mes`、`patchesApplied` 与 `annotations` 随之改变。
-- 用户在事件摘要卡片上编辑后，`structures` 中对应的值被直接覆盖（只改当前 swipe，`mes` 不变）。
+- 用户在事件摘要 / 状态栏卡片上编辑后（或自定义组件调用 `setValue`），`structures` 中对应的值被直接覆盖（只改当前 swipe，`mes` 不变）。
+
+### 消息挂载点
+
+AP 在每条助手消息的 `.mes_text` 旁边挂载三个自定义元素（都不进入 `.mes_text` 内部）：`<ap-stages>`（阶段卡片）、`<ap-top-cards>`（顶部卡片区域，I-137）在正文之前，`<ap-cards>`（底部卡片区域）在正文之后。卡片的区域与顺序见 [structures.md](structures.md#卡片)；预设的自定义组件各自挂载在卡片区域内一个独立的 Shadow Root 中，只有用户启用了该预设的自定义 UI 后才挂载。是否启用按预设保存在扩展设置 `presets.<id>.customUi`（`{ enabled, hash }`，`hash` 为组件代码指纹）。
 
 ### 行内批注
 
