@@ -8,7 +8,7 @@ tools:
     description: >-
       One turn of the writing workflow between {{ap::name::narrator}} and {{ap::name::editor}}: every stage in order,
       each written by its persona, followed by the requested structures.
-    field: "step{{n}}_{{stage}}"
+    field: "{{stage}}"
     fieldDescription: "Step {{n}} · {{label}}"
   submit:
     name: submit_workflow
@@ -25,6 +25,10 @@ tools:
   patch:
     old: Exact text copied from the story content; long enough to match exactly once.
     new: Replacement text.
+  # Stages and structures share one ordering prefix (`1_questions`, `2_creative_input`, `3_status`,
+  # `4_story`, `5_synopsis`): fields sort alphabetically in turn order, so APIs that generate fields
+  # alphabetically (Gemini) keep the workflow order. `{{field}}` in structure texts is the final name.
+  orderPrefix: "{{n}}_"
   envelope:
     thinking: { name: thinking, description: "{{ap::name::narrator}}'s thought process about the task." }
     result: { name: result, description: "The task result, exactly in the requested format." }

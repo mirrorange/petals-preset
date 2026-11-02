@@ -58,6 +58,7 @@ configurationDefaults:
     event-synopsis: true
     freesia-comments: false
     options: true
+    status-bar: true
     skip-thought: false
     anti-evasion: true
     banned-expressions: true
