@@ -70,7 +70,9 @@ The storyline starts with this turn: make clear when and where it takes place re
 <!-- @end -->
 
 - Write only this storyline. Do not advance the main storyline or other storylines, and do not carry their scenes into this one.
+<!-- @if storyline.frozen -->
 - The state of this storyline is independent: do not update variables, write to databases or cause any other side effect, even if the settings ask for it (no variable update blocks). Output only the story content and the parts this workflow asks for.
+<!-- @end -->
 <!-- @end -->
 <!-- @if storyline.naming || storyline.namingMain -->
 
