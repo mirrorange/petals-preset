@@ -6,7 +6,7 @@
   "author": "mirrorange",
   "description": "Write stories with Freesia! Freesia writes, Petals gives suggestions — a dual-character driven workflow.",
   "minAdvancedPreset": "1.10.0",
-  "hash": "338b1cf01c1d7574",
+  "hash": "84564a2bc428256c",
   "actors": {
     "narrator": {
       "name": "Freesia",
@@ -2556,12 +2556,30 @@
               }
             },
             {
-              "text": "\n- Write only this storyline. Do not advance the main storyline or other storylines, and do not carry their scenes into this one.\n- The state of this storyline is independent: do not update variables, write to databases or cause any other side effect, even if the settings ask for it (no variable update blocks). Output only the story content and the parts this workflow asks for.\n",
+              "text": "\n- Write only this storyline. Do not advance the main storyline or other storylines, and do not carry their scenes into this one.\n",
               "when": {
                 "t": "not",
                 "e": {
                   "t": "var",
                   "path": "storyline.switching"
+                }
+              }
+            },
+            {
+              "text": "- The state of this storyline is independent: do not update variables, write to databases or cause any other side effect, even if the settings ask for it (no variable update blocks). Output only the story content and the parts this workflow asks for.\n",
+              "when": {
+                "t": "bin",
+                "op": "&&",
+                "l": {
+                  "t": "not",
+                  "e": {
+                    "t": "var",
+                    "path": "storyline.switching"
+                  }
+                },
+                "r": {
+                  "t": "var",
+                  "path": "storyline.frozen"
                 }
               }
             },
@@ -5048,7 +5066,7 @@
     },
     "storylines": {
       "enabled": true,
-      "freezeVariables": true
+      "freezeVariables": "all"
     }
   },
   "configurations": [

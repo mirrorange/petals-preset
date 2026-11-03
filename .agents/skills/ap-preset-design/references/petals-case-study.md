@@ -106,7 +106,7 @@
 | 事件摘要 | 每段之后的 `<synopsis>`，默认打开，同时为节省 Token 提供数据 |
 | 选项 | 每轮 4 个方向不同的选项，默认打开 |
 | 用户输入整形 | `inputShaping: extract`：聊天记录以用户消息结尾时，把它从聊天记录中取出，由 `input` 区域的条目（`when="input.shaped"`）放进 `<input>` |
-| 故事线 | `storylines: true`（默认分隔）；`context` 模组拆成两个条目：`history` 区域的 `storylines`（`when="storyline.grouped"`）介绍历史按故事线分组、分隔消息、主线 / 支线 / if 线的含义；`input` 区域用户输入之前的 `storyline`（`when="!storyline.main"`）说明本轮写的是哪条线、`storyline.new` 时交代时间地点，并要求只写这条线、状态独立——不更新变量、不写数据库、不产生故事正文和流程要求之外的副作用；同一条目在 `storyline.switching` 时说明新主线与原主线的关系；`storyline` 结构由 `context` 模组请求（AP 只在命名轮次发送），`storyline.naming` / `storyline.namingMain` 时请 Freesia 为新故事线 / 原主线起名 |
+| 故事线 | `storylines: true`（默认分隔）；`context` 模组拆成两个条目：`history` 区域的 `storylines`（`when="storyline.grouped"`）介绍历史按故事线分组、分隔消息、主线 / 支线 / if 线的含义；`input` 区域用户输入之前的 `storyline`（`when="!storyline.main"`）说明本轮写的是哪条线、`storyline.new` 时交代时间地点，并要求只写这条线；变量更新被阻止时（`storyline.frozen`）还要求状态独立——不更新变量、不写数据库、不产生故事正文和流程要求之外的副作用；同一条目在 `storyline.switching` 时说明新主线与原主线的关系；`storyline` 结构由 `context` 模组请求（AP 只在命名轮次发送），`storyline.naming` / `storyline.namingMain` 时请 Freesia 为新故事线 / 原主线起名 |
 
 ## 第八步：推荐配置
 
