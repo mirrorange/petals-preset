@@ -6,7 +6,7 @@
   "author": "mirrorange",
   "description": "Write stories with Freesia! Freesia writes, Petals gives suggestions — a dual-character driven workflow.",
   "minAdvancedPreset": "1.10.0",
-  "hash": "49911d10b186a117",
+  "hash": "338b1cf01c1d7574",
   "actors": {
     "narrator": {
       "name": "Freesia",
@@ -2262,7 +2262,7 @@
         {
           "pieces": [
             {
-              "text": "<storylines>\nThis chat has more than one storyline, and the chat history is grouped by storyline. Each group opens with a marker: `<!-- Start of Storyline NAME -->` for a side storyline (`?` for one that has no name yet), `<!-- Start of the main storyline -->` for the main one. The groups are not in story order: the other storylines come first, and the storyline being written comes last.\n\n- **Main storyline**: the story itself.\n- **Side stories**: set in the same world; their events are real for every storyline.\n- **If-lines** (names starting with \"if\"): alternate \"what if\" versions of the story; their events happen only in that if-line. Only the if-line being written is shown.\n</storylines>\n\n"
+              "text": "<storylines>\nThis chat has more than one storyline, and the chat history is grouped by storyline. Each group opens with a marker: `<!-- Start of Storyline NAME -->` for a side storyline (`?` for one that has no name yet), `<!-- Start of the main storyline -->` for the main one. The groups are not in story order: the other storylines come first, and the storyline being written comes last.\n\n- **Main storyline**: the story itself.\n- **Side stories**: set in the same world; their events are real for every storyline.\n- **If-lines**: alternate \"what if\" versions of the story; their events happen only in that if-line.\n</storylines>\n\n"
             }
           ]
         }
@@ -2422,20 +2422,57 @@
               }
             },
             {
+              "text": "This turn starts a new if-line, an alternate \"what if\" of the main storyline. What happens here never happens in the main storyline or in any other storyline, and it may contradict them.\n",
+              "when": {
+                "t": "bin",
+                "op": "&&",
+                "l": {
+                  "t": "bin",
+                  "op": "&&",
+                  "l": {
+                    "t": "not",
+                    "e": {
+                      "t": "var",
+                      "path": "storyline.switching"
+                    }
+                  },
+                  "r": {
+                    "t": "var",
+                    "path": "storyline.if"
+                  }
+                },
+                "r": {
+                  "t": "var",
+                  "path": "storyline.naming"
+                }
+              }
+            },
+            {
               "text": "This turn belongs to the if-line \"{{ap::storyline}}\", an alternate \"what if\" of the main storyline. What happens here never happens in the main storyline or in any other storyline, and it may contradict them.\n",
               "when": {
                 "t": "bin",
                 "op": "&&",
                 "l": {
-                  "t": "not",
-                  "e": {
+                  "t": "bin",
+                  "op": "&&",
+                  "l": {
+                    "t": "not",
+                    "e": {
+                      "t": "var",
+                      "path": "storyline.switching"
+                    }
+                  },
+                  "r": {
                     "t": "var",
-                    "path": "storyline.switching"
+                    "path": "storyline.if"
                   }
                 },
                 "r": {
-                  "t": "var",
-                  "path": "storyline.if"
+                  "t": "not",
+                  "e": {
+                    "t": "var",
+                    "path": "storyline.naming"
+                  }
                 }
               }
             },

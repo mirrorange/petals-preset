@@ -57,7 +57,7 @@ transport in ["structured", "tool-single", "tool-multi"]
 | `input.shaped` | 布尔 | 本次生成做了[用户输入整形](manifest.md#用户输入整形-inputshaping)（预设声明了 `inputShaping`，且聊天历史以用户消息结尾） |
 | `storyline.name` | 字符串 | 当前[故事线](meta-and-tasks.md#故事线)的名称；在主线上为主线的名称（未命名时为空字符串） |
 | `storyline.main` | 布尔 | 当前是主线（预设没有声明 `storylines` 或用户关闭了故事线时总为真） |
-| `storyline.if` | 布尔 | 当前是 if 线 |
+| `storyline.if` | 布尔 | 当前是 if 线（故事中的含义；`#if?` 的新故事线在命名前就为真）。故事线是否对其他线可见不提供给提示词 |
 | `storyline.new` | 布尔 | 当前故事线还没有消息（这一轮开始它） |
 | `storyline.grouped` | 布尔 | 历史按故事线分组（可见的故事线不止一条），带分隔消息；在主线上也可能为真 |
 | `storyline.naming` | 布尔 | AI 本轮为当前故事线命名（`#?` / `#!?`，及 `#!?` 轮次的滑动）；此时 `storyline.name` 为空 |
