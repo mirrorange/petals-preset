@@ -91,6 +91,29 @@ structures:
           <weather>...</weather>
         </status>
       field: Fill the `{{field}}` field with `date`, `weekday`, `time`, `location` and `weather` before writing the story.
+  storyline:
+    kind: storyline
+    tag: storyline
+    field: storyline
+    # Only requested when a storyline is named (`#?` / `#!?`, or an unnamed main storyline replaced
+    # with `#!`); the schema then holds just the names asked for.
+    description: The storyline name(s) asked for this turn.
+    properties:
+      name: >-
+        Name of the storyline this turn starts: a short title of a few words in the story's language,
+        `_` instead of spaces, no `#`, not starting with "if".
+      previous_main: >-
+        Name of the previous main storyline, which continues as a side story: a short title of a few
+        words in the story's language, `_` instead of spaces, no `#`, not starting with "if".
+    formatPrompt:
+      tag: |-
+        After the story content, output the name(s) asked for, one child tag each (leave out the one not asked for):
+
+        <storyline>
+          <name>...</name>
+          <previous_main>...</previous_main>
+        </storyline>
+      field: Fill the `{{field}}` field with the name(s) asked for.
   options:
     kind: options
     tag: options
