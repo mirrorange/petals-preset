@@ -360,7 +360,7 @@ inputShaping:
 
 ## 故事线 `storylines`
 
-声明预设支持**故事线**：用户在输入末尾写 `#名称` 来写支线故事（`#if…` 为 if 线），AP 按故事线整理聊天历史，并在每组历史前插入一条分隔消息。不声明时 `#标签` 只是普通文字、历史保持原顺序；声明后配置中多一个开关 `storylines.enabled`（默认开启，用户可在面板关闭）。
+声明预设支持**故事线**：用户在输入末尾写 `#名称` 来写支线故事（`#if…` 为 if 线；`#` 继续最近的支线，`#?` / `#!?` 开始由 AI 命名的新支线 / 新主线），AP 按故事线整理聊天历史，并在每组历史前插入一条分隔消息。不声明时 `#标签` 只是普通文字、历史保持原顺序；声明后配置中多一个开关 `storylines.enabled`（默认开启，用户可在面板关闭）。
 
 ```yaml
 storylines: true            # 使用默认分隔消息
@@ -379,10 +379,11 @@ storylines:
 
 - 分隔消息中的 `{{ap::…}}` 与 ST 宏照常展开；`{{storyline}}` 在展开之后才换成名称，名称按原样插入。分隔消息展开后为空时不插入；
 - 只有历史中出现两条以上可见的故事线时才分组、插入分隔消息；只有主线时历史不变；
-- 提示词可以用条件变量 `storyline.name` / `storyline.main` / `storyline.if` / `storyline.new` / `storyline.grouped`（[expressions.md](expressions.md)）与宏 `{{ap::storyline}}` / `{{ap::storyline::main}}`（[macros.md](macros.md)）说明当前在写哪条故事线；
+- 提示词可以用条件变量 `storyline.name` / `storyline.main` / `storyline.if` / `storyline.new` / `storyline.grouped` / `storyline.naming` / `storyline.namingMain` / `storyline.switching`（[expressions.md](expressions.md)）与宏 `{{ap::storyline}}` / `{{ap::storyline::main}}`（[macros.md](macros.md)）说明当前在写哪条故事线；
+- 让 AI 为新故事线命名需要一个 [`storyline` 结构](structures.md#故事线命名-storyline)，由某个模组请求；
 - 需要 Advanced Preset 1.10.0 以上（更早的版本忽略这个字段：`#标签` 作为文字发送，历史保持原顺序）。
 
-`ap check`：`storylines` 不是 `true` 或映射时报错；未知字段、`separator` 没有 `{{storyline}}`（各条支线无法区分）、`minAdvancedPreset` 低于 1.10.0 时警告；没有声明 `storylines` 却使用了 `storyline.*` 或 `{{ap::storyline}}` 时警告（它们总是描述主线）。
+`ap check`：`storylines` 不是 `true` 或映射时报错；未知字段、`separator` 没有 `{{storyline}}`（各条支线无法区分）、`minAdvancedPreset` 低于 1.10.0 时警告；没有声明 `storylines` 却使用了 `storyline.*` 或 `{{ap::storyline}}` 时警告（它们总是描述主线）；声明了 `storylines` 却没有模组请求 `storyline` 结构时警告（新故事线用通用名称）；没有声明 `storylines` 却有 `storyline` 结构、或有多个 `storyline` 结构时警告。
 
 完整规则见 [meta-and-tasks.md](meta-and-tasks.md#故事线)。
 

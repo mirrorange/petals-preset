@@ -82,8 +82,10 @@ warn  preset.yaml:41 groups: module `x` has no group
 | `--bundled-modules <ids>` | 合并哪些[随预设安装的用户模组](user-modules.md#预设携带的用户模组-user-modules)（逗号分隔的 id，`all` 为全部，`none` 为不合并）；默认按全新安装，合并 `enabled` 不为 `false` 的。它们排在最前 |
 | `--user-module-templates <ids>` | 把[用户模组模板](user-modules.md#用户模组模板-user-module-templates)当作新建的用户模组合并（逗号分隔的 id，`all` 为全部），排在 `--user-modules` 之后 |
 | `--input <text>` | 模拟本次输入（聊天历史以这条用户消息结尾）：预设声明了 `inputShaping` 时 `input.shaped` 为真、`{{ap::input::text}}` 为这段文字，`historyStart` 区域后多出一节 `chat history (ST) · last user message`，显示历史中这条消息的样子（`wrap` 为包裹后的文字，`extract` 为已提取）。摘要中有一行 `input shaping: <mode>` |
-| `--storyline <name>` | 模拟在故事线 `<name>` 上生成（预设声明了 `storylines` 时）：`storyline.name` 为它、`storyline.main` 为假，名称以 `if` 开头时 `storyline.if` 为真。摘要中有一行 `storyline: …` |
+| `--storyline <name>` | 模拟在故事线 `<name>` 上生成（预设声明了 `storylines` 时）：`storyline.name` 为它、`storyline.main` 为假，名称以 `if` 开头时 `storyline.if` 为真。`?` 模拟 `#?`：AI 命名的新故事线（`storyline.naming`、`storyline.new` 为真，名称为空，请求 `storyline` 结构）。摘要中有一行 `storyline: …` |
 | `--storyline-new` | 当前故事线还没有消息（`storyline.new` 为真） |
+| `--storyline-switch` | 模拟 `#!`：本轮把当前故事线设为主线（`storyline.switching` 与 `storyline.main` 为真）；与 `--storyline ?` 一起为 `#!?` |
+| `--storyline-naming-main` | 与 `--storyline-switch` 一起：原主线没有名称，由 AI 命名（`storyline.namingMain`，请求 `previous_main`） |
 | `--storyline-grouped` | 在主线上模拟分组的历史（`storyline.grouped` 为真；给了 `--storyline` 时总为真） |
 | `--lang <lang>` | 按该面板语言选用随预设安装的用户模组与模板的翻译 |
 | `--json` | 输出 JSON：`vars`、`buildVars`、`skipped`、`modules`、`structures`、`stages`、`regions`、`historyInput`（`--input` 时历史中那条消息的样子，提取时为 `null`），以及 `schema`（structured）或 `tools`（工具传输） |

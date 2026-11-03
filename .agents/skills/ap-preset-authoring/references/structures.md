@@ -102,6 +102,7 @@ structures:
 | `synopsis` | `{ time, location, event, summary }` | `time` `location` `event` `summary` | 是 | 本段的事件摘要卡片；省 token 时替代旧回复 |
 | `options` | `{ label, content }[]` | `label` `content` | 是 | 选项卡片，点击填入输入框 |
 | `status` | `{ date, weekday, time, location, weather }` | `date` `weekday` `time` `location` `weather` | 是 | 顶部状态栏：故事日期（或 `第N天`）、星期、时间、地点、天气 |
+| `storyline` | `{ name, previous_main }` | `name` `previous_main` | 是（本轮请求的子字段） | AI 为新故事线 / 原主线起的名称；只在需要命名的轮次请求，无卡片 |
 | `annotations` | 正文内标记 → `Annotation[]` | — | — | **行内**结构：写在正文里，解析后从正文移除，显示为虚线下划线与气泡 |
 | `custom` | `string` 或 `Record<string, string>` | — | 是 | 预设自定义的块，可带自己的卡片组件 |
 
@@ -126,6 +127,8 @@ structures: [options]
 - 指令式：作为字段加入回合 schema（结构化、单工具），或作为携带它的阶段工具的附加参数（多工具），位置见 [workflows.md](workflows.md#结构的位置)；
 - 对话式：AP 从模型输出中提取对应标签；
 - 行内结构（`annotations`）：两种写法相同，AP 从正文中解析标记；
+
+`storyline` 结构只在需要命名故事线的轮次请求（条件变量 `storyline.naming` / `storyline.namingMain` 至少一个为真），其他轮次即使模组列出它也不请求，见 [storyline](#故事线命名-storyline)。
 
 由脚本或其他扩展发起的任务生成（`gen.type == "script"` 且 `gen.origin == "task"`）不请求任何结构，即使模组列出了它们。
 
@@ -302,6 +305,42 @@ structures:
     formatPrompt:
       tag: "<status><date>…</date><weekday>…</weekday><time>…</time><location>…</location><weather>…</weather></status>"
       field: "Fill `{{field}}` before the story."
+```
+
+### 故事线命名 storyline
+
+（I-158）声明了 [`storylines`](manifest.md#故事线-storylines) 的预设用它让 AI 为故事线起名：`#?`（新支线）、`#!?`（新主线）与切换主线时没有名称的原主线，见 [meta-and-tasks.md](meta-and-tasks.md#命名新故事线)。
+
+- 只在需要命名的轮次请求：`name` 在 `storyline.naming` 时请求，`previous_main` 在 `storyline.namingMain` 时请求；结构化 / 工具传输的 Schema 只含这一轮的子字段（都必填），两者都不需要时整个结构不请求；
+- 宽松解析：JSON 中也接受 `previousMain` / `old_main` 等写法；字符串视为 `name`；标签块 `<storyline>名称</storyline>`（没有子标签时整块是名称）或 `<storyline><name>…</name><previous_main>…</previous_main></storyline>`；
+- 收到回复时 AP 整理名称并写入聊天（不显示卡片），名称已被使用时加编号；
+- 一个预设只读取第一个 `storyline` 结构。
+
+格式说明随这一轮要写的子字段变化，可以在模组中用条件写：
+
+```yaml
+structures:
+  storyline:
+    kind: storyline
+    properties:
+      name: A short name for the new storyline (a few words, no spaces or "#").
+      previous_main: A short name for the previous main storyline, which becomes a side story.
+    formatPrompt:
+      tag: "<storyline><name>…</name></storyline> (add <previous_main>…</previous_main> when asked to name the previous main storyline)"
+      field: "Fill `{{field}}` with the storyline name(s) asked for."
+```
+
+```markdown
+---
+id: storyline-naming
+toggle: always
+region: task
+when: storyline.naming || storyline.namingMain
+structures: [storyline]
+---
+<!-- @if storyline.naming -->This turn starts a new storyline: give it a name.<!-- @end -->
+<!-- @if storyline.namingMain -->The previous main storyline has no name yet: name it too.<!-- @end -->
+{{ap::structure::storyline}}
 ```
 
 ### custom
