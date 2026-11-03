@@ -12,7 +12,7 @@ This chat has more than one storyline, and the chat history is grouped by storyl
 
 - **Main storyline**: the story itself.
 - **Side stories**: set in the same world; their events are real for every storyline.
-- **If-lines** (names starting with "if"): alternate "what if" versions of the story; their events happen only in that if-line. Only the if-line being written is shown.
+- **If-lines**: alternate "what if" versions of the story; their events happen only in that if-line.
 </storylines>
 
 <!-- @entry id=recap region=history order=100 when="recap.present" -->
@@ -53,7 +53,11 @@ The storyline starts with this turn: make clear when and where it takes place re
 - Write only this storyline. Do not continue the previous main storyline or other storylines, and do not carry their scenes into this one.
 <!-- @else -->
 <!-- @if storyline.if -->
+<!-- @if storyline.naming -->
+This turn starts a new if-line, an alternate "what if" of the main storyline. What happens here never happens in the main storyline or in any other storyline, and it may contradict them.
+<!-- @else -->
 This turn belongs to the if-line "{{ap::storyline}}", an alternate "what if" of the main storyline. What happens here never happens in the main storyline or in any other storyline, and it may contradict them.
+<!-- @end -->
 <!-- @else -->
 <!-- @if storyline.naming -->
 This turn starts a new side story. It is set in the same world as the main storyline, and its events are real there too, so keep them consistent with it.
