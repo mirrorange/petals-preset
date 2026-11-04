@@ -21,6 +21,7 @@
 | [meta-and-tasks.md](meta-and-tasks.md) | 元指令、生成来源、任务工作流、历史改写与省 token |
 | [configuration.md](configuration.md) | 配置层、推荐配置、Carrier、迁移 |
 | [user-modules.md](user-modules.md) | 插入点、用户模组（含导入导出格式）、预设携带的用户模组与用户模组模板 |
+| [regex-and-quick-replies.md](regex-and-quick-replies.md) | 预设携带的 ST 正则脚本与快速回复集 |
 | [locales.md](locales.md) | 面板文字翻译 |
 | [assembly.md](assembly.md) | 一次生成的完整组装流程 |
 | [cli.md](cli.md) | `ap` 命令行 |
@@ -28,7 +29,7 @@
 
 ## 源码结构
 
-预设仓库里只有五类文件是源码，其余文件（README、`package.json`、`.github/`、`.agents/` 等）都会被编译器忽略：
+预设仓库里只有下面这些文件是源码，其余文件（README、`package.json`、`.github/`、`.agents/` 等）都会被编译器忽略：
 
 ```
 preset.yaml              清单：身份、角色、区域、参数、结构、配置……
@@ -36,6 +37,8 @@ modules/**/*.md          模组：每个文件一个模组（可以放在任意�
 workflows/*.md           工作流：每个文件一个工作流（只认 workflows/ 下一层）
 user-modules/*.md        随预设安装的用户模组（可选，只认下一层）
 user-module-templates/*.md 用户模组模板：新建用户模组时可选的示例（可选，只认下一层）
+regex-scripts/*.yaml     ST 正则脚本，写入 Carrier（可选，只认下一层；也可以是 .yml / .json）
+quick-replies/*.yaml     ST 快速回复集，预设启用时加入全局列表（可选，只认下一层；也可以是 .yml / .json）
 locales/<lang>.yaml      面板翻译（可选）
 ui/**                    自定义结构组件的模板 / 模块 / 样式（可选，由结构的 ui 字段以 ./ui/… 引用）
 ```

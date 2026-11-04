@@ -19,6 +19,7 @@ preset.yaml          清单根文件：元数据、角色、区域、Carrier…�
 manifest/*.yaml      清单片段（参数、结构、工具、推荐配置、行为），构建时合并
 modules/**/*.md      模组（一个文件一个）
 workflows/*.md       工作流
+quick-replies/*.yaml 快速回复集（选中预设时加入 ST 的全局快速回复集列表）
 locales/*.yaml       面板翻译
 dist/                构建产物（由 ap build 生成，发布时提交）
 DESIGN.md            设计稿（如果有）

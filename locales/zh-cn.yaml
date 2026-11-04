@@ -172,3 +172,18 @@ insertionPoints:
   writing-style: { label: 文风, description: 位于文风块内，所选文风之后。 }
   after-history: { label: 历史之后, description: 紧接在聊天历史与记忆之后，适合放当前状态或提醒。 }
   before-task: { label: 任务之前, description: 紧挨在工作流指令之前。 }
+
+quickReplySets:
+  petals:
+    qrList:
+      meta: { label: 元指令, title: "和 {{ap::name::narrator}} 说话：在输入框末尾追加 @{{ap::name::narrator}}" }
+      summary:
+        label: 总结
+        title: 请 {{ap::name::narrator}} 总结目前为止的故事
+        message: "@{{ap::name::narrator}} 请总结目前为止的故事。\n{{input}}"
+      impersonate:
+        label: 代写回复
+        title: 请 {{ap::name::narrator}} 代写你的下一条回复（输入框中的文字作为提示）
+        message: "@{{ap::name::narrator}} 请代写我的下一条回复。\n{{input}}"
+      storyline: { label: 故事线, title: "继续最近的支线：在输入框末尾追加 #" }
+      branch: { label: 新分支, title: "开始由 {{ap::name::narrator}} 命名的新支线：在输入框末尾追加 #?" }

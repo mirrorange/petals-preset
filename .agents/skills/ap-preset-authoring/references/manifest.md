@@ -286,6 +286,8 @@ regex:
 
 `requires` 求值时只有 `meta.*` 可用（此时尚未组装）。非法正则或 `target` 报错。
 
+正则标记只用来判断，不改写文字。要让 ST 替换、隐藏或美化文字，请写 ST 的[正则脚本](regex-and-quick-replies.md#正则脚本-regex-scripts)（`regex-scripts/`）。
+
 ## 元指令 `meta`
 
 ```yaml

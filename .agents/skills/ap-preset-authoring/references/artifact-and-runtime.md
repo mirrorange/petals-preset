@@ -18,6 +18,7 @@
 | `regions` `anchors` `workflowRegion` | 区域 |
 | `params` `groups` `modules` `entries` `insertionPoints` `userModules` `userModuleTemplates` `vars` | 参数、分组、模组、已排序的条目（条件已编译为 AST）、插入点、随预设安装的用户模组与用户模组模板（条目文字为源码原文，翻译在各项的 `locales` 中，见 [user-modules.md](user-modules.md#预设中的用户模组)）、构建变量 |
 | `workflows` `structures` `regex` `meta` `tokenSaving` | 工作流、结构、正则标记、元指令、省 token |
+| `regexScripts` `quickReplySets` | ST 正则脚本（ST 的 `RegexScriptData`）与快速回复集，没有时省略（见 [regex-and-quick-replies.md](regex-and-quick-replies.md)） |
 | `syntheticTurns` `tools` | 工具传输的文案 |
 | `theme` | 主题色 |
 | `carrier` | 生成好的 ST 提示词列表与顺序 |
@@ -41,7 +42,8 @@ AP 面板 → **预设**：
 - 产物包含[模板](templates.md)时，安装前显示全部模板代码并请用户确认信任；更新时模板代码与已安装版本相同则不再询问。取消则不安装。内置与开发服务器的预设不询问；
 - 查找顺序：开发服务器 → 已安装 → 内置。已安装副本版本低于内置版本时使用内置版本；
 - 安装 / 更新后：按[迁移](configuration.md#迁移)处理用户配置与用户模组，然后确保 Carrier 存在且与产物一致；
-- 删除已安装的预设会同时删除它的 Carrier（内置预设则回退到内置版本）。
+- 产物中有无需点击即会执行的[快速回复](regex-and-quick-replies.md#运行期)时，安装前同样请用户确认（与已安装版本相同时不再询问）；
+- 删除已安装的预设会同时删除它的 Carrier（内置预设则回退到内置版本）与 AP 为它创建的快速回复集。
 
 **发布建议**：把 `dist/<id>.apreset.json` 提交到仓库（或作为 Release 附件），给用户 GitHub 上的文件链接。注意 GitHub Release 附件的下载链接不支持跨域访问，浏览器中的 AP 无法直接从它导入；请使用仓库文件链接（`blob/` 或 `raw.githubusercontent.com`）。
 

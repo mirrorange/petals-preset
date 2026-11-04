@@ -52,7 +52,7 @@ warn  preset.yaml:41 groups: module `x` has no group
 
 ## ap dev
 
-开发服务器：先构建一次，然后监视源码（`preset.yaml`、`manifest/`、`modules/`、`workflows/`、`user-modules/`、`user-module-templates/`、`locales/`、`ui/`），变化后约 120 ms 重新构建并写入 `dist/`。构建失败时继续提供上一次成功的产物。
+开发服务器：先构建一次，然后监视源码（`preset.yaml`、`manifest/`、`modules/`、`workflows/`、`user-modules/`、`user-module-templates/`、`regex-scripts/`、`quick-replies/`、`locales/`、`ui/`），变化后约 120 ms 重新构建并写入 `dist/`。构建失败时继续提供上一次成功的产物。
 
 | 端点 | 内容 |
 | --- | --- |

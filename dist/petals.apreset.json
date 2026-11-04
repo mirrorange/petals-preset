@@ -6,7 +6,7 @@
   "author": "mirrorange",
   "description": "Write stories with Freesia! Freesia writes, Petals gives suggestions — a dual-character driven workflow.",
   "minAdvancedPreset": "1.10.0",
-  "hash": "84564a2bc428256c",
+  "hash": "fdb6ec87ab6578aa",
   "actors": {
     "narrator": {
       "name": "Freesia",
@@ -4530,6 +4530,116 @@
       }
     }
   ],
+  "quickReplySets": [
+    {
+      "id": "petals",
+      "name": "AP · Petals Preset",
+      "global": true,
+      "visible": true,
+      "disableSend": false,
+      "placeBeforeInput": false,
+      "injectInput": false,
+      "color": "transparent",
+      "onlyBorderColor": false,
+      "qrList": [
+        {
+          "id": "meta",
+          "label": "Freesia",
+          "icon": "fa-at",
+          "showLabel": false,
+          "title": "Talk to {{ap::name::narrator}}: append @{{ap::name::narrator}} to the input",
+          "message": "/setinput {{input}} @{{ap::name::narrator}}",
+          "contextList": [],
+          "preventAutoExecute": true,
+          "isHidden": false,
+          "automationId": "",
+          "executeOnStartup": false,
+          "executeOnUser": false,
+          "executeOnAi": false,
+          "executeOnChatChange": false,
+          "executeOnGroupMemberDraft": false,
+          "executeOnNewChat": false,
+          "executeBeforeGeneration": false
+        },
+        {
+          "id": "summary",
+          "label": "Summary",
+          "icon": "fa-scroll",
+          "showLabel": false,
+          "title": "Ask {{ap::name::narrator}} to summarize the story so far",
+          "message": "@{{ap::name::narrator}} Please summarize the story so far.\n{{input}}",
+          "contextList": [],
+          "preventAutoExecute": true,
+          "isHidden": false,
+          "automationId": "",
+          "executeOnStartup": false,
+          "executeOnUser": false,
+          "executeOnAi": false,
+          "executeOnChatChange": false,
+          "executeOnGroupMemberDraft": false,
+          "executeOnNewChat": false,
+          "executeBeforeGeneration": false
+        },
+        {
+          "id": "impersonate",
+          "label": "Ghostwrite",
+          "icon": "fa-feather-pointed",
+          "showLabel": false,
+          "title": "Ask {{ap::name::narrator}} to ghostwrite your next reply (the text in the input box is the hint)",
+          "message": "@{{ap::name::narrator}} Please ghostwrite my next reply.\n{{input}}",
+          "contextList": [],
+          "preventAutoExecute": true,
+          "isHidden": false,
+          "automationId": "",
+          "executeOnStartup": false,
+          "executeOnUser": false,
+          "executeOnAi": false,
+          "executeOnChatChange": false,
+          "executeOnGroupMemberDraft": false,
+          "executeOnNewChat": false,
+          "executeBeforeGeneration": false
+        },
+        {
+          "id": "storyline",
+          "label": "Storyline",
+          "icon": "fa-hashtag",
+          "showLabel": false,
+          "title": "Continue the most recent side storyline: append # to the input",
+          "message": "/setinput {{input}} #",
+          "contextList": [],
+          "preventAutoExecute": true,
+          "isHidden": false,
+          "automationId": "",
+          "executeOnStartup": false,
+          "executeOnUser": false,
+          "executeOnAi": false,
+          "executeOnChatChange": false,
+          "executeOnGroupMemberDraft": false,
+          "executeOnNewChat": false,
+          "executeBeforeGeneration": false
+        },
+        {
+          "id": "branch",
+          "label": "New branch",
+          "icon": "fa-code-branch",
+          "showLabel": false,
+          "title": "Start a new side storyline that {{ap::name::narrator}} names: append #? to the input",
+          "message": "/setinput {{input}} #?",
+          "contextList": [],
+          "preventAutoExecute": true,
+          "isHidden": false,
+          "automationId": "",
+          "executeOnStartup": false,
+          "executeOnUser": false,
+          "executeOnAi": false,
+          "executeOnChatChange": false,
+          "executeOnGroupMemberDraft": false,
+          "executeOnNewChat": false,
+          "executeBeforeGeneration": false
+        }
+      ]
+    }
+  ],
   "meta": {
     "trigger": "@{{ap::name::narrator}}",
     "wrap": true,
@@ -5529,6 +5639,34 @@
         "before-task": {
           "label": "任务之前",
           "description": "紧挨在工作流指令之前。"
+        }
+      },
+      "quickReplySets": {
+        "petals": {
+          "qrList": {
+            "meta": {
+              "label": "元指令",
+              "title": "和 {{ap::name::narrator}} 说话：在输入框末尾追加 @{{ap::name::narrator}}"
+            },
+            "summary": {
+              "label": "总结",
+              "title": "请 {{ap::name::narrator}} 总结目前为止的故事",
+              "message": "@{{ap::name::narrator}} 请总结目前为止的故事。\n{{input}}"
+            },
+            "impersonate": {
+              "label": "代写回复",
+              "title": "请 {{ap::name::narrator}} 代写你的下一条回复（输入框中的文字作为提示）",
+              "message": "@{{ap::name::narrator}} 请代写我的下一条回复。\n{{input}}"
+            },
+            "storyline": {
+              "label": "故事线",
+              "title": "继续最近的支线：在输入框末尾追加 #"
+            },
+            "branch": {
+              "label": "新分支",
+              "title": "开始由 {{ap::name::narrator}} 命名的新支线：在输入框末尾追加 #?"
+            }
+          }
         }
       }
     }
