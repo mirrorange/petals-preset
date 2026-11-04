@@ -36,6 +36,8 @@ https://github.com/mirrorange/petals-preset/blob/main/dist/petals.apreset.json
 
 之后可以在预设页一键“从来源更新”，你的配置修改、我的模组与记忆都会保留。
 
+还没有安装 Advanced Preset？`petals.apreset.json` 也是一个标准的 SillyTavern 预设：下载后在 ST 的对话补全预设中直接 **导入**，AI 会告诉你如何安装插件；装有[酒馆助手](https://github.com/N0VI028/JS-Slash-Runner)时，在它询问时启用预设中的脚本，即可自动从 GitHub / GitLab / Codeberg 安装 Advanced Preset。刷新页面后，插件会自动把它换成 `AP · Petals Preset`。
+
 ## 🛠️ 开发
 
 需要 Node.js 20+。
@@ -60,7 +62,7 @@ npm run dev        # 监视源码并在 http://localhost:4747 提供预设
 | `quick-replies/petals.yaml` | 快速回复集（选中预设时加入 ST 的全局快速回复集列表） |
 | `user-module-templates/*.md` | 用户模组模板：新建「我的模组」时可选的示例（`<id>.zh-cn.md` 为中文版） |
 | `locales/zh-cn.yaml` | 面板文案（含预设名称与描述） |
-| `dist/petals.apreset.json` | 构建产物（提交进仓库） |
+| `dist/petals.apreset.json` | 构建产物：预设文件（标准 ST 预设，附带酒馆助手安装脚本；提交进仓库） |
 
 ## 📚 延伸阅读
 
