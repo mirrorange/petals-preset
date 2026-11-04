@@ -37,6 +37,10 @@ npx ap preview --config <每个推荐配置 id>
 npx ap preview --enable <id> --disable <id> # 关键开关、单选集的每个成员
 npx ap preview --workflow <每个故事工作流 id>
 npx ap preview --input "我们去北边"         # 本次输入：检查 inputShaping（包裹 / 提取后放回的位置）
+npx ap preview --storyline 回忆 --storyline-new   # 故事线：检查支线（storyline.*）上的提示词
+npx ap preview --storyline-grouped                # 故事线：分组历史下的主线（storyline.grouped）
+npx ap preview --storyline '?'                    # 故事线：AI 命名的新支线（storyline.naming，请求 storyline 结构）
+npx ap preview --storyline '?' --storyline-switch --storyline-naming-main   # 新主线，并为原主线命名
 ```
 
 输出较长时写入文件再查：`npx ap preview --transport plaintext --out /tmp/plaintext.txt`。需要程序化检查时用 `--json`（键：`vars`、`buildVars`、`modules`、`structures`、`stages`、`regions`，以及 `schema` 或 `tools`；`--input` 时还有 `historyInput`），例如：
@@ -55,7 +59,7 @@ npx ap preview --json --transport tool-multi | node -e "const d=JSON.parse(requi
 - [ ] 参数未设置时相关文字不出现，设置后正确出现；
 - [ ] 没有残留的 `{{ap::…}}`（未展开的宏）。`{{user}}`、`{{char}}` 原样出现是正常的——ST 在之后展开。
 
-预览与真实运行的差别：ST 宏不展开；记忆、总结、最近元指令为空（`memory.*`、`recap.present`、`meta.recent`、`chat.group` 为假）；元指令文本是占位符 `(meta text)`；没有 `--input` 时没有本次输入（`input.shaped` 为假）。
+预览与真实运行的差别：ST 宏不展开；记忆、总结、最近元指令为空（`memory.*`、`recap.present`、`meta.recent`、`chat.group` 为假）；元指令文本是占位符 `(meta text)`；没有 `--input` 时没有本次输入（`input.shaped` 为假）；没有 `--storyline` 时在主线上（`storyline.main` 为真）。
 
 ## 3. 在 SillyTavern 里实测
 
@@ -71,6 +75,7 @@ npx ap preview --json --transport tool-multi | node -e "const d=JSON.parse(requi
 - [ ] 卡片（选项、事件摘要、自定义结构）显示正常；
 - [ ] 打开省 token 后的长对话（如果支持事件摘要）；
 - [ ] 用户输入整形（如果声明了 `inputShaping`）：发送、重新生成后“最近组装”显示输入已包裹 / 已提取；“继续”时显示未整形；
+- [ ] 故事线（如果声明了 `storylines`）：输入末尾写 `#支线`，消息顶部出现故事线卡片、标签被隐藏；“最近组装”中各组前有分隔，当前线在最后；`if` 开头的线（以及 `#@` 标记或面板中设为不可见的线）不出现在其他线的历史里，面板中设为可见的 if 线则出现；`#if?` 的轮次 `storyline.if` 为真；切到支线后状态栏等结构接着这条线的上一条；`#?` / `#!?` 的回复得到 AI 起的名字（故事线面板中可见），滑动后重新命名；只写 `#` 时输入被补成最近支线的名字；支线上选项卡片填入的文字带 `#支线名称`；“阻止支线变量更新”为全部时，支线回复后 MVU / 酒馆助手变量保持不变（仅 if 线时只有 if 线保持不变），“最近组装”中被阻止的轮次标有 frozen，`storyline.frozen` 的提示词随之出现；重命名、可见性等工具栏操作后标签与卡片随之更新；
 - [ ] 新用户默认配置的效果。
 
 ## 4. 排查

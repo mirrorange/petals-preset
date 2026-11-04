@@ -33,8 +33,8 @@ structures:
 | `description` | — | 字段整体的说明，进入 JSON Schema 的 `description`（模型可见，支持宏；`{{field}}` 为实际字段名） |
 | `properties` | — | 子字段说明，键只能是该种类的固定子字段（见下表），其他键报错 |
 | `count` | — | 仅 `options`：要求的选项数，写入 schema 的 `minItems` / `maxItems` |
-| `history` | `0` | 仅 `synopsis`：最近几条原样发送的助手消息附带自己的事件摘要（0 表示不附带），见下 |
-| `historyTemplate` | `{{content}}` + 空行 + `[{{time}} · {{location}}] {{event}}: {{summary}}` | 仅 `synopsis`：附带摘要的消息的格式 |
+| `history` | — | 历史回传：最近 N 条助手消息再次带上该结构（任意非行内种类），可指定模板、位置与条件，见 [历史回传](#历史回传)。`annotations` 的 `history` 是数字，含义不同（见下） |
+| `historyTemplate` | `{{content}}` + 空行 + `[{{time}} · {{location}}] {{event}}: {{summary}}` | 旧写法，仅 `synopsis` 配合数字 `history`：附带摘要的消息的格式，见 [旧写法](#旧写法synopsis-的数字-history) |
 | `title` | 结构 id | 卡片标题（自定义结构用；`reply` 等也可以设，如花瓣的回复卡片显示叙述者名字）。可在 `locales` 中翻译 |
 | `formatPrompt.tag` | `''` | 对话式下的格式说明，由 `{{ap::structure::<id>}}` 输出 |
 | `formatPrompt.field` | `''` | 指令式下的格式说明，由 `{{ap::structure::<id>}}` 输出；`{{field}}` 为实际字段名 |
@@ -49,7 +49,7 @@ structures:
 - 除 `custom` 外，**每种 kind 最多一个**结构；
 - 结构之间的 `field` 不能重复；结构字段（加前缀后）也不能与工作流阶段字段、携带它的阶段工具的参数同名（见 [workflows.md](workflows.md)）。
 
-使用 `order`、`ui`、`status` 或 `tools.orderPrefix` 的预设应声明 `minAdvancedPreset: 1.10.0`（否则 `ap check` 告警）：更早的 AP 会忽略这些设置，按旧规则把结构放在正文之后。
+使用 `order`、`ui`、`status`、`history` 对象或 `tools.orderPrefix` 的预设应声明 `minAdvancedPreset: 1.10.0`（否则 `ap check` 告警）：更早的 AP 会忽略这些设置，按旧规则把结构放在正文之后。
 
 ## 字段名与顺序
 
@@ -102,6 +102,7 @@ structures:
 | `synopsis` | `{ time, location, event, summary }` | `time` `location` `event` `summary` | 是 | 本段的事件摘要卡片；省 token 时替代旧回复 |
 | `options` | `{ label, content }[]` | `label` `content` | 是 | 选项卡片，点击填入输入框 |
 | `status` | `{ date, weekday, time, location, weather }` | `date` `weekday` `time` `location` `weather` | 是 | 顶部状态栏：故事日期（或 `第N天`）、星期、时间、地点、天气 |
+| `storyline` | `{ name, previous_main }` | `name` `previous_main` | 是（本轮请求的子字段） | AI 为新故事线 / 原主线起的名称；只在需要命名的轮次请求，无卡片 |
 | `annotations` | 正文内标记 → `Annotation[]` | — | — | **行内**结构：写在正文里，解析后从正文移除，显示为虚线下划线与气泡 |
 | `custom` | `string` 或 `Record<string, string>` | — | 是 | 预设自定义的块，可带自己的卡片组件 |
 
@@ -126,6 +127,8 @@ structures: [options]
 - 指令式：作为字段加入回合 schema（结构化、单工具），或作为携带它的阶段工具的附加参数（多工具），位置见 [workflows.md](workflows.md#结构的位置)；
 - 对话式：AP 从模型输出中提取对应标签；
 - 行内结构（`annotations`）：两种写法相同，AP 从正文中解析标记；
+
+`storyline` 结构只在需要命名故事线的轮次请求（条件变量 `storyline.naming` / `storyline.namingMain` 至少一个为真），其他轮次即使模组列出它也不请求，见 [storyline](#故事线命名-storyline)。
 
 由脚本或其他扩展发起的任务生成（`gen.type == "script"` 且 `gen.origin == "task"`）不请求任何结构，即使模组列出了它们。
 
@@ -192,6 +195,49 @@ Gemini 不支持自由键的对象：`kv` 形式会改为 JSON 字符串字段�
 - `status`：字符串值先尝试 `JSON.parse`；子字段也接受别名（`day` → `date`，`week` / `dayOfWeek` → `weekday`，`clock` → `time`，`place` → `location`），缺失的子字段为空串；
 - `custom(kv)`：字符串值先尝试 `JSON.parse`；所有值转成字符串。
 
+## 历史回传
+
+结构值保存在消息的 Sidecar 中，正文 `mes` 是干净的，历史里默认只发送正文。`history` 让最近几条助手消息**再次带上**结构（I-139）：例如让模型从先前的状态栏 / 事件摘要延续时间线，或在纯文本传输中给出输出格式的示例。
+
+```yaml
+structures:
+  status:
+    kind: status
+    order: { before: "@content" }   # 正文之前生成 → 回传时也插在正文之前
+    history:
+      depth: 1                       # 最近 1 条助手消息
+      template: |-                   # 插入的文字，占位符为字段
+        <status>
+          <date>{{date}}</date>
+          <time>{{time}}</time>
+          <location>{{location}}</location>
+        </status>
+      when: 'transport in ["plaintext", "prefill"]'
+```
+
+| 键 | 默认 | 说明 |
+| --- | --- | --- |
+| `depth` | `1` | 最近几条助手消息带上该结构，`0` 为关闭。已被省 token 替换为摘要的消息也计入 N，但只有仍为原文的消息会带上；没有该结构值的消息跳过 |
+| `template` | `synopsis`：`[{{time}} · {{location}}] {{event}}: {{summary}}`；其他：`{{value}}` | 插入的文字。占位符：该种类的子字段（如 `synopsis` 的 `{{time}}`、`status` 的 `{{date}}`；`custom` 的 `kv` 形式可用任意键）与 `{{value}}`（整个值的文字形式：`status` 为 `日期 星期 时间 \| 地点 \| 天气`，`options` 为 `- 标题: 内容` 列表，`kv` 为 `键: 值` 行）。其他 `{{…}}` 原样保留；不展开宏 |
+| `position` | 结构的排序 | `before` / `after`：紧贴在正文之前 / 之后；数字：排序键，与阶段同一条轴（正文位于终结正文阶段的键，如 `300`）。不写时按结构的 `order`（含工作流的 `structures.order`）相对终结正文阶段的位置；没写 `order` 的结构在正文之后 |
+| `when` | 总是 | 条件表达式，在本次请求的条件变量下求值（见下） |
+
+`history: N`（数字）是 `{ depth: N }` 的简写，`synopsis` 除外（数字为旧写法，见下）。
+
+- 只有请求该结构的模组开启、且 `when` 成立时才回传；
+- 同一条消息带多个结构时，按（排序键，正文之前 / 之后，声明顺序）排列；结构与正文之间、结构彼此之间以空行分隔；
+- 「继续」生成时，被续写的那条消息不带结构；
+- 条件在历史改写时（组装之前）求值：`transport`、`style`、`workflow`、`gen.*`、`meta.*`、`modules.*`、`params.*`、`flags.*`、`features.*`、`chat.group`、`memory.*`、`recap.present`、`last.*` 可用；`stages.*` 为空、`input.shaped` 为假；
+- 位置按当前配置的故事工作流计算（`gen.origin` 为 `task` 时也是）；
+- 开启缓存优化时，每条消息带了哪些结构也属于它的渲染方式，按粘性渲染沿用（见 [meta-and-tasks.md](meta-and-tasks.md#缓存优化粘性渲染)）；
+- `annotations` 不使用此机制：它的 `history: N` 把批注以 CriticMarkup 注入正文（见 [annotations](#annotations)）。
+
+常见用法：纯文本 / 预填充传输中，历史里的结构就是格式示例；结构化 / 工具传输中模型不应在正文里写标签，可用条件只在前两种传输下回传，另由模组在别处提供上一次的值（如 `{{ap::structure::status::last}}`，条件 `last.status`）。
+
+### 旧写法：synopsis 的数字 history
+
+1.9 及以前，`synopsis` 用 `history: N` + `historyTemplate`（`{{content}}` 为消息原文）。这种写法仍然可用：CLI 原样写入产物，旧版 AP 照常读取；新版 AP 把 `{{content}}` 之前 / 之后的文字分别插在正文之前 / 之后（不另加空行），输出与以前逐字节一致。它不能写条件与位置，需要时改用对象写法（并声明 `minAdvancedPreset: 1.10.0`）。
+
 ## 运行期语义
 
 ### reply
@@ -217,7 +263,7 @@ SillyTavern 的“代写”按钮会发送清单中的 `meta.impersonatePrompt`�
 显示为事件摘要卡片，用户可在卡片上编辑四个字段，保存后直接覆盖该楼层（当前 swipe）Sidecar 中的结构值，不改正文 `mes`，也不保留原值。事件摘要在历史中有两种用法，模板都由预设指定，都读取编辑后的值：
 
 - **替换**：启用省 token 时，较早的助手消息被 `tokenSaving.synopsisTemplate` 渲染的摘要替代（见 [meta-and-tasks.md](meta-and-tasks.md#省-token)）；
-- **附带**：`history: N` 时，最近 N 条助手消息保留原文，并按 `historyTemplate` 附上自己的摘要（与是否启用省 token 无关）。占位符 `{{content}}`（消息原文）与 `{{time}}` `{{location}}` `{{event}}` `{{summary}}`。
+- **附带**：声明 [`history`](#历史回传) 时，最近 N 条助手消息保留原文，并附上自己的摘要（与是否启用省 token 无关）。占位符 `{{time}}` `{{location}}` `{{event}}` `{{summary}}`。
 
 故事中没有明确时间时，模型往往只能从先前的事件摘要推断时间；附带最近几条摘要可以避免时间线混乱。只有请求了该结构的模组开启时才附带；已被省 token 替换的消息也计入 N。
 
@@ -225,16 +271,17 @@ SillyTavern 的“代写”按钮会发送清单中的 `meta.impersonatePrompt`�
 structures:
   synopsis:
     kind: synopsis
-    history: 3
-    historyTemplate: |-
-      {{content}}
-
-      <synopsis>
-        <time>{{time}}</time>
-        <location>{{location}}</location>
-        <event>{{event}}</event>
-        <summary>{{summary}}</summary>
-      </synopsis>
+    history:
+      depth: 3
+      template: |-
+        <synopsis>
+          <time>{{time}}</time>
+          <location>{{location}}</location>
+          <event>{{event}}</event>
+          <summary>{{summary}}</summary>
+        </synopsis>
+      # 有状态栏提供时间时，只在纯文本 / 预填充中作为格式示例回传
+      when: '!modules.status-bar || transport in ["plaintext", "prefill"]'
 ```
 
 ### options
@@ -245,7 +292,7 @@ structures:
 
 顶部状态栏（I-136）：AP 内置的卡片显示在消息**顶部**（思考等阶段卡片之下、正文之上），一行显示 `日期 星期 · 时间 · 地点 · 天气`（天气按关键词配图标），流式生成时随输出实时更新。用户可以点铅笔编辑五个字段，保存后覆盖该楼层的结构值（同 synopsis）。
 
-宜把它放在正文之前生成：`order: { before: "@content" }`。`{{ap::structure::status::last}}` 输出聊天中最近一次的状态（`日期 星期 时间 | 地点 | 天气`），便于让模型延续时间线：
+宜把它放在正文之前生成：`order: { before: "@content" }`。`{{ap::structure::status::last}}` 输出聊天中最近一次的状态（`日期 星期 时间 | 地点 | 天气`），便于让模型延续时间线；条件变量 `last.status` 表示已有先前的状态。也可以用 [`history`](#历史回传) 让最近一条消息在正文之前带上自己的状态：
 
 ```yaml
 structures:
@@ -258,6 +305,42 @@ structures:
     formatPrompt:
       tag: "<status><date>…</date><weekday>…</weekday><time>…</time><location>…</location><weather>…</weather></status>"
       field: "Fill `{{field}}` before the story."
+```
+
+### 故事线命名 storyline
+
+（I-158）声明了 [`storylines`](manifest.md#故事线-storylines) 的预设用它让 AI 为故事线起名：`#?`（新支线）、`#!?`（新主线）与切换主线时没有名称的原主线，见 [meta-and-tasks.md](meta-and-tasks.md#命名新故事线)。
+
+- 只在需要命名的轮次请求：`name` 在 `storyline.naming` 时请求，`previous_main` 在 `storyline.namingMain` 时请求；结构化 / 工具传输的 Schema 只含这一轮的子字段（都必填），两者都不需要时整个结构不请求；
+- 宽松解析：JSON 中也接受 `previousMain` / `old_main` 等写法；字符串视为 `name`；标签块 `<storyline>名称</storyline>`（没有子标签时整块是名称）或 `<storyline><name>…</name><previous_main>…</previous_main></storyline>`；
+- 收到回复时 AP 整理名称并写入聊天（不显示卡片），名称已被使用时加编号；
+- 一个预设只读取第一个 `storyline` 结构。
+
+格式说明随这一轮要写的子字段变化，可以在模组中用条件写：
+
+```yaml
+structures:
+  storyline:
+    kind: storyline
+    properties:
+      name: A short name for the new storyline (a few words, no spaces or "#").
+      previous_main: A short name for the previous main storyline, which becomes a side story.
+    formatPrompt:
+      tag: "<storyline><name>…</name></storyline> (add <previous_main>…</previous_main> when asked to name the previous main storyline)"
+      field: "Fill `{{field}}` with the storyline name(s) asked for."
+```
+
+```markdown
+---
+id: storyline-naming
+toggle: always
+region: task
+when: storyline.naming || storyline.namingMain
+structures: [storyline]
+---
+<!-- @if storyline.naming -->This turn starts a new storyline: give it a name.<!-- @end -->
+<!-- @if storyline.namingMain -->The previous main storyline has no name yet: name it too.<!-- @end -->
+{{ap::structure::storyline}}
 ```
 
 ### custom

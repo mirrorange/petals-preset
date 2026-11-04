@@ -6,7 +6,7 @@
   "author": "mirrorange",
   "description": "Write stories with Freesia! Freesia writes, Petals gives suggestions — a dual-character driven workflow.",
   "minAdvancedPreset": "1.10.0",
-  "hash": "970d0f815d877071",
+  "hash": "84564a2bc428256c",
   "actors": {
     "narrator": {
       "name": "Freesia",
@@ -126,6 +126,10 @@
   "inputShaping": {
     "mode": "extract",
     "template": "<input>\n{{content}}\n</input>"
+  },
+  "storylines": {
+    "separator": "<!-- Start of Storyline {{storyline}} -->",
+    "mainSeparator": "<!-- Start of the main storyline -->"
   },
   "params": [
     {
@@ -401,10 +405,12 @@
       "name": "Context",
       "toggle": "always",
       "default": true,
-      "structures": [],
+      "structures": [
+        "storyline"
+      ],
       "vars": [],
       "source": "modules/core/context.md",
-      "description": "Story recap, recent meta conversations, memories and the latest input supplied by Advanced Preset."
+      "description": "Storylines, story recap, recent meta conversations, memories, the current storyline and the latest input supplied by Advanced Preset."
     },
     {
       "id": "role-freesia",
@@ -2248,6 +2254,25 @@
       ]
     },
     {
+      "id": "context/storylines",
+      "module": "context",
+      "region": "history",
+      "order": 50,
+      "content": [
+        {
+          "pieces": [
+            {
+              "text": "<storylines>\nThis chat has more than one storyline, and the chat history is grouped by storyline. Each group opens with a marker: `<!-- Start of Storyline NAME -->` for a side storyline (`?` for one that has no name yet), `<!-- Start of the main storyline -->` for the main one. The groups are not in story order: the other storylines come first, and the storyline being written comes last.\n\n- **Main storyline**: the story itself.\n- **Side stories**: set in the same world; their events are real for every storyline.\n- **If-lines**: alternate \"what if\" versions of the story; their events happen only in that if-line.\n</storylines>\n\n"
+            }
+          ]
+        }
+      ],
+      "when": {
+        "t": "var",
+        "path": "storyline.grouped"
+      }
+    },
+    {
       "id": "context/recap",
       "module": "context",
       "region": "history",
@@ -2321,6 +2346,381 @@
       "when": {
         "t": "var",
         "path": "memory.hasGlobal"
+      }
+    },
+    {
+      "id": "context/storyline",
+      "module": "context",
+      "region": "input",
+      "order": 30,
+      "content": [
+        {
+          "pieces": [
+            {
+              "text": "<current_storyline>\n"
+            },
+            {
+              "text": "This turn starts a new main storyline: from now on it is the story itself.\n",
+              "when": {
+                "t": "bin",
+                "op": "&&",
+                "l": {
+                  "t": "var",
+                  "path": "storyline.switching"
+                },
+                "r": {
+                  "t": "var",
+                  "path": "storyline.naming"
+                }
+              }
+            },
+            {
+              "text": "This turn makes \"{{ap::storyline}}\" the main storyline: from now on it is the story itself.\n",
+              "when": {
+                "t": "bin",
+                "op": "&&",
+                "l": {
+                  "t": "var",
+                  "path": "storyline.switching"
+                },
+                "r": {
+                  "t": "not",
+                  "e": {
+                    "t": "var",
+                    "path": "storyline.naming"
+                  }
+                }
+              }
+            },
+            {
+              "text": "The previous main storyline continues as a side story in the history; its events stay real.\n",
+              "when": {
+                "t": "var",
+                "path": "storyline.switching"
+              }
+            },
+            {
+              "text": "The storyline starts with this turn: make clear when and where it takes place relative to the previous main storyline.\n",
+              "when": {
+                "t": "bin",
+                "op": "&&",
+                "l": {
+                  "t": "var",
+                  "path": "storyline.switching"
+                },
+                "r": {
+                  "t": "var",
+                  "path": "storyline.new"
+                }
+              }
+            },
+            {
+              "text": "\n- Write only this storyline. Do not continue the previous main storyline or other storylines, and do not carry their scenes into this one.\n",
+              "when": {
+                "t": "var",
+                "path": "storyline.switching"
+              }
+            },
+            {
+              "text": "This turn starts a new if-line, an alternate \"what if\" of the main storyline. What happens here never happens in the main storyline or in any other storyline, and it may contradict them.\n",
+              "when": {
+                "t": "bin",
+                "op": "&&",
+                "l": {
+                  "t": "bin",
+                  "op": "&&",
+                  "l": {
+                    "t": "not",
+                    "e": {
+                      "t": "var",
+                      "path": "storyline.switching"
+                    }
+                  },
+                  "r": {
+                    "t": "var",
+                    "path": "storyline.if"
+                  }
+                },
+                "r": {
+                  "t": "var",
+                  "path": "storyline.naming"
+                }
+              }
+            },
+            {
+              "text": "This turn belongs to the if-line \"{{ap::storyline}}\", an alternate \"what if\" of the main storyline. What happens here never happens in the main storyline or in any other storyline, and it may contradict them.\n",
+              "when": {
+                "t": "bin",
+                "op": "&&",
+                "l": {
+                  "t": "bin",
+                  "op": "&&",
+                  "l": {
+                    "t": "not",
+                    "e": {
+                      "t": "var",
+                      "path": "storyline.switching"
+                    }
+                  },
+                  "r": {
+                    "t": "var",
+                    "path": "storyline.if"
+                  }
+                },
+                "r": {
+                  "t": "not",
+                  "e": {
+                    "t": "var",
+                    "path": "storyline.naming"
+                  }
+                }
+              }
+            },
+            {
+              "text": "This turn starts a new side story. It is set in the same world as the main storyline, and its events are real there too, so keep them consistent with it.\n",
+              "when": {
+                "t": "bin",
+                "op": "&&",
+                "l": {
+                  "t": "bin",
+                  "op": "&&",
+                  "l": {
+                    "t": "not",
+                    "e": {
+                      "t": "var",
+                      "path": "storyline.switching"
+                    }
+                  },
+                  "r": {
+                    "t": "not",
+                    "e": {
+                      "t": "var",
+                      "path": "storyline.if"
+                    }
+                  }
+                },
+                "r": {
+                  "t": "var",
+                  "path": "storyline.naming"
+                }
+              }
+            },
+            {
+              "text": "This turn belongs to the side story \"{{ap::storyline}}\". It is set in the same world as the main storyline, and its events are real there too, so keep them consistent with it.\n",
+              "when": {
+                "t": "bin",
+                "op": "&&",
+                "l": {
+                  "t": "bin",
+                  "op": "&&",
+                  "l": {
+                    "t": "not",
+                    "e": {
+                      "t": "var",
+                      "path": "storyline.switching"
+                    }
+                  },
+                  "r": {
+                    "t": "not",
+                    "e": {
+                      "t": "var",
+                      "path": "storyline.if"
+                    }
+                  }
+                },
+                "r": {
+                  "t": "not",
+                  "e": {
+                    "t": "var",
+                    "path": "storyline.naming"
+                  }
+                }
+              }
+            },
+            {
+              "text": "The storyline starts with this turn: make clear when and where it takes place relative to the main storyline.\n",
+              "when": {
+                "t": "bin",
+                "op": "&&",
+                "l": {
+                  "t": "not",
+                  "e": {
+                    "t": "var",
+                    "path": "storyline.switching"
+                  }
+                },
+                "r": {
+                  "t": "var",
+                  "path": "storyline.new"
+                }
+              }
+            },
+            {
+              "text": "\n- Write only this storyline. Do not advance the main storyline or other storylines, and do not carry their scenes into this one.\n",
+              "when": {
+                "t": "not",
+                "e": {
+                  "t": "var",
+                  "path": "storyline.switching"
+                }
+              }
+            },
+            {
+              "text": "- The state of this storyline is independent: do not update variables, write to databases or cause any other side effect, even if the settings ask for it (no variable update blocks). Output only the story content and the parts this workflow asks for.\n",
+              "when": {
+                "t": "bin",
+                "op": "&&",
+                "l": {
+                  "t": "not",
+                  "e": {
+                    "t": "var",
+                    "path": "storyline.switching"
+                  }
+                },
+                "r": {
+                  "t": "var",
+                  "path": "storyline.frozen"
+                }
+              }
+            },
+            {
+              "text": "\n",
+              "when": {
+                "t": "bin",
+                "op": "||",
+                "l": {
+                  "t": "var",
+                  "path": "storyline.naming"
+                },
+                "r": {
+                  "t": "var",
+                  "path": "storyline.namingMain"
+                }
+              }
+            },
+            {
+              "text": "Name the new storyline (`name`) after its events: a short title of a few words in the story's language, with `_` instead of spaces.\n",
+              "when": {
+                "t": "bin",
+                "op": "&&",
+                "l": {
+                  "t": "bin",
+                  "op": "||",
+                  "l": {
+                    "t": "var",
+                    "path": "storyline.naming"
+                  },
+                  "r": {
+                    "t": "var",
+                    "path": "storyline.namingMain"
+                  }
+                },
+                "r": {
+                  "t": "var",
+                  "path": "storyline.naming"
+                }
+              }
+            },
+            {
+              "text": "The previous main storyline has no name yet: name it too (`previous_main`), after its events, in the same way.\n",
+              "when": {
+                "t": "bin",
+                "op": "&&",
+                "l": {
+                  "t": "bin",
+                  "op": "&&",
+                  "l": {
+                    "t": "bin",
+                    "op": "||",
+                    "l": {
+                      "t": "var",
+                      "path": "storyline.naming"
+                    },
+                    "r": {
+                      "t": "var",
+                      "path": "storyline.namingMain"
+                    }
+                  },
+                  "r": {
+                    "t": "var",
+                    "path": "storyline.namingMain"
+                  }
+                },
+                "r": {
+                  "t": "var",
+                  "path": "storyline.naming"
+                }
+              }
+            },
+            {
+              "text": "The previous main storyline has no name yet: name it (`previous_main`) after its events: a short title of a few words in the story's language, with `_` instead of spaces.\n",
+              "when": {
+                "t": "bin",
+                "op": "&&",
+                "l": {
+                  "t": "bin",
+                  "op": "&&",
+                  "l": {
+                    "t": "bin",
+                    "op": "||",
+                    "l": {
+                      "t": "var",
+                      "path": "storyline.naming"
+                    },
+                    "r": {
+                      "t": "var",
+                      "path": "storyline.namingMain"
+                    }
+                  },
+                  "r": {
+                    "t": "var",
+                    "path": "storyline.namingMain"
+                  }
+                },
+                "r": {
+                  "t": "not",
+                  "e": {
+                    "t": "var",
+                    "path": "storyline.naming"
+                  }
+                }
+              }
+            },
+            {
+              "text": "{{ap::structure::storyline}}\n",
+              "when": {
+                "t": "bin",
+                "op": "||",
+                "l": {
+                  "t": "var",
+                  "path": "storyline.naming"
+                },
+                "r": {
+                  "t": "var",
+                  "path": "storyline.namingMain"
+                }
+              }
+            },
+            {
+              "text": "</current_storyline>\n\n"
+            }
+          ]
+        }
+      ],
+      "when": {
+        "t": "bin",
+        "op": "||",
+        "l": {
+          "t": "not",
+          "e": {
+            "t": "var",
+            "path": "storyline.main"
+          }
+        },
+        "r": {
+          "t": "var",
+          "path": "storyline.switching"
+        }
       }
     },
     {
@@ -4026,6 +4426,21 @@
         }
       }
     },
+    "storyline": {
+      "id": "storyline",
+      "kind": "storyline",
+      "tag": "storyline",
+      "field": "storyline",
+      "formatPrompt": {
+        "tag": "After the story content, output the name(s) asked for, one child tag each (leave out the one not asked for):\n\n<storyline>\n  <name>...</name>\n  <previous_main>...</previous_main>\n</storyline>",
+        "field": "Fill the `{{field}}` field with the name(s) asked for."
+      },
+      "description": "The storyline name(s) asked for this turn.",
+      "properties": {
+        "name": "Name of the storyline this turn starts: a short title of a few words in the story's language, `_` instead of spaces, no `#`, not starting with \"if\".",
+        "previous_main": "Name of the previous main storyline, which continues as a side story: a short title of a few words in the story's language, `_` instead of spaces, no `#`, not starting with \"if\"."
+      }
+    },
     "options": {
       "id": "options",
       "kind": "options",
@@ -4648,6 +5063,10 @@
     "meta": {
       "enabled": true,
       "recentCount": 3
+    },
+    "storylines": {
+      "enabled": true,
+      "freezeVariables": "all"
     }
   },
   "configurations": [

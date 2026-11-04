@@ -41,6 +41,7 @@ configurationDefaults:
   tokenSaving: { enabled: false, keepFullTurns: 6, truncateUserAfter: 2000, userInput: truncate }
   cache: { enabled: false, ttlMinutes: 5, maxDeferredTurns: 6 }
   meta: { enabled: true, recentCount: 3 }
+  storylines: { enabled: true, freezeVariables: all }   # 只在预设声明了 storylines 时存在
 ```
 
 | 段 | 字段 | 默认 | 说明 |
@@ -62,6 +63,8 @@ configurationDefaults:
 | `cache` | `enabled` / `ttlMinutes` / `maxDeferredTurns` | `false` / `5` / `6` | 缓存优化：粘性渲染历史（[meta-and-tasks.md](meta-and-tasks.md#缓存优化粘性渲染)）；`ttlMinutes`、`maxDeferredTurns` 为 0 分别表示不限时、从不推迟 |
 | `meta` | `enabled` | `true` | 元指令总开关；`false` 时不处理元指令（[meta-and-tasks.md](meta-and-tasks.md#元指令)） |
 | | `recentCount` | 清单 `meta.recentCount` | `{{ap::recent_meta}}` 的条数 |
+| `storylines` | `enabled` | `true` | 故事线开关（只在预设声明了 [`storylines`](manifest.md#故事线-storylines) 时存在）；`false` 时 `#标签` 作为文字发送，历史保持原顺序（[meta-and-tasks.md](meta-and-tasks.md#故事线)） |
+| | `freezeVariables` | `all` | 哪些轮次不更新 MVU / 酒馆助手的聊天与消息变量：`all` 主线以外的故事线、`if` 只有 if 线、`off` 不阻止；本轮的结果为条件变量 `storyline.frozen`（[支线轮次的变量](meta-and-tasks.md#支线轮次的变量)） |
 
 ### sampling
 
