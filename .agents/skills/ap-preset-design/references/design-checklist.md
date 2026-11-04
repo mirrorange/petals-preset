@@ -139,6 +139,6 @@
    - 用正则提取的选项、状态栏、摘要 → 结构（`options` / `custom` / `synopsis`）；
    - 角色卡、世界书、人设等 marker → 原生区域 `settings`（交给 Carrier 的 `order`）；
    - 位置在聊天记录之后的条目 → `task` / `tail` 区域。
-3. 采样参数（`temperature`、`openai_max_tokens` 等）→ `configurationDefaults.sampling`；预设附带的正则（`extensions.regex_scripts`）→ `regex-scripts/`（每个脚本原样存成一个 JSON / YAML 文件）。
+3. 采样参数（`temperature`、`openai_max_tokens` 等）→ `configurationDefaults.sampling`；预设附带的正则（`extensions.regex_scripts`）→ `regex-scripts/`（每个脚本原样存成一个 JSON / YAML 文件）；酒馆助手预设脚本（`extensions.tavern_helper.scripts`）→ `tavern-helper-scripts/`（每个脚本或文件夹原样存成一个 JSON 文件，或把代码拆成 .js 文件）。
 4. 只适用于某个模型的“破限 / 越狱”写法 → 模型专用开关，由对应推荐配置打开。
 5. 把归类表写进 `DESIGN.md` 的“迁移对照”一节，请用户确认哪些不要了。

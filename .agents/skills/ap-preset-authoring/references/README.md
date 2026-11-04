@@ -22,10 +22,12 @@
 | [configuration.md](configuration.md) | 配置层、推荐配置、Carrier、迁移 |
 | [user-modules.md](user-modules.md) | 插入点、用户模组（含导入导出格式）、预设携带的用户模组与用户模组模板 |
 | [regex-and-quick-replies.md](regex-and-quick-replies.md) | 预设携带的 ST 正则脚本与快速回复集 |
+| [tavern-helper-scripts.md](tavern-helper-scripts.md) | 预设携带的酒馆助手脚本 |
 | [locales.md](locales.md) | 面板文字翻译 |
 | [assembly.md](assembly.md) | 一次生成的完整组装流程 |
 | [cli.md](cli.md) | `ap` 命令行 |
 | [artifact-and-runtime.md](artifact-and-runtime.md) | 产物 JSON、安装与更新、聊天里保存的数据、全局 API |
+| [preset-file.md](preset-file.md) | 预设文件（ST 预设形态的 `.apreset.json`）、安装提示与酒馆助手安装脚本 |
 
 ## 源码结构
 
@@ -39,6 +41,7 @@ user-modules/*.md        随预设安装的用户模组（可选，只认下一�
 user-module-templates/*.md 用户模组模板：新建用户模组时可选的示例（可选，只认下一层）
 regex-scripts/*.yaml     ST 正则脚本，写入 Carrier（可选，只认下一层；也可以是 .yml / .json）
 quick-replies/*.yaml     ST 快速回复集，预设启用时加入全局列表（可选，只认下一层；也可以是 .yml / .json）
+tavern-helper-scripts/*.yaml 酒馆助手脚本，写入 Carrier（可选，只认下一层；也可以是 .yml / .json；代码文件可放在该目录任意位置）
 locales/<lang>.yaml      面板翻译（可选）
 ui/**                    自定义结构组件的模板 / 模块 / 样式（可选，由结构的 ui 字段以 ./ui/… 引用）
 ```
@@ -48,12 +51,12 @@ ui/**                    自定义结构组件的模板 / 模块 / 样式（可�
 ## 构建流程
 
 ```
-源码树 ──compile──▶ APreset 对象 ──validate──▶ 诊断 ──write──▶ dist/<id>.apreset.json
+源码树 ──compile──▶ APreset 对象 ──validate──▶ 诊断 ──write──▶ dist/<id>.apreset.json（预设文件）
 ```
 
 1. **compile**（`packages/cli/src/compile.ts`）：解析 YAML 与 Markdown，填入默认值，把条件表达式编译成 AST，排序模组与条目，生成 Carrier，计算哈希。结构性错误（缺少字段、非法值、重复 id）在这里报告。
 2. **validate**（`packages/cli/src/validate.ts`）：交叉引用检查（未知变量、未知宏、未知区域……）与风格警告。
-3. 产物写成两空格缩进的 JSON。`hash` 是去掉 `hash` 字段后、键排序的规范化 JSON 的 SHA-256 前 16 位十六进制。相同源码总是得到相同产物。
+3. 产物包进[预设文件](preset-file.md)（一个携带产物的 ST 预设），写成两空格缩进的 JSON。`hash` 是去掉 `hash` 字段后、键排序的规范化 JSON 的 SHA-256 前 16 位十六进制。相同源码总是得到相同产物。
 
 `ap build` / `ap check` 在有错误时返回非零退出码；加 `--strict` 时警告也算失败（见 [cli.md](cli.md)）。
 

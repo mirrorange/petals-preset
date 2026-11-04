@@ -46,6 +46,7 @@
 | `migrations` | list | `[]` | 改名迁移，见 [configuration.md](configuration.md#迁移) |
 | `moduleOrder` | list | `["*"]` | 模组排序，见 [modules.md](modules.md#排序) |
 | `workflowOrder` | list | 文件名顺序 | 工作流在面板中的顺序 |
+| `build` | map | — | 构建选项（不写入产物），见[构建选项](#构建选项-build) |
 
 最小可用的清单：
 
@@ -398,6 +399,21 @@ theme:
 ```
 
 AP 跟随 ST 的明暗模式选择 `light` 或 `dark`。`primary` 与 `accent` 会生成 50–900 的色阶（`--ap-primary-500` 等）；其他键原样成为 CSS 变量 `--ap-<key>`。用户可以在“外观”里用自己的颜色覆盖。
+
+## 构建选项 `build`
+
+只影响 `ap build` / `ap dev` 怎样写出文件，不进入产物，也不改变产物哈希。可以写在清单片段中。
+
+| 字段 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `installer` | boolean | `true` | 预设文件是否附带酒馆助手安装脚本（见 [preset-file.md](preset-file.md#安装脚本)）。命令行 `--installer` / `--no-installer` 优先 |
+
+```yaml
+build:
+  installer: false
+```
+
+不是映射、`installer` 不是布尔值时报错；未知键警告。
 
 ## 其余字段
 

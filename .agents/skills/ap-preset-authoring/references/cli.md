@@ -3,9 +3,9 @@
 `ap` 是 AP 的工具链：编译、检查、开发服务器、预览、创建新预设，以及安装 Agent Skills。它随 npm 包 [`advanced-preset`](https://www.npmjs.com/package/advanced-preset) 发布，预设仓库通过 `devDependencies` 安装（`npm install -D advanced-preset`，模板仓库已配置好），在仓库里用 `npx ap …` 或 `npm run <script>` 调用。
 
 ```
-ap build   [dir] [--out dist] [--strict]
+ap build   [dir] [--out dist] [--strict] [--installer | --no-installer]
 ap check   [dir] [--strict]
-ap dev     [dir] [--port 4747] [--host 127.0.0.1] [--out dist]
+ap dev     [dir] [--port 4747] [--host 127.0.0.1] [--out dist] [--installer | --no-installer]
 ap preview [dir] [--transport t] [--workflow w] [--config c] [--meta pure|mixed] [--param id=value …]
                  [--enable a,b] [--disable c] [--user-modules file]
                  [--bundled-modules a,b|all|none] [--user-module-templates a,b|all]
@@ -32,13 +32,15 @@ warn  preset.yaml:41 groups: module `x` has no group
 
 ## ap build
 
-编译并写出产物 `<out>/<id>.apreset.json`（默认 `dist/`）。成功时输出：
+编译并写出预设文件 `<out>/<id>.apreset.json`（默认 `dist/`）：一个携带产物的 ST 对话补全预设，没有 AP 的用户也能直接导入 ST（见 [preset-file.md](preset-file.md)）。成功时输出：
 
 ```
-✓ /path/to/dist/my-preset.apreset.json #3f9c2a1b0d4e5f67
+✓ /path/to/dist/my-preset.apreset.json #3f9c2a1b0d4e5f67 (with installer)
 ```
 
 `#` 后是产物哈希（[artifact-and-runtime.md](artifact-and-runtime.md)）。相同源码总是得到相同产物。
+
+- `--no-installer`：不附带酒馆助手安装脚本；`--installer`：附带。两者都不写时按清单 `build.installer`（见 [manifest.md](manifest.md#构建选项-build)），默认附带。附带时输出末尾显示 `(with installer)`。
 
 ## ap check
 
@@ -52,7 +54,7 @@ warn  preset.yaml:41 groups: module `x` has no group
 
 ## ap dev
 
-开发服务器：先构建一次，然后监视源码（`preset.yaml`、`manifest/`、`modules/`、`workflows/`、`user-modules/`、`user-module-templates/`、`regex-scripts/`、`quick-replies/`、`locales/`、`ui/`），变化后约 120 ms 重新构建并写入 `dist/`。构建失败时继续提供上一次成功的产物。
+开发服务器：先构建一次，然后监视源码（`preset.yaml`、`manifest/`、`modules/`、`workflows/`、`user-modules/`、`user-module-templates/`、`regex-scripts/`、`quick-replies/`、`tavern-helper-scripts/`、`locales/`、`ui/`），变化后约 120 ms 重新构建并写入 `dist/`。构建失败时继续提供上一次成功的产物。
 
 | 端点 | 内容 |
 | --- | --- |
@@ -63,7 +65,8 @@ warn  preset.yaml:41 groups: module `x` has no group
 
 - `--port`：端口（默认 4747）；
 - `--host`：监听地址（默认 `127.0.0.1`）。ST 在其他设备上时用 `--host 0.0.0.0`，并在 AP 中填写电脑的局域网 IP；
-- `--out`：产物目录。
+- `--out`：产物目录；
+- `--installer` / `--no-installer`：与 `ap build` 相同，只影响写入 `dist/` 的预设文件。`GET /preset` 总是提供裸产物。
 
 ## ap preview
 

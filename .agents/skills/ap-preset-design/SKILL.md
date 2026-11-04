@@ -31,6 +31,7 @@ Advanced Preset（AP）是 SillyTavern 的扩展。预设作者写源码（`pres
 | 随预设安装的用户模组 user-modules | 安装预设时放进用户「我的模组」的模组，之后归用户所有、可直接修改 |
 | 正则脚本 regex-scripts | ST 的正则脚本（隐藏 / 美化文字），选中预设时由 ST 执行 |
 | 快速回复集 quick-replies | ST 的快速回复按钮（如“对叙述者说话”“总结”），选中预设时出现，换预设时消失 |
+| 酒馆助手脚本 tavern-helper-scripts | 需要酒馆助手的前端脚本（按钮、面板、自动化），选中预设时由酒馆助手询问用户后运行 |
 
 细节在 `ap-preset-authoring` 技能的 `references/` 中；入门讲解见[预设开发指南](https://github.com/mirrorange/advanced-preset/blob/main/docs/guide/README.md)。
 

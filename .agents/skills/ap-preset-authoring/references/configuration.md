@@ -153,6 +153,7 @@ carrier:
 - 安装或更新预设后，如果产物哈希变化，Carrier 被**重建**。用户手动改过 Carrier 的提示词时，重建会覆盖并提示；`chat_completion_source`、`reverse_proxy`、`proxy_password` 这些与连接绑定的字段会保留；
 - 重建的 Carrier 如果正被选中，会立即重新应用到 ST 当前设置（ST 按已应用的设置而不是磁盘上的预设拼提示词），新增的区域锚点马上生效。区域有内容但提示词里没有它的锚点时，组装调试会警告 `region <id>: its anchor is not in the prompt …`；
 - 预设的[正则脚本](regex-and-quick-replies.md#正则脚本-regex-scripts)写在 Carrier 的 `extensions.regex_scripts` 中，是 ST 的预设正则：只在选中 Carrier 时生效，随 Carrier 重建；
+- 预设的[酒馆助手脚本](tavern-helper-scripts.md)写在 Carrier 的 `extensions.tavern_helper` 中。重建时只替换预设自己的脚本，脚本开关、脚本变量、预设变量与用户自己添加的脚本保留（[运行期](tavern-helper-scripts.md#运行期)）；
 - 所以要改提示词内容，请改预设源码，而不是改 Carrier。
 
 ## 迁移
