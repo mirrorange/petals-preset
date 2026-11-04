@@ -1,6 +1,6 @@
 # 面板文字翻译
 
-`locales/<lang>.yaml` 为预设的**面板文字**（预设名称与描述、模组名、参数说明、工作流阶段名……）提供翻译。它只影响 AP 面板与卡片的显示，**不影响发给模型的文字**——提示词的语言请用参数（如 `language`）与条件控制。
+`locales/<lang>.yaml` 为预设的**面板文字**（预设名称与描述、模组名、参数说明、工作流阶段名……）提供翻译。它只影响 AP 面板与卡片的显示，**不影响发给模型的文字**（快速回复的 `message` 是唯一例外：它是用户点击后发送的文字）——提示词的语言请用参数（如 `language`）与条件控制。
 
 ```
 locales/
@@ -43,6 +43,10 @@ userModuleTemplates:
   my-guideline: { name: 我的写作要求, description: 在写作指南中加入你自己的规则 }
 vars:
   questions: { label: 问题列表, description: 叙述者每轮要回答的问题 }
+quickReplySets:
+  petals:
+    qrList:
+      summary: { label: 总结, title: 请小苍兰总结, message: "@{{ap::name::narrator}} 请总结目前的故事。" }
 ```
 
 | 段 | 键 | 可翻译字段 |
@@ -59,9 +63,11 @@ vars:
 | `userModules` | 随预设安装的用户模组 id | `name`（正文的翻译用 `user-modules/<id>.<lang>.md`，见 [user-modules.md](user-modules.md#文件格式)） |
 | `userModuleTemplates` | 用户模组模板 id | `name` `description`（正文的翻译用 `user-module-templates/<id>.<lang>.md`） |
 | `vars` | 构建变量 id | `label` `description` |
+| `quickReplySets` | 快速回复集 id | `qrList`（`{ 快速回复 id: { label, title, message } }`，见 [regex-and-quick-replies.md](regex-and-quick-replies.md#翻译)） |
 
 - 任何字段都可以省略，缺失的显示原文；
 - `name` 只影响显示：ST 预设列表中的 Carrier 名（`AP · <name>`）始终用清单里的原文，切换界面语言不会产生新的 Carrier；
+- 集合名（ST 中的快速回复集名称）同样不翻译；
 - 引用不存在的 id 给出警告（`ap check --strict` 会因此失败）；
 - 文件必须是 YAML 映射，否则报错。
 

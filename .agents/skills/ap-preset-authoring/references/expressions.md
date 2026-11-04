@@ -53,13 +53,24 @@ transport in ["structured", "tool-single", "tool-multi"]
 | `chat.group` | 布尔 | 群聊 |
 | `memory.hasChat` / `memory.hasGlobal` | 布尔 | 聊天记忆 / 全局记忆非空 |
 | `recap.present` | 布尔 | 当前有生效的总结 |
+| `last.<id>` | 布尔 | `custom` / `status` 结构在聊天中已有先前的值（`{{ap::structure::<id>::last}}` 非空） |
 | `input.shaped` | 布尔 | 本次生成做了[用户输入整形](manifest.md#用户输入整形-inputshaping)（预设声明了 `inputShaping`，且聊天历史以用户消息结尾） |
+| `storyline.name` | 字符串 | 当前[故事线](meta-and-tasks.md#故事线)的名称；在主线上为主线的名称（未命名时为空字符串） |
+| `storyline.main` | 布尔 | 当前是主线（预设没有声明 `storylines` 或用户关闭了故事线时总为真） |
+| `storyline.if` | 布尔 | 当前是 if 线（故事中的含义；`#if?` 的新故事线在命名前就为真）。故事线是否对其他线可见不提供给提示词 |
+| `storyline.new` | 布尔 | 当前故事线还没有消息（这一轮开始它） |
+| `storyline.grouped` | 布尔 | 历史按故事线分组（可见的故事线不止一条），带分隔消息；在主线上也可能为真 |
+| `storyline.naming` | 布尔 | AI 本轮为当前故事线命名（`#?` / `#!?`，及 `#!?` 轮次的滑动）；此时 `storyline.name` 为空 |
+| `storyline.namingMain` | 布尔 | AI 本轮为没有名称的原主线命名（`#!` 切换主线时） |
+| `storyline.switching` | 布尔 | 本轮把当前故事线设为主线（`#!名称` / `#!?`）；`storyline.main` 同时为真，原主线是历史中的一条支线 |
+| `storyline.frozen` | 布尔 | 本轮的变量更新被阻止（配置 `storylines.freezeVariables`：`all` 为主线以外的故事线，`if` 为 if 线，`off` 为从不，见[支线轮次的变量](meta-and-tasks.md#支线轮次的变量)）；预设据此告诉模型不要更新状态 |
 
 注意：
 
 - 阶段的 `when` 在 `stages.*` 计算之前求值，所以阶段条件里不要引用 `stages.*`。
 - 正则标记的 `requires` 与 `meta.tasks` 在组装之前求值，只能可靠地使用 `meta.*` 与 `flags.*`（`input.shaped` 在那里总为假）。
-- `ap preview` 中 `memory.*`、`recap.present`、`chat.group`、`meta.recent` 总为假；`input.shaped` 只在给了 `--input` 且预设声明了 `inputShaping` 时为真。
+- 结构 [`history.when`](structures.md#历史回传) 在历史改写时求值：`stages.*` 为空，`input.shaped` 为假，其余变量可用。
+- `ap preview` 中 `memory.*`、`recap.present`、`chat.group`、`meta.recent`、`last.*` 总为假；`input.shaped` 只在给了 `--input` 且预设声明了 `inputShaping` 时为真；`storyline.*` 由 `--storyline` / `--storyline-new` / `--storyline-grouped` / `--storyline-switch` / `--storyline-naming-main` 决定（默认主线、不分组；给了 `--storyline` 时分组；`storyline.frozen` 按所选配置的 `storylines.freezeVariables` 计算）。
 - 这些变量同样是[模板](templates.md#作用域)作用域里的对象（`params.length`、`gen.type`……）。
 
 ## 诊断

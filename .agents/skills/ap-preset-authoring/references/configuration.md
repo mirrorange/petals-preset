@@ -41,6 +41,7 @@ configurationDefaults:
   tokenSaving: { enabled: false, keepFullTurns: 6, truncateUserAfter: 2000, userInput: truncate }
   cache: { enabled: false, ttlMinutes: 5, maxDeferredTurns: 6 }
   meta: { enabled: true, recentCount: 3 }
+  storylines: { enabled: true, freezeVariables: all }   # 只在预设声明了 storylines 时存在
 ```
 
 | 段 | 字段 | 默认 | 说明 |
@@ -62,6 +63,8 @@ configurationDefaults:
 | `cache` | `enabled` / `ttlMinutes` / `maxDeferredTurns` | `false` / `5` / `6` | 缓存优化：粘性渲染历史（[meta-and-tasks.md](meta-and-tasks.md#缓存优化粘性渲染)）；`ttlMinutes`、`maxDeferredTurns` 为 0 分别表示不限时、从不推迟 |
 | `meta` | `enabled` | `true` | 元指令总开关；`false` 时不处理元指令（[meta-and-tasks.md](meta-and-tasks.md#元指令)） |
 | | `recentCount` | 清单 `meta.recentCount` | `{{ap::recent_meta}}` 的条数 |
+| `storylines` | `enabled` | `true` | 故事线开关（只在预设声明了 [`storylines`](manifest.md#故事线-storylines) 时存在）；`false` 时 `#标签` 作为文字发送，历史保持原顺序（[meta-and-tasks.md](meta-and-tasks.md#故事线)） |
+| | `freezeVariables` | `all` | 哪些轮次不更新 MVU / 酒馆助手的聊天与消息变量：`all` 主线以外的故事线、`if` 只有 if 线、`off` 不阻止；本轮的结果为条件变量 `storyline.frozen`（[支线轮次的变量](meta-and-tasks.md#支线轮次的变量)） |
 
 ### sampling
 
@@ -148,6 +151,9 @@ carrier:
 
 - 组装时 ST 按 Carrier 的顺序拼出提示词，AP 在每个锚点处换入区域内容（[assembly.md](assembly.md)）。锚点永远不会原样发给模型；
 - 安装或更新预设后，如果产物哈希变化，Carrier 被**重建**。用户手动改过 Carrier 的提示词时，重建会覆盖并提示；`chat_completion_source`、`reverse_proxy`、`proxy_password` 这些与连接绑定的字段会保留；
+- 重建的 Carrier 如果正被选中，会立即重新应用到 ST 当前设置（ST 按已应用的设置而不是磁盘上的预设拼提示词），新增的区域锚点马上生效。区域有内容但提示词里没有它的锚点时，组装调试会警告 `region <id>: its anchor is not in the prompt …`；
+- 预设的[正则脚本](regex-and-quick-replies.md#正则脚本-regex-scripts)写在 Carrier 的 `extensions.regex_scripts` 中，是 ST 的预设正则：只在选中 Carrier 时生效，随 Carrier 重建；
+- 预设的[酒馆助手脚本](tavern-helper-scripts.md)写在 Carrier 的 `extensions.tavern_helper` 中。重建时只替换预设自己的脚本，脚本开关、脚本变量、预设变量与用户自己添加的脚本保留（[运行期](tavern-helper-scripts.md#运行期)）；
 - 所以要改提示词内容，请改预设源码，而不是改 Carrier。
 
 ## 迁移

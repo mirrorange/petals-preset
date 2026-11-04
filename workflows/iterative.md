@@ -10,7 +10,7 @@ stages:
     actor: narrator
     kind: text
     label: Asking Questions
-    field: { name: "step{{n}}_questions", description: "{{ap::name::narrator}} asks {{ap::name::editor}} the questions for this turn. Questions only, no explanations." }
+    field: { name: "questions", description: "{{ap::name::narrator}} asks {{ap::name::editor}} the questions for this turn. Questions only, no explanations." }
     tool:
       name: ask_questions
       description: "{{ap::name::narrator}} asks {{ap::name::editor}} the questions for this turn."
@@ -19,7 +19,7 @@ stages:
     actor: editor
     kind: text
     label: Planning and Creative Input
-    field: { name: "step{{n}}_creative_input", description: "{{ap::name::editor}} answers {{ap::name::narrator}}'s questions with professional advice and concrete solutions." }
+    field: { name: "creative_input", description: "{{ap::name::editor}} answers {{ap::name::narrator}}'s questions with professional advice and concrete solutions." }
     tool:
       name: give_creative_input
       description: "{{ap::name::editor}} answers {{ap::name::narrator}}'s questions with professional advice and concrete solutions."
@@ -28,7 +28,7 @@ stages:
     actor: narrator
     kind: text
     label: Drafting
-    field: { name: "step{{n}}_draft", description: "{{ap::name::narrator}}'s first draft of the story content." }
+    field: { name: "draft", description: "{{ap::name::narrator}}'s first draft of the story content." }
     tool:
       name: write_draft
       description: "{{ap::name::narrator}} writes a first draft using {{ap::name::editor}}' input."
@@ -37,7 +37,7 @@ stages:
     actor: editor
     kind: text
     label: Review and Feedback
-    field: { name: "step{{n}}_feedback", description: "{{ap::name::editor}} reviews the draft and gives concrete feedback." }
+    field: { name: "feedback", description: "{{ap::name::editor}} reviews the draft and gives concrete feedback." }
     tool:
       name: give_feedback
       description: "{{ap::name::editor}} reviews {{ap::name::narrator}}'s draft and gives concrete feedback."
@@ -46,7 +46,7 @@ stages:
     actor: narrator
     kind: content
     label: Revision and Redrafting
-    field: { name: "step{{n}}_story", description: "{{ap::name::narrator}} revises the draft according to {{ap::name::editor}}' feedback into the final story content." }
+    field: { name: "story", description: "{{ap::name::narrator}} revises the draft according to {{ap::name::editor}}' feedback into the final story content." }
     tool:
       name: revise_story
       description: "{{ap::name::narrator}} revises the draft according to {{ap::name::editor}}' feedback into the final story content."

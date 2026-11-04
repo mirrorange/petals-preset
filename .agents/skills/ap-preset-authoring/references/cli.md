@@ -3,9 +3,9 @@
 `ap` 是 AP 的工具链：编译、检查、开发服务器、预览、创建新预设，以及安装 Agent Skills。它随 npm 包 [`advanced-preset`](https://www.npmjs.com/package/advanced-preset) 发布，预设仓库通过 `devDependencies` 安装（`npm install -D advanced-preset`，模板仓库已配置好），在仓库里用 `npx ap …` 或 `npm run <script>` 调用。
 
 ```
-ap build   [dir] [--out dist] [--strict]
+ap build   [dir] [--out dist] [--strict] [--installer | --no-installer]
 ap check   [dir] [--strict]
-ap dev     [dir] [--port 4747] [--host 127.0.0.1] [--out dist]
+ap dev     [dir] [--port 4747] [--host 127.0.0.1] [--out dist] [--installer | --no-installer]
 ap preview [dir] [--transport t] [--workflow w] [--config c] [--meta pure|mixed] [--param id=value …]
                  [--enable a,b] [--disable c] [--user-modules file]
                  [--bundled-modules a,b|all|none] [--user-module-templates a,b|all]
@@ -32,13 +32,15 @@ warn  preset.yaml:41 groups: module `x` has no group
 
 ## ap build
 
-编译并写出产物 `<out>/<id>.apreset.json`（默认 `dist/`）。成功时输出：
+编译并写出预设文件 `<out>/<id>.apreset.json`（默认 `dist/`）：一个携带产物的 ST 对话补全预设，没有 AP 的用户也能直接导入 ST（见 [preset-file.md](preset-file.md)）。成功时输出：
 
 ```
-✓ /path/to/dist/my-preset.apreset.json #3f9c2a1b0d4e5f67
+✓ /path/to/dist/my-preset.apreset.json #3f9c2a1b0d4e5f67 (with installer)
 ```
 
 `#` 后是产物哈希（[artifact-and-runtime.md](artifact-and-runtime.md)）。相同源码总是得到相同产物。
+
+- `--no-installer`：不附带酒馆助手安装脚本；`--installer`：附带。两者都不写时按清单 `build.installer`（见 [manifest.md](manifest.md#构建选项-build)），默认附带。附带时输出末尾显示 `(with installer)`。
 
 ## ap check
 
@@ -52,7 +54,7 @@ warn  preset.yaml:41 groups: module `x` has no group
 
 ## ap dev
 
-开发服务器：先构建一次，然后监视源码（`preset.yaml`、`manifest/`、`modules/`、`workflows/`、`user-modules/`、`user-module-templates/`、`locales/`），变化后约 120 ms 重新构建并写入 `dist/`。构建失败时继续提供上一次成功的产物。
+开发服务器：先构建一次，然后监视源码（`preset.yaml`、`manifest/`、`modules/`、`workflows/`、`user-modules/`、`user-module-templates/`、`regex-scripts/`、`quick-replies/`、`tavern-helper-scripts/`、`locales/`、`ui/`），变化后约 120 ms 重新构建并写入 `dist/`。构建失败时继续提供上一次成功的产物。
 
 | 端点 | 内容 |
 | --- | --- |
@@ -63,7 +65,8 @@ warn  preset.yaml:41 groups: module `x` has no group
 
 - `--port`：端口（默认 4747）；
 - `--host`：监听地址（默认 `127.0.0.1`）。ST 在其他设备上时用 `--host 0.0.0.0`，并在 AP 中填写电脑的局域网 IP；
-- `--out`：产物目录。
+- `--out`：产物目录；
+- `--installer` / `--no-installer`：与 `ap build` 相同，只影响写入 `dist/` 的预设文件。`GET /preset` 总是提供裸产物。
 
 ## ap preview
 
@@ -82,18 +85,24 @@ warn  preset.yaml:41 groups: module `x` has no group
 | `--bundled-modules <ids>` | 合并哪些[随预设安装的用户模组](user-modules.md#预设携带的用户模组-user-modules)（逗号分隔的 id，`all` 为全部，`none` 为不合并）；默认按全新安装，合并 `enabled` 不为 `false` 的。它们排在最前 |
 | `--user-module-templates <ids>` | 把[用户模组模板](user-modules.md#用户模组模板-user-module-templates)当作新建的用户模组合并（逗号分隔的 id，`all` 为全部），排在 `--user-modules` 之后 |
 | `--input <text>` | 模拟本次输入（聊天历史以这条用户消息结尾）：预设声明了 `inputShaping` 时 `input.shaped` 为真、`{{ap::input::text}}` 为这段文字，`historyStart` 区域后多出一节 `chat history (ST) · last user message`，显示历史中这条消息的样子（`wrap` 为包裹后的文字，`extract` 为已提取）。摘要中有一行 `input shaping: <mode>` |
+| `--storyline <name>` | 模拟在故事线 `<name>` 上生成（预设声明了 `storylines` 时）：`storyline.name` 为它、`storyline.main` 为假，名称以 `if` 开头时 `storyline.if` 为真。`?` 模拟 `#?`：AI 命名的新故事线（`storyline.naming`、`storyline.new` 为真，名称为空，请求 `storyline` 结构）；`if?` 模拟 `#if?`（同上，且 `storyline.if` 为真）。可见性（`#@`）对提示词没有影响，无需模拟。`storyline.frozen` 按所选配置的 `storylines.freezeVariables` 计算。摘要中有一行 `storyline: …`（被阻止时带 `(variables frozen)`） |
+| `--storyline-new` | 当前故事线还没有消息（`storyline.new` 为真） |
+| `--storyline-switch` | 模拟 `#!`：本轮把当前故事线设为主线（`storyline.switching` 与 `storyline.main` 为真）；与 `--storyline ?` 一起为 `#!?` |
+| `--storyline-naming-main` | 与 `--storyline-switch` 一起：原主线没有名称，由 AI 命名（`storyline.namingMain`，请求 `previous_main`） |
+| `--storyline-grouped` | 在主线上模拟分组的历史（`storyline.grouped` 为真；给了 `--storyline` 时总为真） |
 | `--lang <lang>` | 按该面板语言选用随预设安装的用户模组与模板的翻译 |
 | `--json` | 输出 JSON：`vars`、`buildVars`、`skipped`、`modules`、`structures`、`stages`、`regions`、`historyInput`（`--input` 时历史中那条消息的样子，提取时为 `null`），以及 `schema`（structured）或 `tools`（工具传输） |
 | `--out <file>` | 写入文件而不是标准输出 |
 
-文本输出的开头是摘要（预设、传输方式与写法、工作流、配置、生效模组、构建变量、结构、阶段），然后按 `regions` 顺序列出每个区域的消息，最后是 schema / 工具。
+文本输出的开头是摘要（预设、传输方式与写法、工作流、配置、生效模组、构建变量、结构、阶段；指令式传输还有一行 `fields:`，按生成顺序列出本轮的阶段与结构字段名，含排序前缀），然后按 `regions` 顺序列出每个区域的消息，最后是 schema / 工具。
 
 预览与真实运行的差别：
 
 - ST 宏（`{{user}}`、`{{char}}`……）不展开；
 - 运行时数据为空：记忆、总结、最近元指令、聊天文本；`memory.*`、`recap.present`、`chat.group`、`meta.recent` 为假；用户模组的关键词规则看到空文本；
 - 元指令文本为占位符 `(meta text)`；`meta.task` 为 `null`；
-- 没有 `--input` 时没有本次输入，`input.shaped` 为假。
+- 没有 `--input` 时没有本次输入，`input.shaped` 为假；
+- 没有聊天历史，所以看不到故事线的分组与分隔消息；`{{ap::storyline::main}}` 为空。
 
 常用的预览矩阵：每种传输方式各一次；`--meta pure`；每个推荐配置；关键模组开 / 关；关键参数设置 / 未设置（`--param`）。
 

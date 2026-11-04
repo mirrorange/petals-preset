@@ -1,8 +1,13 @@
-# Meta commands, input shaping, token saving, regex flags, and the order of modules and workflows.
+# Meta commands, input shaping, storylines, token saving, regex flags, and the order of modules and workflows.
 
 # The latest user input leaves the chat history and is placed after the memories (region `input`).
 inputShaping:
   mode: extract
+
+# Side stories and if-lines: `#name` at the end of an input; default group separators.
+# Context module: `storylines` (history) explains the grouped history; `storyline` (input, above the
+# input) tells Freesia which storyline she is writing and that its state is independent.
+storylines: true
 
 meta:
   trigger: "@{{ap::name::narrator}}"
@@ -22,7 +27,7 @@ tokenSaving:
 
 regex:
   - id: summary
-    pattern: (总结|概括|梗概|摘要|summarize|summary|recap|digest)
+    pattern: (总结|概括|梗概|摘要|summar|recap|digest)
     flags: i
     target: meta
     requires: meta.pure

@@ -10,7 +10,7 @@ stages:
     actor: narrator
     kind: text
     label: Asking Questions
-    field: { name: "step{{n}}_questions", description: "{{ap::name::narrator}} asks {{ap::name::editor}} the questions for this turn. Questions only, no explanations." }
+    field: { name: "questions", description: "{{ap::name::narrator}} asks {{ap::name::editor}} the questions for this turn. Questions only, no explanations." }
     tool:
       name: ask_questions
       description: "{{ap::name::narrator}} asks {{ap::name::editor}} the questions for this turn."
@@ -19,7 +19,7 @@ stages:
     actor: editor
     kind: text
     label: Planning and Creative Input
-    field: { name: "step{{n}}_creative_input", description: "{{ap::name::editor}} answers {{ap::name::narrator}}'s questions with professional advice and concrete solutions." }
+    field: { name: "creative_input", description: "{{ap::name::editor}} answers {{ap::name::narrator}}'s questions with professional advice and concrete solutions." }
     tool:
       name: give_creative_input
       description: "{{ap::name::editor}} answers {{ap::name::narrator}}'s questions with professional advice and concrete solutions."
@@ -28,7 +28,7 @@ stages:
     actor: narrator
     kind: content
     label: Drafting
-    field: { name: "step{{n}}_story", description: "{{ap::name::narrator}} writes the story content using {{ap::name::editor}}' input." }
+    field: { name: "story", description: "{{ap::name::narrator}} writes the story content using {{ap::name::editor}}' input." }
     tool:
       name: write_story
       description: "{{ap::name::narrator}} writes the story content using {{ap::name::editor}}' input."
