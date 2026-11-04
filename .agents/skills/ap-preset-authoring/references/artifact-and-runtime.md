@@ -2,7 +2,7 @@
 
 ## 产物
 
-`ap build` 输出 `dist/<id>.apreset.json`：一个完整、自包含的 JSON。扩展只读取产物，不读取源码。
+`ap build` 输出 `dist/<id>.apreset.json`：一个[预设文件](preset-file.md)，即携带产物的 ST 对话补全预设，产物在其 `extensions.advanced_preset_file.artifact` 中。产物是完整、自包含的 JSON，扩展只读取产物，不读取源码。凡是读取产物的地方（导入文件 / 链接、ST 导入按钮、内置预设、已安装副本）都同时接受预设文件与裸产物。
 
 - **格式版本** `formatVersion: 3`。扩展只接受当前格式：已安装的旧格式副本会被忽略（如果扩展内置了同 id 的预设，则改用内置版本），请用新版 CLI 重新构建；
 - **哈希** `hash`：去掉 `hash` 字段后、键排序的规范化 JSON 的 SHA-256 前 16 位十六进制。扩展用它判断产物是否变化（重建 Carrier、迁移用户配置、开发服务器热更新）；
@@ -19,6 +19,7 @@
 | `params` `groups` `modules` `entries` `insertionPoints` `userModules` `userModuleTemplates` `vars` | 参数、分组、模组、已排序的条目（条件已编译为 AST）、插入点、随预设安装的用户模组与用户模组模板（条目文字为源码原文，翻译在各项的 `locales` 中，见 [user-modules.md](user-modules.md#预设中的用户模组)）、构建变量 |
 | `workflows` `structures` `regex` `meta` `tokenSaving` | 工作流、结构、正则标记、元指令、省 token |
 | `regexScripts` `quickReplySets` | ST 正则脚本（ST 的 `RegexScriptData`）与快速回复集，没有时省略（见 [regex-and-quick-replies.md](regex-and-quick-replies.md)） |
+| `tavernHelperScripts` | 酒馆助手脚本与文件夹（酒馆助手自己的形状），没有时省略（见 [tavern-helper-scripts.md](tavern-helper-scripts.md)） |
 | `syntheticTurns` `tools` | 工具传输的文案 |
 | `theme` | 主题色 |
 | `carrier` | 生成好的 ST 提示词列表与顺序 |
@@ -33,7 +34,7 @@ AP 面板 → **预设**：
 
 | 方式 | 说明 |
 | --- | --- |
-| 导入文件 | 选择 `.apreset.json` |
+| 导入文件 | 选择 `.apreset.json`（预设文件或裸产物）。也可以用 ST 对话补全预设的导入按钮 |
 | 导入链接 | 填写产物 URL。GitHub 页面链接（`github.com/<owner>/<repo>/blob/<ref>/<path>`）自动换成 `raw.githubusercontent.com`。AP 记住来源，之后可点“从来源更新”重新下载 |
 | 开发服务器 | 调试页填写 `ap dev` 的地址，见 [cli.md](cli.md#ap-dev) |
 | 内置 | 扩展自带的预设（目前是花瓣），随扩展更新 |
@@ -43,9 +44,11 @@ AP 面板 → **预设**：
 - 查找顺序：开发服务器 → 已安装 → 内置。已安装副本版本低于内置版本时使用内置版本；
 - 安装 / 更新后：按[迁移](configuration.md#迁移)处理用户配置与用户模组，然后确保 Carrier 存在且与产物一致；
 - 产物中有无需点击即会执行的[快速回复](regex-and-quick-replies.md#运行期)时，安装前同样请用户确认（与已安装版本相同时不再询问）；
+- [酒馆助手脚本](tavern-helper-scripts.md)不在 AP 的安装确认中询问：是否启用由酒馆助手在用户选中预设时询问；
+- 未装 AP 时导入 ST 的预设文件，AP 安装后会自动接管：安装其中的预设、换成 Carrier 并删除原 ST 预设，见 [preset-file.md](preset-file.md#安装了-ap-时)；
 - 删除已安装的预设会同时删除它的 Carrier（内置预设则回退到内置版本）与 AP 为它创建的快速回复集。
 
-**发布建议**：把 `dist/<id>.apreset.json` 提交到仓库（或作为 Release 附件），给用户 GitHub 上的文件链接。注意 GitHub Release 附件的下载链接不支持跨域访问，浏览器中的 AP 无法直接从它导入；请使用仓库文件链接（`blob/` 或 `raw.githubusercontent.com`）。
+**发布建议**：把 `dist/<id>.apreset.json` 提交到仓库（或作为 Release 附件），给用户 GitHub 上的文件链接。没有 AP 的用户可以直接把它导入 ST，再按提示安装 AP。注意 GitHub Release 附件的下载链接不支持跨域访问，浏览器中的 AP 无法直接从它导入；请使用仓库文件链接（`blob/` 或 `raw.githubusercontent.com`）。
 
 ## 聊天中保存的数据
 

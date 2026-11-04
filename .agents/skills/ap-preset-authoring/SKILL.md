@@ -1,6 +1,6 @@
 ---
 name: ap-preset-authoring
-description: Write and edit Advanced Preset (AP) source files for SillyTavern — preset.yaml, manifest/*.yaml, modules/*.md, workflows/*.md, user-modules/*.md, user-module-templates/*.md, regex-scripts/*.yaml, quick-replies/*.yaml, locales/*.yaml — following the AP format reference bundled with this skill. Use for implementing a DESIGN.md, adding or changing modules, params, workflows, structures, configurations, insertion points, bundled user modules, user module templates, SillyTavern regex scripts and Quick Reply sets or translations, and fixing `ap check` errors. 编写或修改 AP 预设源码（模组、工作流、参数、结构、推荐配置、随预设的用户模组与模板、ST 正则脚本与快速回复集、翻译）、修复构建报错时使用。
+description: Write and edit Advanced Preset (AP) source files for SillyTavern — preset.yaml, manifest/*.yaml, modules/*.md, workflows/*.md, user-modules/*.md, user-module-templates/*.md, regex-scripts/*.yaml, quick-replies/*.yaml, tavern-helper-scripts/*.yaml, locales/*.yaml — following the AP format reference bundled with this skill. Use for implementing a DESIGN.md, adding or changing modules, params, workflows, structures, configurations, insertion points, bundled user modules, user module templates, SillyTavern regex scripts, Quick Reply sets, Tavern Helper scripts or translations, and fixing `ap check` errors. 编写或修改 AP 预设源码（模组、工作流、参数、结构、推荐配置、随预设的用户模组与模板、ST 正则脚本与快速回复集、酒馆助手脚本、翻译）、修复构建报错时使用。
 ---
 
 # 编写 Advanced Preset 预设
@@ -10,7 +10,7 @@ description: Write and edit Advanced Preset (AP) source files for SillyTavern �
 ## 开始之前
 
 1. 读 `DESIGN.md`（如果有）。没有设计稿、而改动涉及新增角色 / 工作流 / 大量模组时，先建议用户用 `ap-preset-design` 技能。
-2. 读 `preset.yaml` 与 `manifest/`（如果有），`ls -R manifest modules workflows user-modules user-module-templates regex-scripts quick-replies locales`，了解现有 id、区域、分组。
+2. 读 `preset.yaml` 与 `manifest/`（如果有），`ls -R manifest modules workflows user-modules user-module-templates regex-scripts quick-replies tavern-helper-scripts locales`，了解现有 id、区域、分组。
 3. 运行 `npx ap check`，记下已有的错误和警告，不要把它们算到你的改动上。
 4. 如果用户正在用 `npm run dev` 实时预览，保持它运行；每次保存都会自动重新构建。
 
@@ -41,16 +41,18 @@ description: Write and edit Advanced Preset (AP) source files for SillyTavern �
 | `configurationDefaults`、推荐配置、Carrier、迁移 | [configuration.md](references/configuration.md) |
 | 插入点、用户模组、`user-modules/` 与 `user-module-templates/` | [user-modules.md](references/user-modules.md) |
 | 预设携带的 ST 正则脚本（`regex-scripts/`）与快速回复集（`quick-replies/`） | [regex-and-quick-replies.md](references/regex-and-quick-replies.md) |
+| 预设携带的酒馆助手脚本（`tavern-helper-scripts/`） | [tavern-helper-scripts.md](references/tavern-helper-scripts.md) |
 | 面板翻译 | [locales.md](references/locales.md) |
 | 一次生成的完整组装流程（排查“为什么出现 / 没出现”） | [assembly.md](references/assembly.md) |
 | `ap` 命令 | [cli.md](references/cli.md) |
 | 产物格式、安装与更新、聊天中保存的数据 | [artifact-and-runtime.md](references/artifact-and-runtime.md) |
+| 预设文件（ST 预设形态的 `.apreset.json`）、安装提示、酒馆助手安装脚本、`build.installer` | [preset-file.md](references/preset-file.md) |
 
 常见任务的完整步骤见 [recipes.md](recipes.md)。
 
 ## 速查
 
-**源码**：`preset.yaml`（清单）、`manifest/**/*.yaml`（可选的清单片段：顶层键同 `preset.yaml`，映射逐层合并，标量 / 列表只能定义一次，元数据只能在 `preset.yaml`）、`modules/**/*.md`（一个文件一个模组，子目录随意）、`workflows/*.md`（只认一层）、`regex-scripts/*.yaml` 与 `quick-replies/*.yaml`（ST 正则脚本与快速回复集，字段名同 ST，可直接放入 ST 导出的 JSON）、`locales/<lang>.yaml`。以 `.` 开头的文件、`node_modules/`、`dist/` 被忽略；其他文件（README、DESIGN.md）不参与编译。
+**源码**：`preset.yaml`（清单）、`manifest/**/*.yaml`（可选的清单片段：顶层键同 `preset.yaml`，映射逐层合并，标量 / 列表只能定义一次，元数据只能在 `preset.yaml`）、`modules/**/*.md`（一个文件一个模组，子目录随意）、`workflows/*.md`（只认一层）、`regex-scripts/*.yaml` 与 `quick-replies/*.yaml`（ST 正则脚本与快速回复集，字段名同 ST，可直接放入 ST 导出的 JSON）、`tavern-helper-scripts/*.yaml`（酒馆助手脚本，字段名同酒馆助手，代码可写在该目录下的 .js 文件中）、`locales/<lang>.yaml`。以 `.` 开头的文件、`node_modules/`、`dist/` 被忽略；其他文件（README、DESIGN.md）不参与编译。
 
 **模组**：
 

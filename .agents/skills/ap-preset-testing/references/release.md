@@ -27,6 +27,7 @@
 - **导入链接**：AP 面板 → 预设 → 导入链接，填 `https://github.com/<用户>/<仓库>/blob/main/dist/<id>.apreset.json`（AP 自动换成 raw 地址）。这个地址始终指向最新提交。
 - **从来源更新**：通过链接安装的预设可以一键更新；用户的配置修改、我的模组、记忆都会保留。
 - **导入文件**：从 Release 页面下载 `.apreset.json` 后导入。
+- **还没装 AP 的用户**：`.apreset.json` 是一个标准的 ST 预设，直接在 ST 对话补全预设中导入即可；预设会提示安装 AP，装有酒馆助手时附带的安装脚本可以自动安装，安装后 AP 自动接管（见 [preset-file.md](../../ap-preset-authoring/references/preset-file.md)）。不附带安装脚本：清单 `build: { installer: false }` 或 `ap build --no-installer`。
 
 > GitHub Release 附件的下载地址不能用于“导入链接”：浏览器的跨域限制会拒绝读取。分享链接请用仓库里的文件地址。
 
