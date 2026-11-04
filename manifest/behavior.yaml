@@ -27,7 +27,7 @@ tokenSaving:
 
 regex:
   - id: summary
-    pattern: (总结|概括|梗概|摘要|summarize|summary|recap|digest)
+    pattern: (总结|概括|梗概|摘要|summar|recap|digest)
     flags: i
     target: meta
     requires: meta.pure
