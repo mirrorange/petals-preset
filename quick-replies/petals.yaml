@@ -1,0 +1,40 @@
+# Petals Quick Reply set: added to SillyTavern's global Quick Reply list while Petals is the active
+# preset (`AP · Petals Preset`), removed again with any other preset. Icon-only buttons; the labels
+# and tooltips are translated in locales/zh-cn.yaml.
+#
+# The set sends its messages (`disableSend: false`) without merging the input (`injectInput: false`):
+# - meta / storyline / branch append to the input box with STscript (`/setinput {{input}} …`), so the
+#   user goes on typing;
+# - summary / impersonate send the meta instruction (matching meta.tasks: flags.summary /
+#   flags.impersonate in manifest/behavior.yaml); a draft in the input box follows on the next line
+#   as a hint (`{{input}}`), so `#name` in the draft keeps the turn on that storyline.
+qrList:
+  - id: meta
+    label: Freesia
+    icon: fa-at
+    title: "Talk to {{ap::name::narrator}}: append @{{ap::name::narrator}} to the input"
+    message: "/setinput {{input}} @{{ap::name::narrator}}"
+  - id: summary
+    label: Summary
+    icon: fa-scroll
+    title: "Ask {{ap::name::narrator}} to summarize the story so far"
+    message: |-
+      @{{ap::name::narrator}} Please summarize the story so far.
+      {{input}}
+  - id: impersonate
+    label: Ghostwrite
+    icon: fa-feather-pointed
+    title: "Ask {{ap::name::narrator}} to ghostwrite your next reply (the text in the input box is the hint)"
+    message: |-
+      @{{ap::name::narrator}} Please ghostwrite my next reply.
+      {{input}}
+  - id: storyline
+    label: Storyline
+    icon: fa-hashtag
+    title: "Continue the most recent side storyline: append # to the input"
+    message: "/setinput {{input}} #"
+  - id: branch
+    label: New branch
+    icon: fa-code-branch
+    title: "Start a new side storyline that {{ap::name::narrator}} names: append #? to the input"
+    message: "/setinput {{input}} #?"
