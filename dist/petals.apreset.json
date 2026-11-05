@@ -490,7 +490,7 @@
         "author": "mirrorange",
         "description": "Write stories with Freesia! Freesia writes, Petals gives suggestions — a dual-character driven workflow.",
         "minAdvancedPreset": "1.10.0",
-        "hash": "cd52e06ddcd2707e",
+        "hash": "fa53395a95d06fa2",
         "actors": {
           "narrator": {
             "name": "Freesia",
@@ -2443,7 +2443,7 @@
               {
                 "pieces": [
                   {
-                    "text": "## Expansion + Continuation Mode\n\n- Current mode is **Expansion + Continuation**. {{ap::name::user}}'s input is treated as **intent, instruction, or a story fragment** that guides the direction of the narrative.\n- {{ap::name::narrator}} must first **incorporate and expand upon {{ap::name::user}}'s input**, ensuring that the output **contains** the essence or content of what {{ap::name::user}} provided.\n- Then {{ap::name::narrator}} **continues the story by one more segment** that follows naturally from it, instead of stopping where {{ap::name::user}}'s input ends.\n"
+                    "text": "## Expansion + Continuation Mode\n\n- Current mode is **Expansion + Continuation**. {{ap::name::user}}'s input is treated as **intent, instruction, or a story fragment** that guides the direction of the narrative.\n- {{ap::name::narrator}} must first **incorporate and expand upon {{ap::name::user}}'s input**, ensuring that the output **contains** the essence or content of what {{ap::name::user}} provided—whether by quoting, paraphrasing, or weaving it into the narrative.\n- Then {{ap::name::narrator}} **continues the story by one more segment** that follows naturally from it, instead of stopping where {{ap::name::user}}'s input ends.\n"
                   }
                 ]
               }
