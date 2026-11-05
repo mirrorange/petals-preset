@@ -6,6 +6,7 @@ groups:
   mode: { label: Mode, order: 20 }
   guidelines: { label: Guidelines, order: 30 }
   narrative: { label: Narrative agency, allowNone: true }
+  pacing: { label: Pacing, allowNone: true }
   style:
     label: Writing Style
     description: One main style (or none); Eros can be added on top for NSFW scenes.

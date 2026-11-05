@@ -71,8 +71,10 @@ configurationDefaults:
     nsfw-protocol: false
     output-structure: false
     pacing-control: true
+    plot-advancement: false
     mode-continuation: false
     mode-expansion: true
+    mode-expansion-continuation: false
     mode-preface: true
     role-freesia: true
     style-aisthesis: false

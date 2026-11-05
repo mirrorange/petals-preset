@@ -490,7 +490,7 @@
         "author": "mirrorange",
         "description": "Write stories with Freesia! Freesia writes, Petals gives suggestions — a dual-character driven workflow.",
         "minAdvancedPreset": "1.10.0",
-        "hash": "2298ac62ec0dd622",
+        "hash": "fa53395a95d06fa2",
         "actors": {
           "narrator": {
             "name": "Freesia",
@@ -836,6 +836,11 @@
             "order": 40,
             "allowNone": true
           },
+          "pacing": {
+            "label": "Pacing",
+            "order": 50,
+            "allowNone": true
+          },
           "style": {
             "label": "Writing Style",
             "order": 40,
@@ -843,7 +848,7 @@
           },
           "main-style": {
             "label": "Main style",
-            "order": 60,
+            "order": 70,
             "allowNone": true
           },
           "features": {
@@ -929,6 +934,18 @@
             "vars": [],
             "source": "modules/mode/expansion.md",
             "description": "Your input is intent, instruction or a story fragment; Freesia weaves it into a full narrative.",
+            "group": "mode",
+            "exclusive": "mode"
+          },
+          {
+            "id": "mode-expansion-continuation",
+            "name": "Expansion + Continuation",
+            "toggle": "user",
+            "default": false,
+            "structures": [],
+            "vars": [],
+            "source": "modules/mode/expansion-continuation.md",
+            "description": "Freesia expands your input into a full narrative, then carries the story one segment further.",
             "group": "mode",
             "exclusive": "mode"
           },
@@ -1362,7 +1379,21 @@
             "structures": [],
             "vars": [],
             "source": "modules/guidelines/pacing-control.md",
-            "group": "guidelines"
+            "description": "Slow down — dwell on the current moment instead of rushing ahead.",
+            "group": "guidelines",
+            "exclusive": "pacing"
+          },
+          {
+            "id": "plot-advancement",
+            "name": "Plot Advancement",
+            "toggle": "user",
+            "default": false,
+            "structures": [],
+            "vars": [],
+            "source": "modules/guidelines/plot-advancement.md",
+            "description": "Actively move the plot forward with new events, decisions and turns.",
+            "group": "guidelines",
+            "exclusive": "pacing"
           },
           {
             "id": "mode-preface",
@@ -2055,6 +2086,21 @@
             ]
           },
           {
+            "id": "mode-expansion-continuation/mode",
+            "module": "mode-expansion-continuation",
+            "region": "mode",
+            "order": 100,
+            "content": [
+              {
+                "pieces": [
+                  {
+                    "text": "{{ap::prefix::user}}{{ap::name::narrator}}, I want to write stories with you. I will give you instructions or story snippets; you will expand them into a full narrative, then carry the story a little further.\n\n"
+                  }
+                ]
+              }
+            ]
+          },
+          {
             "id": "mode-preface/preface",
             "module": "mode-preface",
             "region": "mode",
@@ -2389,6 +2435,21 @@
             ]
           },
           {
+            "id": "mode-expansion-continuation/guideline",
+            "module": "mode-expansion-continuation",
+            "region": "guidelines",
+            "order": 50,
+            "content": [
+              {
+                "pieces": [
+                  {
+                    "text": "## Expansion + Continuation Mode\n\n- Current mode is **Expansion + Continuation**. {{ap::name::user}}'s input is treated as **intent, instruction, or a story fragment** that guides the direction of the narrative.\n- {{ap::name::narrator}} must first **incorporate and expand upon {{ap::name::user}}'s input**, ensuring that the output **contains** the essence or content of what {{ap::name::user}} provided—whether by quoting, paraphrasing, or weaving it into the narrative.\n- Then {{ap::name::narrator}} **continues the story by one more segment** that follows naturally from it, instead of stopping where {{ap::name::user}}'s input ends.\n"
+                  }
+                ]
+              }
+            ]
+          },
+          {
             "id": "character-enhancement/main",
             "module": "character-enhancement",
             "region": "guidelines",
@@ -2509,6 +2570,21 @@
             ]
           },
           {
+            "id": "plot-advancement/main",
+            "module": "plot-advancement",
+            "region": "guidelines",
+            "order": 600,
+            "content": [
+              {
+                "pieces": [
+                  {
+                    "text": "## Plot Advancement\n\n- **Preferred approach**: Actively move the plot forward in every response—introduce new events, decisions, conflicts, or revelations, and let characters take the initiative.\n- **Avoid**: Lingering on the same moment, repeating established beats, or ending a response with nothing changed.\n"
+                  }
+                ]
+              }
+            ]
+          },
+          {
             "id": "core/banned-list",
             "module": "core",
             "region": "guidelines",
@@ -2611,7 +2687,7 @@
               {
                 "pieces": [
                   {
-                    "text": "## Event Synopsis\n\nAfter each story segment, {{ap::name::narrator}} should output a concise synopsis of **the current segment's events**. This synopsis should include:\n\n- **Time:** When the events occurred.\n  - Format: {Start Time} - {End Time}. If the start and end dates are the same, the date in the end time can be omitted.\n  - If the story specifies dates: `MM-dd HH:mm - (MM-dd) HH:mm`\n  - If no specific dates are given: Use relative day notation, e.g., `Day1 HH:mm - (Day2) HH:mm`.\n- **Location:** Where the events occurred (scene or setting).\n- **Event:** A title of 10 words or less of current event.\n- **Summary:** A brief, objective description of what happened.\n\n### Format\n\n{{ap::structure::synopsis}}\n"
+                    "text": "## Event Synopsis\n\nAfter each story segment, {{ap::name::narrator}} should output a concise synopsis of **the current segment's events**. This synopsis should include:\n\n- **Time:** When the events occurred. The story time as `MM-dd HH:mm`; If no specific dates are given, use relative day notation: `Day1`, `Day2`…\n- **Location:** Where the events occurred (scene or setting).\n- **Event:** A title of 10 words or less of current event.\n- **Summary:** A brief, objective description of what happened.\n\n### Format\n\n{{ap::structure::synopsis}}\n"
                   }
                 ]
               }
@@ -5605,6 +5681,7 @@
             "role-freesia": true,
             "mode-continuation": false,
             "mode-expansion": true,
+            "mode-expansion-continuation": false,
             "always-reply": false,
             "antifiltering": false,
             "event-synopsis": true,
@@ -5623,6 +5700,7 @@
             "nsfw-protocol": false,
             "output-structure": false,
             "pacing-control": true,
+            "plot-advancement": false,
             "mode-preface": true,
             "style-kardia": true,
             "style-aisthesis": false,
@@ -5794,6 +5872,7 @@
           "role-freesia",
           "mode-continuation",
           "mode-expansion",
+          "mode-expansion-continuation",
           "*",
           "style-kardia",
           "style-aisthesis",
@@ -5819,6 +5898,9 @@
               },
               "narrative": {
                 "label": "叙事控制"
+              },
+              "pacing": {
+                "label": "节奏"
               },
               "style": {
                 "label": "文风",
@@ -5857,6 +5939,10 @@
               "mode-expansion": {
                 "name": "扩写",
                 "description": "你的输入是意图、指令或故事片段；Freesia 把它扩展成完整的叙事。"
+              },
+              "mode-expansion-continuation": {
+                "name": "扩写后续写",
+                "description": "先把你的输入扩写成完整的叙事，再继续推进一段剧情。"
               },
               "mode-preface": {
                 "name": "成人内容前言",
@@ -5898,7 +5984,12 @@
                 "name": "输出结构强化"
               },
               "pacing-control": {
-                "name": "叙事节奏控制"
+                "name": "控制节奏",
+                "description": "放慢节奏，聚焦当下的对话、动作与细节，不急于推进。"
+              },
+              "plot-advancement": {
+                "name": "推进剧情",
+                "description": "积极推进剧情发展：引入新事件、抉择与转折。"
               },
               "style-kardia": {
                 "name": "Kardia",

@@ -1,7 +1,9 @@
 ---
 id: pacing-control
 name: Pacing Control
+description: Slow down — dwell on the current moment instead of rushing ahead.
 group: guidelines
+exclusive: pacing
 region: guidelines
 order: 600
 ---
