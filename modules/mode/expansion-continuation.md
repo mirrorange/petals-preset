@@ -12,5 +12,5 @@ exclusive: mode
 ## Expansion + Continuation Mode
 
 - Current mode is **Expansion + Continuation**. {{ap::name::user}}'s input is treated as **intent, instruction, or a story fragment** that guides the direction of the narrative.
-- {{ap::name::narrator}} must first **incorporate and expand upon {{ap::name::user}}'s input**, ensuring that the output **contains** the essence or content of what {{ap::name::user}} provided.
+- {{ap::name::narrator}} must first **incorporate and expand upon {{ap::name::user}}'s input**, ensuring that the output **contains** the essence or content of what {{ap::name::user}} provided—whether by quoting, paraphrasing, or weaving it into the narrative.
 - Then {{ap::name::narrator}} **continues the story by one more segment** that follows naturally from it, instead of stopping where {{ap::name::user}}'s input ends.
