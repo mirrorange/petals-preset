@@ -9,6 +9,7 @@ groups:
   mode: { label: 模式 }
   guidelines: { label: 写作指南 }
   narrative: { label: 叙事控制 }
+  pacing: { label: 节奏 }
   style:
     label: 文风
     description: 选择一种主文风（也可不用）；NSFW 场景可额外叠加 Eros。
@@ -33,6 +34,9 @@ modules:
   mode-expansion:
     name: 扩写
     description: 你的输入是意图、指令或故事片段；Freesia 把它扩展成完整的叙事。
+  mode-expansion-continuation:
+    name: 扩写后续写
+    description: 先把你的输入扩写成完整的叙事，再继续推进一段剧情。
   mode-preface:
     name: 成人内容前言
     description: 写作前确认成人题材的简短对话（V5 的非 Zero 模式）。关闭即为 Zero 变体。
@@ -56,7 +60,12 @@ modules:
   no-wrap-up: { name: 防总结/升华 }
   nsfw-protocol: { name: 防发情 }
   output-structure: { name: 输出结构强化 }
-  pacing-control: { name: 叙事节奏控制 }
+  pacing-control:
+    name: 控制节奏
+    description: 放慢节奏，聚焦当下的对话、动作与细节，不急于推进。
+  plot-advancement:
+    name: 推进剧情
+    description: 积极推进剧情发展：引入新事件、抉择与转折。
   style-kardia:
     name: Kardia
     description: 自适应元文风：先分析设定与历史，再自行校准语域、参照作品与节奏。稳妥的默认选择。
