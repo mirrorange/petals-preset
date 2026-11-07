@@ -89,15 +89,33 @@ Always maintain your own identity: even while playing a character, your core ide
 - Fit the amount of plot to the length—develop scenes with concrete detail rather than padding, and do not rush or summarize to stay short.
 
 <!-- @entry id=narrative-person region=guidelines order=13 when="!meta.pure && gen.type != \"impersonate\" && params.narrativePerson != \"\"" -->
-## Narrative Person
+<!-- @if params.narrativePerson == "alternating-third-first" -->
+## Narrative Perspective: Alternating 3rd-Person & 1st-Person POV
 
+- Use Third-Person POV for macroscopic scene-setting, environmental atmosphere, objective action choreography, character's external demeanor or scenes where protagonist is absent.
+- Shift into protagonist's First-Person POV ("I") during moments of heightened emotion, intense focus, or internal monologue to expose protagonist's raw, unfiltered thoughts and hidden motives.
+- Autonomous Spatio-Temporal Shifting: Use cinematic transitions across time and space (e.g., brief flashbacks, parallel cutaways to other locations, or natural time skips) when it enhances dramatic tension and pacing.
+<!-- @end -->
+<!-- @if params.narrativePerson == "alternating-third-second" -->
+## Narrative Perspective: Alternating 3rd-Person & 2nd-Person POV
+
+- Use Third-Person POV for macroscopic world-building, environmental atmosphere, character's independent actions, internal thoughts, and off-screen parallel events where protagonist is not present.
+- Shift to Second-Person POV ("you") when focusing on protagonist's immediate vantage point—describing what "you" see, hear, and physically sense in the environment, or how character's presence and actions directly impact "your" immediate space.
+- Autonomous Spatio-Temporal Shifting: Allow seamless cinematic transitions across time and locations using Third-Person narration to enrich the plot outside of protagonist's immediate field of view.
+<!-- @end -->
 <!-- @if params.narrativePerson == "first" -->
+## Narrative Perspective
+
 Narrate the story content in the **first person**: the narrator is the viewpoint character and refers to themself as "I". The viewpoint character is {{user}}, unless the story so far has already established a different first-person narrator.
 <!-- @end -->
 <!-- @if params.narrativePerson == "second" -->
+## Narrative Perspective
+
 Narrate the story content in the **second person**: address the player character ({{user}}) as "you"; all other characters are referred to in the third person.
 <!-- @end -->
 <!-- @if params.narrativePerson == "third" -->
+## Narrative Perspective
+
 Narrate the story content in the **third person**: refer to every character—including the player character—by name or by third-person pronouns.
 <!-- @end -->
 

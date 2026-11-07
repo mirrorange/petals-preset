@@ -47,8 +47,11 @@ syntheticTurns:
       description: >-
         Open the writing session of {{ap::name::narrator}} and {{ap::name::editor}} for this turn.
         Returns how the workflow is delivered.
-    # User-supplied opaque Gemini signature; sent only to Gemini when `sendThoughtSignature` is on. Never edit.
-    thoughtSignature: AY89a19rZjAaoGPoZIQYJVKTJki6wEZ833K90LZvrH0lkrtbJHgi1gs/uato/uKR2MTxgGXruDHi5dCr9axRX2GJBT1Net7a+u2cgwc5xYKL2Fomowpj4czoV5vAq/OYoJ2hefMPtuf7aLRuPSHInA==
+    # User-supplied opaque Gemini signatures, one per channel (a signature only validates on the backend
+    # that issued it); sent for the channel chosen by `sendThoughtSignature`. Never edit.
+    thoughtSignature:
+      vertex: AY89a19rZjAaoGPoZIQYJVKTJki6wEZ833K90LZvrH0lkrtbJHgi1gs/uato/uKR2MTxgGXruDHi5dCr9axRX2GJBT1Net7a+u2cgwc5xYKL2Fomowpj4czoV5vAq/OYoJ2hefMPtuf7aLRuPSHInA==
+      aistudio: EmkKZwFpFH0TWEgzZ8FlKekxSN2nQBpgzI2HXpOSZ3SEgBbzBY+RAO+Zf8/T5ifbzPkUqob9JOaq+uFl4S60MeW/0yV67k1KTJovuZIO3a4GswwFZ/hGdPtRhenHrqH29m+Yl/pqTaYJD8E=
     response: &init-response
       single: Workflow initialised. Now call `{{submit}}` exactly once, filling every field in order to complete the whole workflow in a single call.
       multi: Workflow initialised. Complete the workflow by calling the stage tools in order, starting with `{{first}}`. Each tool records one stage.
@@ -59,5 +62,7 @@ syntheticTurns:
     # "Skip the internal thought and proceed directly to the workflow." Never edit.
     user: *init-user
     tool: *init-tool
-    thoughtSignature: AY89a1+a+MIYy6FPVVZOUYcPe3YWxMtEikrAsPW3VBSHcALLf7nNcDv67a6j4ScvrwCFhMzqsG3rKQi/xYyYbh+CS9n51H4C2SBr8gG/CRkupZPVyA==
+    thoughtSignature:
+      vertex: AY89a1+a+MIYy6FPVVZOUYcPe3YWxMtEikrAsPW3VBSHcALLf7nNcDv67a6j4ScvrwCFhMzqsG3rKQi/xYyYbh+CS9n51H4C2SBr8gG/CRkupZPVyA==
+      aistudio: EqkBCqYBAWkUfROQ7ikvZDvcoamzj1kJZxqG0P6l1LxovYgWCIYkAd41wjn/K/8H5ON50xQ/2sQbCq6VeYyXejwAmlFDuenYWUMIvbW/9ZMm8JU2OVT24IC9m5QRhOzkF+v0HBhX/UGUekAVRmv4zT9ZeXclHaZJTJ4NhRPY8jdJ9mJuzyLEFfYUUd8zHJbZ6sKwvanTnYfAn3Ivh2KLOxx2nafHQnaUA/nuLQ==
     response: *init-response

@@ -12,7 +12,8 @@
 | `version` | semver | `0.0.0` | 必须形如 `1.2.3` 或 `1.2.3-beta.1` |
 | `author` | string | — | |
 | `description` | string | — | 面板中显示 |
-| `minAdvancedPreset` | semver | — | 安装时检查扩展版本，低于此版本拒绝安装 |
+| `minAdvancedPreset` | semver | — | 安装时检查扩展版本。低于此版本时 AP 先尝试更新自身，更新不了则拒绝安装（见[安装与更新](artifact-and-runtime.md#安装与更新)） |
+| `updateUrl` | http(s) URL | — | 发布最新预设文件的地址（如仓库中 `dist/<id>.apreset.json` 的 GitHub 文件链接）。以文件安装的副本从这里检查更新；必须是 `http://` / `https://` 地址，否则报错。1.11.0 之前的 AP 忽略它 |
 | `actors` | map | — | **至少一个**。见[角色](#角色-actors) |
 | `narrator` | actor id | 第一个角色 | 主叙述者 |
 | `user` | actor id | `user` | 代表用户的角色，必须在 `actors` 中声明 |
@@ -82,7 +83,7 @@ manifest/configurations.yaml configurationDefaults: / configurations:
 
 规则：
 
-- **元数据只能写在 `preset.yaml`**：`formatVersion`、`id`、`name`、`version`、`author`、`description`、`minAdvancedPreset`。写在片段中时报错（并被忽略）。其他字段写在哪个文件都可以。
+- **元数据只能写在 `preset.yaml`**：`formatVersion`、`id`、`name`、`version`、`author`、`description`、`minAdvancedPreset`、`updateUrl`。写在片段中时报错（并被忽略）。其他字段写在哪个文件都可以。
 - **映射逐层合并**：同一个映射可以分在多个文件里，例如 `structures.synopsis` 与 `structures.options` 各占一个文件，`groups` 的不同分组也可以分开写。
 - **标量与列表只能定义一次**：同一个键路径在两个文件中都写了值（字符串、数字、列表等），报错并指出两处位置。列表（`params`、`regions`、`configurations`……）的顺序有意义，所以整个列表必须写在同一个文件里，不会拼接。
 - **合并顺序**：先 `preset.yaml`，再按路径排序的片段。映射中键的顺序随之确定，例如 `groups` 未写 `order` 时按出现顺序排。

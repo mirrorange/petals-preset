@@ -93,7 +93,7 @@ npx ap preview --json --transport tool-multi | node -e "const d=JSON.parse(requi
 
 ## 5. 发布
 
-按 [release.md](references/release.md)：升版本号 → `npx ap check --strict` → `npm run build` → **提交 `dist/`** → 推送 →（可选）打 `v*` 标签触发自动 Release。分享给用户的安装链接是仓库里的文件地址 `https://github.com/<用户>/<仓库>/blob/main/dist/<id>.apreset.json`，**不是** Release 附件地址。
+按 [release.md](references/release.md)：升版本号 → `npx ap check --strict` → `npm run build` → **提交 `dist/`** → 推送 →（可选）打 `v*` 标签触发自动 Release。分享给用户的安装链接是仓库里的文件地址 `https://github.com/<用户>/<仓库>/blob/main/dist/<id>.apreset.json`，**不是** Release 附件地址；把同一个地址写进 `preset.yaml` 的 `updateUrl`，以文件安装的用户也能自动更新。
 
 ## 汇报
 

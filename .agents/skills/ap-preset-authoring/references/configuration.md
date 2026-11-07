@@ -25,6 +25,7 @@ configurationDefaults:
     forceTool: true
     parallelTools: false
     sendThoughtSignature: false
+    openAiSignatures: false
     streamToolArguments: auto
     maxSteps: 6
     finalFallback: true
@@ -49,7 +50,8 @@ configurationDefaults:
 | `connection` | `transport` | `structured` | 传输方式（[transports.md](transports.md)） |
 | | `forceTool` | `true` | 工具传输强制调用工具（`tool_choice`） |
 | | `parallelTools` | `false` | 多工具模式允许一次调用多个阶段工具 |
-| | `sendThoughtSignature` | `false` | Gemini：示范轮次附带 `thoughtSignature` |
+| | `sendThoughtSignature` | `false` | Gemini 思维签名渠道：`false`（关闭）/ `vertex` / `aistudio`；`true` 等同 `vertex`（[transports.md](transports.md#思维签名)）。渠道值需要 `minAdvancedPreset: 1.11.0` |
+| | `openAiSignatures` | `false` | OpenAI 兼容连接（OpenRouter / CLIProxyAPI）也发送思维签名（[transports.md](transports.md#思维签名)） |
 | | `streamToolArguments` | `auto` | Gemini 工具参数流式：`auto` / `on` / `off` |
 | | `maxSteps` | `6` | 多工具模式最多请求几次 |
 | | `finalFallback` | `true` | 解析不出正文时用原始文本作为正文 |
@@ -78,7 +80,7 @@ ST 内部有几项的设置名与预设文件不同，AP 自动换算：`tempera
 - `params` 的值与参数类型不符（如列表参数不是字符串数组、数字参数不是数字）：错误（推荐配置的 diff 同样检查）；
 - 未知的段（如 `configurationDefaults.foo`）：警告；
 - `cache.enabled` 不是布尔值、`ttlMinutes` / `maxDeferredTurns` 不是非负数：错误；`cache` 中未知的键：警告；
-- `connection.transport` / `streamToolArguments` 取值非法、`workflow` 不存在或是任务工作流、`syntheticTurn` 不存在：错误（推荐配置的 diff 同样检查）。
+- `connection.transport` / `streamToolArguments` / `sendThoughtSignature` 取值非法、`workflow` 不存在或是任务工作流、`syntheticTurn` 不存在：错误（推荐配置的 diff 同样检查）。
 
 ## 推荐配置 `configurations`
 
@@ -89,7 +91,7 @@ configurations:
     description: Tool calling with thought signatures.
     diff:
       sampling: { use_sysprompt: false }
-      connection: { transport: tool-single, sendThoughtSignature: true }
+      connection: { transport: tool-single, sendThoughtSignature: vertex }
       modules: { skip-thought: true }
   - id: claude
     name: Claude

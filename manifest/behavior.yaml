@@ -43,6 +43,7 @@ moduleOrder:
   - role-freesia
   - mode-continuation
   - mode-expansion
+  - mode-expansion-continuation
   - "*"
   - style-kardia
   - style-aisthesis

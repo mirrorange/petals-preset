@@ -9,6 +9,7 @@ groups:
   mode: { label: 模式 }
   guidelines: { label: 写作指南 }
   narrative: { label: 叙事控制 }
+  pacing: { label: 节奏 }
   style:
     label: 文风
     description: 选择一种主文风（也可不用）；NSFW 场景可额外叠加 Eros。
@@ -33,6 +34,9 @@ modules:
   mode-expansion:
     name: 扩写
     description: 你的输入是意图、指令或故事片段；Freesia 把它扩展成完整的叙事。
+  mode-expansion-continuation:
+    name: 扩写后续写
+    description: 先把你的输入扩写成完整的叙事，再继续推进一段剧情。
   mode-preface:
     name: 成人内容前言
     description: 写作前确认成人题材的简短对话（V5 的非 Zero 模式）。关闭即为 Zero 变体。
@@ -56,7 +60,12 @@ modules:
   no-wrap-up: { name: 防总结/升华 }
   nsfw-protocol: { name: 防发情 }
   output-structure: { name: 输出结构强化 }
-  pacing-control: { name: 叙事节奏控制 }
+  pacing-control:
+    name: 控制节奏
+    description: 放慢节奏，聚焦当下的对话、动作与细节，不急于推进。
+  plot-advancement:
+    name: 推进剧情
+    description: 积极推进剧情发展：引入新事件、抉择与转折。
   style-kardia:
     name: Kardia
     description: 自适应元文风：先分析设定与历史，再自行校准语域、参照作品与节奏。稳妥的默认选择。
@@ -135,9 +144,9 @@ params:
     label: 长度策略
     options: { "": 未设置, approx: 约等于, atLeast: 不少于, atMost: 不多于 }
   narrativePerson:
-    label: 叙事人称
-    description: 叙述部分使用的人称，不影响对白。未设置时沿用故事已有的人称。
-    options: { "": 未设置, first: 第一人称, second: 第二人称, third: 第三人称 }
+    label: 叙述视角
+    description: 叙述部分使用的视角：固定一种人称，或在两种人称之间交替。不影响对白。未设置时沿用故事已有的视角。
+    options: { "": 未设置, first: 第一人称, second: 第二人称, third: 第三人称, alternating-third-first: 交替视角（第三/第一人称）, alternating-third-second: 交替视角（第三/第二人称） }
   bannedWords:
     label: 禁用词语
     description: Freesia 不应使用的单个词语，如「闪过」「一丝」。
@@ -149,7 +158,9 @@ params:
     description: 应避免的句式与表达方式，如「不是……而是……」「嘴角勾起一抹弧度」。每项单独列为一行。
 
 configurations:
-  gemini: { name: Gemini }
+  gemini: { name: Gemini (Vertex AI), description: 请求实际到达 Vertex AI 时使用，与 API 连接或反向代理无关。 }
+  gemini-aistudio: { name: Gemini (AI Studio), description: 请求实际到达 Gemini API（AI Studio）时使用，与 API 连接或反向代理无关。 }
+  gemini-other: { name: Gemini (其他), description: 其他或不确定的渠道，不发送思维签名。 }
   deepseek-tool: { name: DeepSeek (工具调用) }
   deepseek-prefill: { name: DeepSeek (预填充), description: 仅 DeepSeek 官方 API 支持预填充，其他提供商请使用「DeepSeek (工具调用)」。 }
   deepseek-claude-legacy: { name: "Claude 4.5 及之前版本" }

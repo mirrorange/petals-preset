@@ -40,10 +40,13 @@ insertionPoints:
   "enabled": true,
   "entries": [
     { "id": "e1", "point": "guidelines", "text": "It is always raining in this city." },
-    { "id": "e2", "point": "after-history", "role": "user", "text": "<!-- @if transport == \"prefill\" -->Remember the rain.<!-- @end -->" }
+    { "id": "e2", "point": "after-history", "role": "user", "text": "<!-- @if transport == \"prefill\" -->Remember the rain.<!-- @end -->" },
+    { "id": "e3", "point": "after-history", "text": "Thunder in the distance.", "enabled": false }
   ],
   "vars": [
-    { "var": "questions", "type": "list", "items": ["Is it still raining?"] }
+    { "var": "questions", "type": "list", "items": ["Is it still raining?"] },
+    { "var": "tags", "type": "list", "items": ["storm"], "enabled": false },
+    { "var": "considerations", "type": "dict", "items": [{ "key": "weather", "value": "Is the rain getting worse?" }, { "key": "pacing", "value": null, "enabled": false }] }
   ],
   "trigger": {
     "match": "all",
@@ -60,8 +63,8 @@ insertionPoints:
 | `id` | 用户模组 id。合并进预设时变为 `user-<id>` |
 | `name` | 显示名 |
 | `enabled` | 是否启用 |
-| `entries[]` | 条目：`id`、`point`（插入点 id）、`role`（可选：`system` / `user` / `assistant`）、`text` |
-| `vars[]` | 构建变量更新，见下 |
+| `entries[]` | 条目：`id`、`point`（插入点 id）、`role`（可选：`system` / `user` / `assistant`）、`text`、`enabled`（可选，`false` 时关闭） |
+| `vars[]` | 构建变量更新，见下；更新本身、字典的每个键、列表的每一项都可关闭 |
 | `trigger` | 触发条件，见下 |
 
 ### 条目
@@ -70,16 +73,21 @@ insertionPoints:
 - 没有 `role` 的条目与区域中的其他文字合并；有 `role` 时成为单独的消息（等同于 `@as`）；
 - `text` 支持 `{{ap::…}}` 宏、ST 宏，以及 `@if` / `@as` / `@style` / `@template` 指令与 `<!--# … -->` 注释（[directives.md](directives.md)），不支持 `@entry` / `@section`；
 - 插入点不存在（例如预设更新后被删除）的条目被跳过，并在调试信息中警告；空文字的条目忽略。
+- `enabled: false` 的条目保留在模组中但不插入（编辑器中每个条目前的开关），省略即开启。
+
+### 条目与变量更新的开关
+
+编辑器中每个插入条目、每条构建变量更新，以及更新里的每个键 / 每一项前都有开关，便于在不删除内容的情况下比较不同组合。开关状态是模组内容的一部分：随模组导出、导入、复制与[随预设导出](#随预设导出)，也计入“用户是否改过随预设模组”的比较。只保存关闭状态（`enabled: false`），重新打开即去掉该字段。模组本身的 `enabled` 则是用户的开关偏好，不计入比较。
 
 ### 构建变量更新
 
 | `type` | 字段 | 效果 |
 | --- | --- | --- |
 | `string` | `text` | 覆盖字符串变量（空文字忽略） |
-| `list` | `items: string[]` | 追加列表项（空项忽略） |
-| `dict` | `items: [{ key, value }]` | 设置字典键；`value` 为空或 `null` 时**删除**该键 |
+| `list` | `items: (string \| { text, enabled: false })[]` | 追加列表项（空项忽略） |
+| `dict` | `items: [{ key, value, enabled? }]` | 设置字典键；`value` 为空或 `null` 时**删除**该键 |
 
-只有预设声明过、且类型一致的变量会被更新；用户模组的更新在所有预设模组之后应用（[build-variables.md](build-variables.md#用户模组)）。
+`enabled: false` 的更新不应用；列表中关闭的项写成 `{ "text": "…", "enabled": false }`（打开的项仍是字符串），字典中关闭的键带 `"enabled": false`，二者都跳过。旧版本 AP 读到时：关闭的列表项被丢弃，关闭的条目、更新与字典键照常生效。只有预设声明过、且类型一致的变量会被更新；用户模组的更新在所有预设模组之后应用（[build-variables.md](build-variables.md#用户模组)）。
 
 ### 触发条件
 
@@ -159,7 +167,7 @@ Remember to keep the custom style.
 | --- | --- |
 | `name` | 模组名，默认为 id（模板新建时同名模组已存在则加编号） |
 | `point` / `role` | 第一个条目的插入点与角色（`role` 可省略，含义同用户模组条目） |
-| `vars` | 构建变量更新，写法与[模组的 `vars`](build-variables.md) 相同（字典值为 `null` 表示移除该键） |
+| `vars` | 构建变量更新，写法与[模组的 `vars`](build-variables.md) 相同（字典值为 `null` 表示移除该键）；`!off` 标记关闭的部分，见下 |
 | `when` | 条件表达式，成为触发条件中的一条“表达式”规则 |
 | `trigger` | 完整的触发条件（`{ match, rules }`，格式见[触发条件](#触发条件)，可写关键词规则）；与 `when` 二选一 |
 | `enabled` | 仅 `user-modules/`：安装后是否开启，默认 `true`（翻译文件中忽略） |
@@ -167,6 +175,18 @@ Remember to keep the custom style.
 
 - **id** 取文件名，小写 kebab-case；frontmatter 中不需要写 `id`（写了且不同则报错）。两个目录的 id 互不相关。
 - **条目**：正文开头到第一个 `<!-- @entry point=<插入点> role=<角色> -->` 之前是第一个条目（需要 frontmatter 的 `point`）；之后每个 `@entry` 行开始一个新条目。`@entry` 必须独占一行；围栏代码块与注释中的 `@entry` 是普通文本。
+- **开关**：`@entry` 上写 `enabled=false` 的条目安装后是关闭的（想关闭第一个条目时，不在 frontmatter 写 `point`，正文以 `@entry` 行开头）。`vars` 中用 YAML 标签 `!off` 关闭整条更新、某个字典键或某个列表项：
+
+  ```yaml
+  vars:
+    optionalQuestions:
+      custom-style: Which details carry the style?
+      imagery: !off Which images recur?        # 关闭这个键
+    tags: [rain, !off thunder]                 # 关闭一项
+    styleNotes: !off Prefer short sentences.   # 关闭整条更新
+  ```
+
+  `!off` 只能用在 `vars` 中（其他位置报错）；只关闭条目或部分变量时，模组的 `enabled` 仍控制整个模组。
 - **原样保存**：条目文字（含[注释](directives.md#注释) `<!--# … -->`、指令、宏）按原样写进产物，只去掉首尾空行；用户在编辑器里看到的就是源码，注释正好用来写修改说明（不会发送给模型）。编译器仍会检查其中的指令、宏与条件，错误带行号报告。
 - **翻译**：`<id>.<lang>.md` 是同一模组的整份翻译（名称、说明、条目、变量与触发条件都以它为准），面板语言为 `<lang>`（或其基础语言，如 `zh` 对应 `zh-cn`）时使用；必须有同 id 的原文件。只想翻译名称（与模板说明）时，在 [locales](locales.md) 的 `userModules` / `userModuleTemplates` 段中写 `name` / `description` 即可。
 - **检查**：插入点、角色、变量与类型、触发规则（含条件变量与取值）都与用户模组同样校验；未知的 frontmatter 键、写在不适用目录中的 `enabled` / `description` 警告。
