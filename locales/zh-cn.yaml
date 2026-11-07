@@ -144,9 +144,9 @@ params:
     label: 长度策略
     options: { "": 未设置, approx: 约等于, atLeast: 不少于, atMost: 不多于 }
   narrativePerson:
-    label: 叙事人称
-    description: 叙述部分使用的人称，不影响对白。未设置时沿用故事已有的人称。
-    options: { "": 未设置, first: 第一人称, second: 第二人称, third: 第三人称 }
+    label: 叙述视角
+    description: 叙述部分使用的视角：固定一种人称，或在两种人称之间交替。不影响对白。未设置时沿用故事已有的视角。
+    options: { "": 未设置, first: 第一人称, second: 第二人称, third: 第三人称, alternating-third-first: 交替视角（第三/第一人称）, alternating-third-second: 交替视角（第三/第二人称） }
   bannedWords:
     label: 禁用词语
     description: Freesia 不应使用的单个词语，如「闪过」「一丝」。

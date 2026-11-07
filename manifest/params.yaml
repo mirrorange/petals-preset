@@ -79,14 +79,16 @@ params:
       - { value: atMost, label: At most, text: no more than }
   - id: narrativePerson
     type: select
-    label: Narrative person
-    description: Grammatical person of the narration. Dialogue is not affected. Unset follows the story so far.
+    label: Narrative perspective
+    description: Point of view of the narration—a single grammatical person, or alternating between two. Dialogue is not affected. Unset follows the story so far.
     group: narration
     options:
       - { value: "", label: Unset }
       - { value: first, label: First person }
       - { value: second, label: Second person }
       - { value: third, label: Third person }
+      - { value: alternating-third-first, label: Alternating (third / first person) }
+      - { value: alternating-third-second, label: Alternating (third / second person) }
   - id: bannedWords
     type: list
     label: Banned words
