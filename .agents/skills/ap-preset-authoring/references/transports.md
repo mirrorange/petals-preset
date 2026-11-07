@@ -109,11 +109,14 @@ Gemini（makersuite / vertexai）只接受 JSON Schema 的 OpenAPI 子集。AP �
 | 连接格式 | 字段 |
 | --- | --- |
 | Gemini（makersuite / vertexai / 自定义 generateContent） | 工具调用的 `signature`，由 ST / TauriTavern 转成 `thoughtSignature` |
-| OpenAI 兼容（OpenRouter 源） | 助手消息的 `reasoning_details`（`reasoning.encrypted`，`id` 为工具调用 id，`format: google-gemini-v1`） |
-| OpenAI 兼容（其他源，如自定义端点接 OpenRouter / CLIProxyAPI） | `reasoning_details` 与工具调用的 `extra_content.google.thought_signature` |
+| OpenAI 兼容（OpenRouter 源），需开启 `openAiSignatures` | 助手消息的 `reasoning_details`（`reasoning.encrypted`，`id` 为工具调用 id，`format: google-gemini-v1`） |
+| OpenAI 兼容（其他源，如自定义端点接 OpenRouter / CLIProxyAPI），需开启 `openAiSignatures` | `reasoning_details` 与工具调用的 `extra_content.google.thought_signature` |
+
+`connection.openAiSignatures`（默认 `false`）是 OpenAI 兼容连接上的开关，避免把额外字段发给可能拒绝它们的端点。关闭时这类连接不发送内置签名，AP 的消息保留 ST 自己的 `signature` 字段（ST 只在 OpenRouter 源上转换它）。
 
 - 渠道关闭、示范轮次没有该渠道的签名、或已回退时，Gemini 格式的连接为没有签名的工具调用（包括 ST 历史中的）发送 `skip_thought_signature_validator`——ST 只为它认得的模型名（`gemini-3`）自动添加；OpenAI 兼容格式什么都不加。
 - AP 也读取响应中的签名：Gemini 的 `thoughtSignature`、OpenRouter 的 `reasoning_details`、Google 格式的 `extra_content`，多工具循环中原样回传；返回给 ST 的工具调用同样带上 `reasoning_details`。
+- 读取响应中的签名不受 `openAiSignatures` 影响。
 - **回退**：请求因思维签名报错（错误信息含 `thought signature` / `thought_signature`）且发送了内置签名时，AP 不发送内置签名重试一次，并提示用户切换思维签名渠道或关闭思维签名。
 
 ## 对话式解析

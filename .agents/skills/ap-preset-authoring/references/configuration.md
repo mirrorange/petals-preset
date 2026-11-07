@@ -25,6 +25,7 @@ configurationDefaults:
     forceTool: true
     parallelTools: false
     sendThoughtSignature: false
+    openAiSignatures: false
     streamToolArguments: auto
     maxSteps: 6
     finalFallback: true
@@ -50,6 +51,7 @@ configurationDefaults:
 | | `forceTool` | `true` | 工具传输强制调用工具（`tool_choice`） |
 | | `parallelTools` | `false` | 多工具模式允许一次调用多个阶段工具 |
 | | `sendThoughtSignature` | `false` | Gemini 思维签名渠道：`false`（关闭）/ `vertex` / `aistudio`；`true` 等同 `vertex`（[transports.md](transports.md#思维签名)）。渠道值需要 `minAdvancedPreset: 1.11.0` |
+| | `openAiSignatures` | `false` | OpenAI 兼容连接（OpenRouter / CLIProxyAPI）也发送思维签名（[transports.md](transports.md#思维签名)） |
 | | `streamToolArguments` | `auto` | Gemini 工具参数流式：`auto` / `on` / `off` |
 | | `maxSteps` | `6` | 多工具模式最多请求几次 |
 | | `finalFallback` | `true` | 解析不出正文时用原始文本作为正文 |
