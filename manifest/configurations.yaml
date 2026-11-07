@@ -91,11 +91,28 @@ defaultConfiguration: other
 # Configuration ids are stored in users' settings: keep them stable. `deepseek-claude-legacy` is kept
 # as the id of "Claude ≤ 4.5" (still prefill) so existing selections keep working.
 configurations:
+  # Gemini thought signatures only validate on the backend that issued them: one configuration per
+  # channel. `gemini` (Vertex AI) keeps its id so existing selections keep working.
   - id: gemini
-    name: Gemini
+    name: Gemini (Vertex AI)
+    description: For requests that reach Vertex AI, whatever the API connection or proxy.
     diff:
       sampling: { use_sysprompt: false }
-      connection: { transport: tool-single, sendThoughtSignature: true, parallelTools: true, syntheticTurn: init-skip-thought }
+      connection: { transport: tool-single, sendThoughtSignature: vertex, parallelTools: true, syntheticTurn: init-skip-thought }
+      modules: { skip-thought: true }
+  - id: gemini-aistudio
+    name: Gemini (AI Studio)
+    description: For requests that reach the Gemini API (AI Studio), whatever the API connection or proxy.
+    diff:
+      sampling: { use_sysprompt: false }
+      connection: { transport: tool-single, sendThoughtSignature: aistudio, parallelTools: true, syntheticTurn: init-skip-thought }
+      modules: { skip-thought: true }
+  - id: gemini-other
+    name: Gemini (Other)
+    description: Other or unknown channels. No thought signature is sent.
+    diff:
+      sampling: { use_sysprompt: false }
+      connection: { transport: tool-single, parallelTools: true, syntheticTurn: init-skip-thought }
       modules: { skip-thought: true }
   - id: deepseek-tool
     name: DeepSeek (tool calling)
