@@ -490,7 +490,7 @@
         "author": "mirrorange",
         "description": "Write stories with Freesia! Freesia writes, Petals gives suggestions — a dual-character driven workflow.",
         "minAdvancedPreset": "1.11.0",
-        "hash": "52b50fd2c5cceaa2",
+        "hash": "fdd26063495ee11b",
         "actors": {
           "narrator": {
             "name": "Freesia",
@@ -770,9 +770,9 @@
           {
             "id": "narrativePerson",
             "type": "select",
-            "label": "Narrative person",
+            "label": "Narrative perspective",
             "default": "",
-            "description": "Grammatical person of the narration. Dialogue is not affected. Unset follows the story so far.",
+            "description": "Point of view of the narration—a single grammatical person, or alternating between two. Dialogue is not affected. Unset follows the story so far.",
             "group": "narration",
             "options": [
               {
@@ -790,6 +790,14 @@
               {
                 "value": "third",
                 "label": "Third person"
+              },
+              {
+                "value": "alternating-third-first",
+                "label": "Alternating (third / first person)"
+              },
+              {
+                "value": "alternating-third-second",
+                "label": "Alternating (third / second person)"
               }
             ]
           },
@@ -2311,10 +2319,37 @@
               {
                 "pieces": [
                   {
-                    "text": "## Narrative Person\n\n"
+                    "text": "## Narrative Perspective: Alternating 3rd-Person & 1st-Person POV\n\n- Use Third-Person POV for macroscopic scene-setting, environmental atmosphere, objective action choreography, character's external demeanor or scenes where protagonist is absent.\n- Shift into protagonist's First-Person POV (\"I\") during moments of heightened emotion, intense focus, or internal monologue to expose protagonist's raw, unfiltered thoughts and hidden motives.\n- Autonomous Spatio-Temporal Shifting: Use cinematic transitions across time and space (e.g., brief flashbacks, parallel cutaways to other locations, or natural time skips) when it enhances dramatic tension and pacing.\n",
+                    "when": {
+                      "t": "bin",
+                      "op": "==",
+                      "l": {
+                        "t": "var",
+                        "path": "params.narrativePerson"
+                      },
+                      "r": {
+                        "t": "lit",
+                        "v": "alternating-third-first"
+                      }
+                    }
                   },
                   {
-                    "text": "Narrate the story content in the **first person**: the narrator is the viewpoint character and refers to themself as \"I\". The viewpoint character is {{user}}, unless the story so far has already established a different first-person narrator.\n",
+                    "text": "## Narrative Perspective: Alternating 3rd-Person & 2nd-Person POV\n\n- Use Third-Person POV for macroscopic world-building, environmental atmosphere, character's independent actions, internal thoughts, and off-screen parallel events where protagonist is not present.\n- Shift to Second-Person POV (\"you\") when focusing on protagonist's immediate vantage point—describing what \"you\" see, hear, and physically sense in the environment, or how character's presence and actions directly impact \"your\" immediate space.\n- Autonomous Spatio-Temporal Shifting: Allow seamless cinematic transitions across time and locations using Third-Person narration to enrich the plot outside of protagonist's immediate field of view.\n",
+                    "when": {
+                      "t": "bin",
+                      "op": "==",
+                      "l": {
+                        "t": "var",
+                        "path": "params.narrativePerson"
+                      },
+                      "r": {
+                        "t": "lit",
+                        "v": "alternating-third-second"
+                      }
+                    }
+                  },
+                  {
+                    "text": "## Narrative Perspective\n\nNarrate the story content in the **first person**: the narrator is the viewpoint character and refers to themself as \"I\". The viewpoint character is {{user}}, unless the story so far has already established a different first-person narrator.\n",
                     "when": {
                       "t": "bin",
                       "op": "==",
@@ -2329,7 +2364,7 @@
                     }
                   },
                   {
-                    "text": "Narrate the story content in the **second person**: address the player character ({{user}}) as \"you\"; all other characters are referred to in the third person.\n",
+                    "text": "## Narrative Perspective\n\nNarrate the story content in the **second person**: address the player character ({{user}}) as \"you\"; all other characters are referred to in the third person.\n",
                     "when": {
                       "t": "bin",
                       "op": "==",
@@ -2344,7 +2379,7 @@
                     }
                   },
                   {
-                    "text": "Narrate the story content in the **third person**: refer to every character—including the player character—by name or by third-person pronouns.\n",
+                    "text": "## Narrative Perspective\n\nNarrate the story content in the **third person**: refer to every character—including the player character—by name or by third-person pronouns.\n",
                     "when": {
                       "t": "bin",
                       "op": "==",
@@ -2596,7 +2631,7 @@
                     "text": "<%_\nconst merge = (...lists) => [...new Set(lists.flat().map((x) => String(x).trim()).filter(Boolean))];\nconst words = merge(vars.bannedWords ?? [], params.bannedWords ?? []);\nconst phrases = merge(vars.bannedPhrases ?? [], params.bannedPhrases ?? []);\nconst expressions = merge(vars.bannedExpressions ?? [], params.bannedExpressions ?? []);\nconst rules = merge(vars.bannedRules ?? []);\nconst builtIn = modules['banned-expressions'];\n_%>\n<%_ if (builtIn || words.length || phrases.length || expressions.length || rules.length) { _%>\n## Avoid Using Cliché Expressions\n\n<%_ if (builtIn) { _%>\n- Use novel and varied expressions, avoiding cliché expressions.\n<%_ } _%>\n<%_ if (words.length) { _%>\n- Refrain from using the words: <%- words.join(', ') %>\n<%_ } _%>\n<%_ if (phrases.length) { _%>\n- Avoid using expressions like: <%- phrases.join(', ') %>\n<%_ } _%>\n<%_ if (expressions.length) { _%>\n- Avoid these sentence patterns and ways of expression:\n<%_ for (const x of expressions) { _%>\n  - <%- x %>\n<%_ } _%>\n<%_ } _%>\n<%_ for (const x of rules) { _%>\n- <%- x %>\n<%_ } _%>\n<%_ } _%>\n",
                     "template": {
                       "file": "modules/core/core.md",
-                      "line": 110
+                      "line": 128
                     }
                   },
                   {
@@ -6161,13 +6196,15 @@
                 }
               },
               "narrativePerson": {
-                "label": "叙事人称",
-                "description": "叙述部分使用的人称，不影响对白。未设置时沿用故事已有的人称。",
+                "label": "叙述视角",
+                "description": "叙述部分使用的视角：固定一种人称，或在两种人称之间交替。不影响对白。未设置时沿用故事已有的视角。",
                 "options": {
                   "": "未设置",
                   "first": "第一人称",
                   "second": "第二人称",
-                  "third": "第三人称"
+                  "third": "第三人称",
+                  "alternating-third-first": "交替视角（第三/第一人称）",
+                  "alternating-third-second": "交替视角（第三/第二人称）"
                 }
               },
               "bannedWords": {
