@@ -8,7 +8,7 @@
 - 新模组、新功能：次版本 +1（`1.2.1` → `1.3.0`）；
 - 改结构、改 id：主版本 +1（`1.3.0` → `2.0.0`），并写好 `migrations`。
 
-`package.json` 的 `version` 可以与之保持一致（可选）。用到了新版 AP 才有的功能时，提高 `minAdvancedPreset`。
+`package.json` 的 `version` 可以与之保持一致（可选）。用到了新版 AP 才有的功能时，提高 `minAdvancedPreset`（版本不够的 AP 安装时会先尝试更新自己）。
 
 ## 步骤
 
@@ -25,7 +25,7 @@
 ## 用户如何安装与更新
 
 - **导入链接**：AP 面板 → 预设 → 导入链接，填 `https://github.com/<用户>/<仓库>/blob/main/dist/<id>.apreset.json`（AP 自动换成 raw 地址）。这个地址始终指向最新提交。
-- **从来源更新**：通过链接安装的预设可以一键更新；用户的配置修改、我的模组、记忆都会保留。
+- **自动更新**：通过链接安装的预设，AP 每次启动时从该链接检查更新，有更高版本时自动安装（也可在“预设”页点“从来源更新”）；用户的配置修改、我的模组、记忆都会保留。在 `preset.yaml` 写上 `updateUrl`（同一个仓库文件地址），以文件安装的副本也会这样自动更新。
 - **导入文件**：从 Release 页面下载 `.apreset.json` 后导入。
 - **还没装 AP 的用户**：`.apreset.json` 是一个标准的 ST 预设，直接在 ST 对话补全预设中导入即可；预设会提示安装 AP，装有酒馆助手时附带的安装脚本可以自动安装，安装后 AP 自动接管（见 [preset-file.md](../../ap-preset-authoring/references/preset-file.md)）。不附带安装脚本：清单 `build: { installer: false }` 或 `ap build --no-installer`。
 

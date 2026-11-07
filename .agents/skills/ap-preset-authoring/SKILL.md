@@ -128,6 +128,7 @@ Write the story content.
 - **新增可见名字时同步翻译**：有 `locales/` 时，新模组、分组、参数、工作流、配置、插入点都要加上翻译条目。
 - **正则标记 ≠ 正则脚本**：清单的 `regex` 只产生条件变量 `flags.<id>`；要让 ST 替换 / 隐藏文字，写 `regex-scripts/`。正则脚本里 `{{ap::…}}` 不展开；快速回复里只有 `{{ap::name::<actor>}}` 展开，`icon` 只写一个类名（`fa-at`）。
 - **`minAdvancedPreset`**：用到新版 AP 才有的功能时提高它。
+- **`updateUrl`**：发布到仓库后写上预设文件的地址（`https://github.com/<用户>/<仓库>/blob/main/dist/<id>.apreset.json`），以文件安装的用户也能自动更新。
 
 ## 完成时
 
