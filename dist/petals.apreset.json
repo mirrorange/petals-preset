@@ -465,8 +465,8 @@
           "enabled": true,
           "name": "Advanced Preset Installer",
           "id": "6f1d6c2e-5a4b-4c3e-9a7d-a9e5c0f1b2d3",
-          "content": "// Advanced Preset installer, written into the preset file by Advanced Preset.\n// It installs, updates or enables the Advanced Preset extension; it does nothing once\n// Advanced Preset 1.10.0 or newer is running.\nconst PRESET = \"Petals Preset\";\nconst REQUIRED = \"1.10.0\";\nconst MIRRORS = [\"https://github.com/mirrorange/advanced-preset\",\"https://gitlab.com/mirrorange/advanced-preset\",\"https://codeberg.org/mirrorange/advanced-preset\"];\nconst FOLDER = 'advanced-preset';\nconst EXTENSION = 'third-party/' + FOLDER;\nconst LATER_KEY = 'advancedPreset.installer.later';\nconst host = window.parent && window.parent.SillyTavern ? window.parent : window;\nconst ctx = () => host.SillyTavern.getContext();\n\nconst locale = String((ctx().getCurrentLocale && ctx().getCurrentLocale()) || host.localStorage.getItem('language') || host.navigator.language || '').toLowerCase();\nconst zh = locale.startsWith('zh');\nconst esc = (s) => String(s).replace(/[&<>\"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', \"'\": '&#39;' })[c]);\nconst list = '<ul style=\"text-align:start;word-break:break-all\">' + MIRRORS.map((u) => '<li><code>' + esc(u) + '</code></li>').join('') + '</ul>';\nconst T = zh ? {\n  title: 'Advanced Preset',\n  install: '<h3>需要 Advanced Preset 插件</h3><p>预设「' + esc(PRESET) + '」需要 Advanced Preset 插件才能使用，当前尚未安装。</p><p>是否现在安装？将依次尝试以下地址：</p>' + list,\n  update: (v) => '<h3>需要更新 Advanced Preset</h3><p>预设「' + esc(PRESET) + '」需要 Advanced Preset ' + esc(REQUIRED) + ' 或更新版本' + (v ? '（当前为 ' + esc(v) + '）' : '') + '。</p><p>是否现在更新？</p>',\n  enable: '<h3>Advanced Preset 已停用</h3><p>预设「' + esc(PRESET) + '」需要 Advanced Preset 插件，它已安装但处于停用状态。</p><p>是否启用并重新加载页面？</p>',\n  installOk: '安装', updateOk: '更新', enableOk: '启用并重新加载', later: '稍后',\n  trying: (u) => '正在从 ' + u + ' 安装 Advanced Preset……',\n  updating: '正在更新 Advanced Preset……',\n  done: '<h3>Advanced Preset 已就绪</h3><p>重新加载页面后插件即会生效，并自动接管预设「' + esc(PRESET) + '」。</p><p>是否现在重新加载？</p>',\n  reloadOk: '重新加载',\n  stillOld: (v) => '已是可获取的最新版本（' + esc(v) + '），但预设需要 ' + esc(REQUIRED) + ' 或更新版本。请稍后再试，或手动更新 Advanced Preset。',\n  failed: '<h3>无法安装 Advanced Preset</h3><p>所有地址都安装失败。请检查网络连接后重新加载页面重试，或尝试手动安装 Advanced Preset 插件：</p><ol style=\"text-align:start\"><li>打开「扩展」面板（顶栏的积木图标），点击「安装扩展」；</li><li>粘贴以下任一地址并安装：' + list + '</li><li>重新加载页面。</li></ol>',\n} : {\n  title: 'Advanced Preset',\n  install: '<h3>Advanced Preset is required</h3><p>The preset \"' + esc(PRESET) + '\" needs the Advanced Preset extension, which is not installed.</p><p>Install it now? These addresses are tried in turn:</p>' + list,\n  update: (v) => '<h3>Advanced Preset needs an update</h3><p>The preset \"' + esc(PRESET) + '\" needs Advanced Preset ' + esc(REQUIRED) + ' or newer' + (v ? ' (installed: ' + esc(v) + ')' : '') + '.</p><p>Update it now?</p>',\n  enable: '<h3>Advanced Preset is disabled</h3><p>The preset \"' + esc(PRESET) + '\" needs the Advanced Preset extension, which is installed but disabled.</p><p>Enable it and reload the page?</p>',\n  installOk: 'Install', updateOk: 'Update', enableOk: 'Enable and reload', later: 'Later',\n  trying: (u) => 'Installing Advanced Preset from ' + u + '…',\n  updating: 'Updating Advanced Preset…',\n  done: '<h3>Advanced Preset is ready</h3><p>It starts once the page is reloaded and then sets up the preset \"' + esc(PRESET) + '\" by itself.</p><p>Reload now?</p>',\n  reloadOk: 'Reload',\n  stillOld: (v) => 'This is the newest version available (' + esc(v) + '), but the preset needs ' + esc(REQUIRED) + ' or newer. Try again later, or update Advanced Preset by hand.',\n  failed: '<h3>Could not install Advanced Preset</h3><p>Installing failed from every address. Check your network connection and reload the page to try again, or install the Advanced Preset extension by hand:</p><ol style=\"text-align:start\"><li>Open the Extensions panel (the stacked-blocks icon in the top bar) and click \"Install extension\".</li><li>Paste one of these addresses and install:' + list + '</li><li>Reload the page.</li></ol>',\n};\n\nconst toast = (kind, message) => (host.toastr || window.toastr)[kind](message, T.title);\nconst parse = (v) => String(v).split('-')[0].split('.').map((n) => parseInt(n, 10) || 0);\nconst atLeast = (v, min) => {\n  const a = parse(v), b = parse(min);\n  for (let i = 0; i < 3; i++) if ((a[i] || 0) !== (b[i] || 0)) return (a[i] || 0) > (b[i] || 0);\n  return true;\n};\nconst sleep = (ms) => new Promise((r) => host.setTimeout(r, ms));\nasync function confirm(html, ok) {\n  const c = ctx();\n  return (await c.callGenericPopup(html, c.POPUP_TYPE.CONFIRM, '', { okButton: ok, cancelButton: T.later })) === c.POPUP_RESULT.AFFIRMATIVE;\n}\nconst showFailure = () => ctx().callGenericPopup(T.failed, ctx().POPUP_TYPE.TEXT);\nconst post = (url, body) => host.fetch(url, { method: 'POST', headers: ctx().getRequestHeaders(), body: JSON.stringify(body) });\nasync function offerReload() {\n  if (await confirm(T.done, T.reloadOk)) host.location.reload();\n}\n\nasync function installFromMirrors() {\n  for (const url of MIRRORS) {\n    toast('info', T.trying(url));\n    try {\n      const r = await post('/api/extensions/install', { url, global: false });\n      // 409: the folder exists (installed meanwhile, e.g. by another tab).\n      if (r.ok || r.status === 409) return true;\n      console.warn('[Advanced Preset installer]', url, r.status, await r.text().catch(() => ''));\n    } catch (e) {\n      console.warn('[Advanced Preset installer]', url, e);\n    }\n  }\n  return false;\n}\n\nasync function updateFolder() {\n  toast('info', T.updating);\n  for (const global of [false, true]) {\n    try {\n      const r = await post('/api/extensions/update', { extensionName: FOLDER, global });\n      if (r.ok) return true;\n    } catch (e) {\n      console.warn('[Advanced Preset installer]', e);\n    }\n  }\n  return false;\n}\n\nasync function installedFolder() {\n  try {\n    const r = await host.fetch('/api/extensions/discover', { headers: ctx().getRequestHeaders() });\n    const all = r.ok ? await r.json() : [];\n    return Array.isArray(all) && all.some((e) => e && e.name === EXTENSION);\n  } catch {\n    return false;\n  }\n}\n\nasync function main() {\n  // AP loads with the other extensions, before Tavern Helper runs scripts; wait a little anyway.\n  for (let i = 0; i < 20 && !host.AdvancedPreset; i++) await sleep(250);\n  const ap = host.AdvancedPreset;\n  if (ap && atLeast(ap.version, REQUIRED)) return;\n  if (host.sessionStorage.getItem(LATER_KEY) || host.__advancedPresetInstaller) return;\n  host.__advancedPresetInstaller = true;\n  const later = () => host.sessionStorage.setItem(LATER_KEY, '1');\n\n  if (ap) {\n    if (!(await confirm(T.update(ap.version), T.updateOk))) return later();\n    toast('info', T.updating);\n    try {\n      // Reloads the page by itself when the extension changed.\n      if ((await ap.update()) === 'current') toast('warning', T.stillOld(ap.version));\n    } catch (e) {\n      console.warn('[Advanced Preset installer]', e);\n      await showFailure();\n    }\n    return;\n  }\n\n  if (await installedFolder()) {\n    const disabled = ctx().extensionSettings && ctx().extensionSettings.disabledExtensions;\n    if (Array.isArray(disabled) && disabled.includes(EXTENSION)) {\n      if (!(await confirm(T.enable, T.enableOk))) return later();\n      disabled.splice(disabled.indexOf(EXTENSION), 1);\n      ctx().saveSettingsDebounced();\n      await sleep(2000);\n      host.location.reload();\n      return;\n    }\n    // Installed but not running (too old for this SillyTavern, or broken): update it.\n    if (!(await confirm(T.update(''), T.updateOk))) return later();\n    if (await updateFolder()) return offerReload();\n    await showFailure();\n    return;\n  }\n\n  if (!(await confirm(T.install, T.installOk))) return later();\n  if (await installFromMirrors()) return offerReload();\n  await showFailure();\n}\n\nmain().catch((e) => console.error('[Advanced Preset installer]', e));\n",
-          "info": "This preset (\"Petals Preset\") needs the Advanced Preset extension. The script offers to install it (or to update or enable it) from:\nhttps://github.com/mirrorange/advanced-preset\nhttps://gitlab.com/mirrorange/advanced-preset\nhttps://codeberg.org/mirrorange/advanced-preset\nIt does nothing once Advanced Preset 1.10.0 or newer is running; Advanced Preset then replaces this preset with its own copy, without this script.\n\n此预设需要 Advanced Preset 插件。脚本会询问是否从以上地址安装（或更新、启用）它；Advanced Preset 1.10.0 及以上版本运行后脚本不做任何事，插件会用自己的副本替换此预设（不含此脚本）。",
+          "content": "// Advanced Preset installer, written into the preset file by Advanced Preset.\n// It installs, updates or enables the Advanced Preset extension; it does nothing once\n// Advanced Preset 1.11.0 or newer is running.\nconst PRESET = \"Petals Preset\";\nconst REQUIRED = \"1.11.0\";\nconst MIRRORS = [\"https://github.com/mirrorange/advanced-preset\",\"https://gitlab.com/mirrorange/advanced-preset\",\"https://codeberg.org/mirrorange/advanced-preset\"];\nconst FOLDER = 'advanced-preset';\nconst EXTENSION = 'third-party/' + FOLDER;\nconst LATER_KEY = 'advancedPreset.installer.later';\nconst host = window.parent && window.parent.SillyTavern ? window.parent : window;\nconst ctx = () => host.SillyTavern.getContext();\n\nconst locale = String((ctx().getCurrentLocale && ctx().getCurrentLocale()) || host.localStorage.getItem('language') || host.navigator.language || '').toLowerCase();\nconst zh = locale.startsWith('zh');\nconst esc = (s) => String(s).replace(/[&<>\"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', \"'\": '&#39;' })[c]);\nconst list = '<ul style=\"text-align:start;word-break:break-all\">' + MIRRORS.map((u) => '<li><code>' + esc(u) + '</code></li>').join('') + '</ul>';\nconst T = zh ? {\n  title: 'Advanced Preset',\n  install: '<h3>需要 Advanced Preset 插件</h3><p>预设「' + esc(PRESET) + '」需要 Advanced Preset 插件才能使用，当前尚未安装。</p><p>是否现在安装？将依次尝试以下地址：</p>' + list,\n  update: (v) => '<h3>需要更新 Advanced Preset</h3><p>预设「' + esc(PRESET) + '」需要 Advanced Preset ' + esc(REQUIRED) + ' 或更新版本' + (v ? '（当前为 ' + esc(v) + '）' : '') + '。</p><p>是否现在更新？</p>',\n  enable: '<h3>Advanced Preset 已停用</h3><p>预设「' + esc(PRESET) + '」需要 Advanced Preset 插件，它已安装但处于停用状态。</p><p>是否启用并重新加载页面？</p>',\n  installOk: '安装', updateOk: '更新', enableOk: '启用并重新加载', later: '稍后',\n  trying: (u) => '正在从 ' + u + ' 安装 Advanced Preset……',\n  updating: '正在更新 Advanced Preset……',\n  done: '<h3>Advanced Preset 已就绪</h3><p>重新加载页面后插件即会生效，并自动接管预设「' + esc(PRESET) + '」。</p><p>是否现在重新加载？</p>',\n  reloadOk: '重新加载',\n  stillOld: (v) => '已是可获取的最新版本（' + esc(v) + '），但预设需要 ' + esc(REQUIRED) + ' 或更新版本。请稍后再试，或手动更新 Advanced Preset。',\n  failed: '<h3>无法安装 Advanced Preset</h3><p>所有地址都安装失败。请检查网络连接后重新加载页面重试，或尝试手动安装 Advanced Preset 插件：</p><ol style=\"text-align:start\"><li>打开「扩展」面板（顶栏的积木图标），点击「安装扩展」；</li><li>粘贴以下任一地址并安装：' + list + '</li><li>重新加载页面。</li></ol>',\n} : {\n  title: 'Advanced Preset',\n  install: '<h3>Advanced Preset is required</h3><p>The preset \"' + esc(PRESET) + '\" needs the Advanced Preset extension, which is not installed.</p><p>Install it now? These addresses are tried in turn:</p>' + list,\n  update: (v) => '<h3>Advanced Preset needs an update</h3><p>The preset \"' + esc(PRESET) + '\" needs Advanced Preset ' + esc(REQUIRED) + ' or newer' + (v ? ' (installed: ' + esc(v) + ')' : '') + '.</p><p>Update it now?</p>',\n  enable: '<h3>Advanced Preset is disabled</h3><p>The preset \"' + esc(PRESET) + '\" needs the Advanced Preset extension, which is installed but disabled.</p><p>Enable it and reload the page?</p>',\n  installOk: 'Install', updateOk: 'Update', enableOk: 'Enable and reload', later: 'Later',\n  trying: (u) => 'Installing Advanced Preset from ' + u + '…',\n  updating: 'Updating Advanced Preset…',\n  done: '<h3>Advanced Preset is ready</h3><p>It starts once the page is reloaded and then sets up the preset \"' + esc(PRESET) + '\" by itself.</p><p>Reload now?</p>',\n  reloadOk: 'Reload',\n  stillOld: (v) => 'This is the newest version available (' + esc(v) + '), but the preset needs ' + esc(REQUIRED) + ' or newer. Try again later, or update Advanced Preset by hand.',\n  failed: '<h3>Could not install Advanced Preset</h3><p>Installing failed from every address. Check your network connection and reload the page to try again, or install the Advanced Preset extension by hand:</p><ol style=\"text-align:start\"><li>Open the Extensions panel (the stacked-blocks icon in the top bar) and click \"Install extension\".</li><li>Paste one of these addresses and install:' + list + '</li><li>Reload the page.</li></ol>',\n};\n\nconst toast = (kind, message) => (host.toastr || window.toastr)[kind](message, T.title);\nconst parse = (v) => String(v).split('-')[0].split('.').map((n) => parseInt(n, 10) || 0);\nconst atLeast = (v, min) => {\n  const a = parse(v), b = parse(min);\n  for (let i = 0; i < 3; i++) if ((a[i] || 0) !== (b[i] || 0)) return (a[i] || 0) > (b[i] || 0);\n  return true;\n};\nconst sleep = (ms) => new Promise((r) => host.setTimeout(r, ms));\nasync function confirm(html, ok) {\n  const c = ctx();\n  return (await c.callGenericPopup(html, c.POPUP_TYPE.CONFIRM, '', { okButton: ok, cancelButton: T.later })) === c.POPUP_RESULT.AFFIRMATIVE;\n}\nconst showFailure = () => ctx().callGenericPopup(T.failed, ctx().POPUP_TYPE.TEXT);\nconst post = (url, body) => host.fetch(url, { method: 'POST', headers: ctx().getRequestHeaders(), body: JSON.stringify(body) });\nasync function offerReload() {\n  if (await confirm(T.done, T.reloadOk)) host.location.reload();\n}\n\nasync function installFromMirrors() {\n  for (const url of MIRRORS) {\n    toast('info', T.trying(url));\n    try {\n      const r = await post('/api/extensions/install', { url, global: false });\n      // 409: the folder exists (installed meanwhile, e.g. by another tab).\n      if (r.ok || r.status === 409) return true;\n      console.warn('[Advanced Preset installer]', url, r.status, await r.text().catch(() => ''));\n    } catch (e) {\n      console.warn('[Advanced Preset installer]', url, e);\n    }\n  }\n  return false;\n}\n\nasync function updateFolder() {\n  toast('info', T.updating);\n  for (const global of [false, true]) {\n    try {\n      const r = await post('/api/extensions/update', { extensionName: FOLDER, global });\n      if (r.ok) return true;\n    } catch (e) {\n      console.warn('[Advanced Preset installer]', e);\n    }\n  }\n  return false;\n}\n\nasync function installedFolder() {\n  try {\n    const r = await host.fetch('/api/extensions/discover', { headers: ctx().getRequestHeaders() });\n    const all = r.ok ? await r.json() : [];\n    return Array.isArray(all) && all.some((e) => e && e.name === EXTENSION);\n  } catch {\n    return false;\n  }\n}\n\nasync function main() {\n  // AP loads with the other extensions, before Tavern Helper runs scripts; wait a little anyway.\n  for (let i = 0; i < 20 && !host.AdvancedPreset; i++) await sleep(250);\n  const ap = host.AdvancedPreset;\n  if (ap && atLeast(ap.version, REQUIRED)) return;\n  if (host.sessionStorage.getItem(LATER_KEY) || host.__advancedPresetInstaller) return;\n  host.__advancedPresetInstaller = true;\n  const later = () => host.sessionStorage.setItem(LATER_KEY, '1');\n\n  if (ap) {\n    if (!(await confirm(T.update(ap.version), T.updateOk))) return later();\n    toast('info', T.updating);\n    try {\n      // Reloads the page by itself when the extension changed.\n      if ((await ap.update()) === 'current') toast('warning', T.stillOld(ap.version));\n    } catch (e) {\n      console.warn('[Advanced Preset installer]', e);\n      await showFailure();\n    }\n    return;\n  }\n\n  if (await installedFolder()) {\n    const disabled = ctx().extensionSettings && ctx().extensionSettings.disabledExtensions;\n    if (Array.isArray(disabled) && disabled.includes(EXTENSION)) {\n      if (!(await confirm(T.enable, T.enableOk))) return later();\n      disabled.splice(disabled.indexOf(EXTENSION), 1);\n      ctx().saveSettingsDebounced();\n      await sleep(2000);\n      host.location.reload();\n      return;\n    }\n    // Installed but not running (too old for this SillyTavern, or broken): update it.\n    if (!(await confirm(T.update(''), T.updateOk))) return later();\n    if (await updateFolder()) return offerReload();\n    await showFailure();\n    return;\n  }\n\n  if (!(await confirm(T.install, T.installOk))) return later();\n  if (await installFromMirrors()) return offerReload();\n  await showFailure();\n}\n\nmain().catch((e) => console.error('[Advanced Preset installer]', e));\n",
+          "info": "This preset (\"Petals Preset\") needs the Advanced Preset extension. The script offers to install it (or to update or enable it) from:\nhttps://github.com/mirrorange/advanced-preset\nhttps://gitlab.com/mirrorange/advanced-preset\nhttps://codeberg.org/mirrorange/advanced-preset\nIt does nothing once Advanced Preset 1.11.0 or newer is running; Advanced Preset then replaces this preset with its own copy, without this script.\n\n此预设需要 Advanced Preset 插件。脚本会询问是否从以上地址安装（或更新、启用）它；Advanced Preset 1.11.0 及以上版本运行后脚本不做任何事，插件会用自己的副本替换此预设（不含此脚本）。",
           "button": {
             "enabled": false,
             "buttons": []
@@ -489,8 +489,8 @@
         "version": "7.10.0",
         "author": "mirrorange",
         "description": "Write stories with Freesia! Freesia writes, Petals gives suggestions — a dual-character driven workflow.",
-        "minAdvancedPreset": "1.10.0",
-        "hash": "fa53395a95d06fa2",
+        "minAdvancedPreset": "1.11.0",
+        "hash": "f8fb918a6be2a5bc",
         "actors": {
           "narrator": {
             "name": "Freesia",
@@ -5236,7 +5236,10 @@
               "multi": "Workflow initialised. Complete the workflow by calling the stage tools in order, starting with `{{first}}`. Each tool records one stage.",
               "parallel": "Workflow initialised. Complete the workflow by calling the stage tools in order, starting with `{{first}}`. You may call several stage tools in one reply (in order) to finish faster."
             },
-            "thoughtSignature": "AY89a19rZjAaoGPoZIQYJVKTJki6wEZ833K90LZvrH0lkrtbJHgi1gs/uato/uKR2MTxgGXruDHi5dCr9axRX2GJBT1Net7a+u2cgwc5xYKL2Fomowpj4czoV5vAq/OYoJ2hefMPtuf7aLRuPSHInA=="
+            "thoughtSignature": {
+              "vertex": "AY89a19rZjAaoGPoZIQYJVKTJki6wEZ833K90LZvrH0lkrtbJHgi1gs/uato/uKR2MTxgGXruDHi5dCr9axRX2GJBT1Net7a+u2cgwc5xYKL2Fomowpj4czoV5vAq/OYoJ2hefMPtuf7aLRuPSHInA==",
+              "aistudio": "EmkKZwFpFH0TWEgzZ8FlKekxSN2nQBpgzI2HXpOSZ3SEgBbzBY+RAO+Zf8/T5ifbzPkUqob9JOaq+uFl4S60MeW/0yV67k1KTJovuZIO3a4GswwFZ/hGdPtRhenHrqH29m+Yl/pqTaYJD8E="
+            }
           },
           {
             "id": "init-skip-thought",
@@ -5251,7 +5254,10 @@
               "multi": "Workflow initialised. Complete the workflow by calling the stage tools in order, starting with `{{first}}`. Each tool records one stage.",
               "parallel": "Workflow initialised. Complete the workflow by calling the stage tools in order, starting with `{{first}}`. You may call several stage tools in one reply (in order) to finish faster."
             },
-            "thoughtSignature": "AY89a1+a+MIYy6FPVVZOUYcPe3YWxMtEikrAsPW3VBSHcALLf7nNcDv67a6j4ScvrwCFhMzqsG3rKQi/xYyYbh+CS9n51H4C2SBr8gG/CRkupZPVyA=="
+            "thoughtSignature": {
+              "vertex": "AY89a1+a+MIYy6FPVVZOUYcPe3YWxMtEikrAsPW3VBSHcALLf7nNcDv67a6j4ScvrwCFhMzqsG3rKQi/xYyYbh+CS9n51H4C2SBr8gG/CRkupZPVyA==",
+              "aistudio": "EqkBCqYBAWkUfROQ7ikvZDvcoamzj1kJZxqG0P6l1LxovYgWCIYkAd41wjn/K/8H5ON50xQ/2sQbCq6VeYyXejwAmlFDuenYWUMIvbW/9ZMm8JU2OVT24IC9m5QRhOzkF+v0HBhX/UGUekAVRmv4zT9ZeXclHaZJTJ4NhRPY8jdJ9mJuzyLEFfYUUd8zHJbZ6sKwvanTnYfAn3Ivh2KLOxx2nafHQnaUA/nuLQ=="
+            }
           }
         ],
         "tools": {
@@ -5744,21 +5750,59 @@
         "configurations": [
           {
             "id": "gemini",
-            "name": "Gemini",
+            "name": "Gemini (Vertex AI)",
             "diff": {
               "sampling": {
                 "use_sysprompt": false
               },
               "connection": {
                 "transport": "tool-single",
-                "sendThoughtSignature": true,
+                "sendThoughtSignature": "vertex",
                 "parallelTools": true,
                 "syntheticTurn": "init-skip-thought"
               },
               "modules": {
                 "skip-thought": true
               }
-            }
+            },
+            "description": "For requests that reach Vertex AI, whatever the API connection or proxy."
+          },
+          {
+            "id": "gemini-aistudio",
+            "name": "Gemini (AI Studio)",
+            "diff": {
+              "sampling": {
+                "use_sysprompt": false
+              },
+              "connection": {
+                "transport": "tool-single",
+                "sendThoughtSignature": "aistudio",
+                "parallelTools": true,
+                "syntheticTurn": "init-skip-thought"
+              },
+              "modules": {
+                "skip-thought": true
+              }
+            },
+            "description": "For requests that reach the Gemini API (AI Studio), whatever the API connection or proxy."
+          },
+          {
+            "id": "gemini-other",
+            "name": "Gemini (Other)",
+            "diff": {
+              "sampling": {
+                "use_sysprompt": false
+              },
+              "connection": {
+                "transport": "tool-single",
+                "parallelTools": true,
+                "syntheticTurn": "init-skip-thought"
+              },
+              "modules": {
+                "skip-thought": true
+              }
+            },
+            "description": "Other or unknown channels. No thought signature is sent."
           },
           {
             "id": "deepseek-tool",
@@ -6140,7 +6184,16 @@
             },
             "configurations": {
               "gemini": {
-                "name": "Gemini"
+                "name": "Gemini (Vertex AI)",
+                "description": "请求实际到达 Vertex AI 时使用，与 API 连接或反向代理无关。"
+              },
+              "gemini-aistudio": {
+                "name": "Gemini (AI Studio)",
+                "description": "请求实际到达 Gemini API（AI Studio）时使用，与 API 连接或反向代理无关。"
+              },
+              "gemini-other": {
+                "name": "Gemini (其他)",
+                "description": "其他或不确定的渠道，不发送思维签名。"
               },
               "deepseek-tool": {
                 "name": "DeepSeek (工具调用)"
