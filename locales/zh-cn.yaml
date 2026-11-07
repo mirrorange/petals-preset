@@ -158,7 +158,9 @@ params:
     description: 应避免的句式与表达方式，如「不是……而是……」「嘴角勾起一抹弧度」。每项单独列为一行。
 
 configurations:
-  gemini: { name: Gemini }
+  gemini: { name: Gemini (Vertex AI), description: 请求实际到达 Vertex AI 时使用，与 API 连接或反向代理无关。 }
+  gemini-aistudio: { name: Gemini (AI Studio), description: 请求实际到达 Gemini API（AI Studio）时使用，与 API 连接或反向代理无关。 }
+  gemini-other: { name: Gemini (其他), description: 其他或不确定的渠道，不发送思维签名。 }
   deepseek-tool: { name: DeepSeek (工具调用) }
   deepseek-prefill: { name: DeepSeek (预填充), description: 仅 DeepSeek 官方 API 支持预填充，其他提供商请使用「DeepSeek (工具调用)」。 }
   deepseek-claude-legacy: { name: "Claude 4.5 及之前版本" }

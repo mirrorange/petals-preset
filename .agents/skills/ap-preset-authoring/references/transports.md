@@ -98,9 +98,23 @@ Gemini（makersuite / vertexai）只接受 JSON Schema 的 OpenAPI 子集。AP �
 - 去掉 `additionalProperties` 等不支持的关键字，为对象加 `propertyOrdering`（保持字段顺序；部分接口或中转不传递它，此时按字母顺序生成，由字段命名保证顺序）；
 - 自由键对象（如 `kv` 自定义结构）改为字符串字段，说明后追加 `tools.jsonStringHint`，模型写 JSON 字符串，AP 再解析。
 
-`connection.streamToolArguments`：`auto`（默认，仅 Vertex AI 请求流式工具参数）、`on`（所有 Gemini 形态的连接都请求）、`off`。
+`connection.streamToolArguments`：`auto`（默认，在可能到达 Vertex AI 的连接上请求流式工具参数：Vertex AI 源、自定义 generateContent 端点、设置了反向代理的 Gemini API 源）、`on`（所有 Gemini 形态的连接都请求）、`off`。只有 Vertex AI（Gemini 3+）支持该请求，AI Studio 静默忽略，所以多请求不会出错。
 
-`connection.sendThoughtSignature`：为真且连接是 Gemini 时，示范轮次的工具调用带上 `thoughtSignature`。
+### 思维签名
+
+`connection.sendThoughtSignature` 选择示范轮次附带哪个**渠道**的内置思维签名：`false`（关闭，默认）、`vertex`、`aistudio`（旧值 `true` 等同 `vertex`）。Gemini 的思维签名只在签发它的后端有效，渠道由配置指定，**不**根据 ST 的 API 连接判断——用户常经由各种路由与反向代理，ST 的连接不代表真实上游。
+
+签名按连接的格式放进对应字段：
+
+| 连接格式 | 字段 |
+| --- | --- |
+| Gemini（makersuite / vertexai / 自定义 generateContent） | 工具调用的 `signature`，由 ST / TauriTavern 转成 `thoughtSignature` |
+| OpenAI 兼容（OpenRouter 源） | 助手消息的 `reasoning_details`（`reasoning.encrypted`，`id` 为工具调用 id，`format: google-gemini-v1`） |
+| OpenAI 兼容（其他源，如自定义端点接 OpenRouter / CLIProxyAPI） | `reasoning_details` 与工具调用的 `extra_content.google.thought_signature` |
+
+- 渠道关闭、示范轮次没有该渠道的签名、或已回退时，Gemini 格式的连接为没有签名的工具调用（包括 ST 历史中的）发送 `skip_thought_signature_validator`——ST 只为它认得的模型名（`gemini-3`）自动添加；OpenAI 兼容格式什么都不加。
+- AP 也读取响应中的签名：Gemini 的 `thoughtSignature`、OpenRouter 的 `reasoning_details`、Google 格式的 `extra_content`，多工具循环中原样回传；返回给 ST 的工具调用同样带上 `reasoning_details`。
+- **回退**：请求因思维签名报错（错误信息含 `thought signature` / `thought_signature`）且发送了内置签名时，AP 不发送内置签名重试一次，并提示用户切换思维签名渠道或关闭思维签名。
 
 ## 对话式解析
 
@@ -189,7 +203,9 @@ syntheticTurns:
     tool:
       name: start_workflow
       description: Open the writing session for this turn.
-    thoughtSignature: AY89a19r…        # 可选，Gemini 专用，不要手改
+    thoughtSignature:                  # 可选，Gemini 专用，不要手改
+      vertex: AY89a19r…
+      aistudio: EmkKZwFp…
     response:
       single: Workflow initialised. Now call `{{submit}}` exactly once.
       multi: Workflow initialised. Call the stage tools in order, starting with `{{first}}`.
@@ -203,7 +219,7 @@ syntheticTurns:
 | `user` | `''` | 插入的用户消息 |
 | `tool.name` | `ap_workflow_init` | 虚构工具名（须匹配 `^[A-Za-z_][\w-]*$`） |
 | `tool.description` | `''` | 虚构工具说明 |
-| `thoughtSignature` | — | 仅当 `connection.sendThoughtSignature` 为真且连接是 Gemini 时附在工具调用上 |
+| `thoughtSignature` | — | 按渠道（`vertex` / `aistudio`）的内置思维签名；写成字符串时是 Vertex AI 的签名。按 `connection.sendThoughtSignature` 选择的渠道附在工具调用上（见[思维签名](#思维签名)）。按渠道写需要 `minAdvancedPreset: 1.11.0` |
 | `response.single` / `multi` / `parallel` | `''`（`parallel` 缺省同 `multi`） | 工具结果文字，按 tool-single / tool-multi / tool-multi 并行选用 |
 
 插入的消息依次是：用户消息 `user` → 助手调用虚构工具（参数 `{}`）→ 工具结果 `response[模式]`。虚构工具也会加入工具列表。占位符：`{{submit}}` 提交工具名、`{{first}}` 第一个阶段工具名。
