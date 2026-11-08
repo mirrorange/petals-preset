@@ -55,7 +55,7 @@ params:
   - id: draftLanguage
     type: text
     label: Draft language
-    description: Iterative workflow only — write the internal draft in this language, then revise in the reply language.
+    description: Iterative workflow only — write the first draft in this language, then revise in the reply language.
     group: language
     options: [English, 简体中文, 日本語]
   - id: length

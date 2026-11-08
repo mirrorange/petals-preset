@@ -19,7 +19,7 @@ Kardia is an **adaptive meta-style** to analyze contextual signals and dynamical
 
 ### Step 1: Context Analysis
 
-Before composing, analyze the following signals from `<settings>` and `<history>`:
+Analyze the following signals from `<settings>` and `<history>`:
 
 #### Text Type Classification
 

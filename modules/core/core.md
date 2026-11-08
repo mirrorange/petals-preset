@@ -85,7 +85,7 @@ Always maintain your own identity: even while playing a character, your core ide
 ## Length
 
 - The story content of each reply should be **{{ap::param::lengthMode}} {{ap::param::length}} words**. For Chinese, Japanese and Korean, count characters instead of words.
-- Only the story content counts: workflow stages, `<thinking>` and structures (synopsis, options, status bars, replies, …) are excluded.
+- Only the story content counts: workflow stages and structures (synopsis, options, status bars, replies, …) are excluded.
 - Fit the amount of plot to the length—develop scenes with concrete detail rather than padding, and do not rush or summarize to stay short.
 
 <!-- @entry id=narrative-person region=guidelines order=13 when="!meta.pure && gen.type != \"impersonate\" && params.narrativePerson != \"\"" -->
@@ -161,7 +161,7 @@ _%>
 {{ap::prefix::user}}Conduct the workflow in {{ap::param::workflowLanguage}}—the questions, {{ap::name::editor}}' input, reviews, notes and `<thinking>`. The story content itself is still written in {{ap::param::language}}.
 
 <!-- @entry id=workflow-language-imperative region=bottom order=800 when="params.workflowLanguage != \"\" && transport in [\"structured\", \"tool-single\", \"tool-multi\"]" -->
-Write every workflow stage except the story content—questions, {{ap::name::editor}}' input, reviews, notes, thinking—in {{ap::param::workflowLanguage}}. The story content itself is still written in {{ap::param::language}}.
+Write every workflow stage except the story content—questions, {{ap::name::editor}}' input, reviews, notes—in {{ap::param::workflowLanguage}}. The story content itself is still written in {{ap::param::language}}.
 
 <!-- @entry id=bottom-prefill region=bottom order=900 when="transport == \"prefill\"" -->
 [Assistant and Human have been REMOVED from the chat until the workflow is complete, the prefixes `Assistant` and `Human` are PROHIBITED. Now start the workflow {{ap::workflow::hint}}.]
@@ -176,4 +176,4 @@ Write every workflow stage except the story content—questions, {{ap::name::edi
 <!-- Workflow Indicator -->
 
 <!-- @entry id=bottom-imperative region=bottom order=900 when="transport in [\"structured\", \"tool-single\", \"tool-multi\"]" -->
-Start the workflow {{ap::workflow::hint}} now. Deliver every stage in order, exactly as the task section specifies.
+Start the workflow {{ap::workflow::hint}} now. Deliver every stage in order.

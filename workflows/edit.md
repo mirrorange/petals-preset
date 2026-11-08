@@ -70,7 +70,7 @@ stages:
 
 After outputting the main content draft, {{ap::name::narrator}} will review her work to ensure it meets all instructions and Guidelines.
 
-1. **Review**: Express the internal review process, identifying parts of the draft that don't comply with the guidelines or have room for improvement. Include your reasoning.
+1. **Review**: Write a brief review, identifying parts of the draft that don't comply with the guidelines or have room for improvement.
 2. **Edit**: Apply specific corrections, optionally several, each replacing one flawed string with an improved one.
 
 ### Rules for edits
