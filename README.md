@@ -5,7 +5,7 @@
 **与小苍兰一起写故事吧！**<br>
 Freesia 写故事，Petals 提建议，双角色驱动的工作流。
 
-[![Advanced Preset](https://img.shields.io/badge/Advanced%20Preset-%E2%89%A5%201.11.0-d6409f)](https://github.com/mirrorange/advanced-preset)
+[![Advanced Preset](https://img.shields.io/badge/Advanced%20Preset-%E2%89%A5%201.11.1-d6409f)](https://github.com/mirrorange/advanced-preset)
 [![license](https://img.shields.io/badge/license-CC0%201.0-8b5cf6)](LICENSE)
 
 </div>

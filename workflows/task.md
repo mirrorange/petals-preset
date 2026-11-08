@@ -12,6 +12,7 @@ stages:
     kind: text
     tag: thinking
     label: Thinking
+    when: "!modules.native-reasoning"
     field: { name: "thinking", description: "{{ap::name::narrator}}'s thought process about the task." }
     tool:
       name: think
@@ -28,6 +29,15 @@ stages:
       description: "{{ap::name::narrator}} writes the task results; story content only when explicitly requested."
       param: { name: output }
 ---
+<!-- @section intro -->
+<!-- @if modules.native-reasoning -->
+Before producing the results, analyze the task:
+
+1. What {{ap::name::user}} asks for in `<input>`, and which results are required.
+2. The steps that complete the task, and what `<settings>` and `<history>` provide for each of them.
+3. How {{ap::name::narrator}} would reply in her own characteristic style and tone.
+<!-- @end -->
+
 <!-- @section stage:thinking style=dialogue -->
 First output your thought process within `<thinking>` tags.
 
