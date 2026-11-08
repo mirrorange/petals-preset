@@ -40,6 +40,9 @@ modules:
   mode-preface:
     name: 成人内容前言
     description: 写作前确认成人题材的简短对话（V5 的非 Zero 模式）。关闭即为 Zero 变体。
+  content-policy:
+    name: 内容政策 (Claude)
+    description: Claude 专用——在成人内容前言之后声明成人内容政策，缓解过度拒绝。
   anti-evasion:
     name: 防回避
     description: 不审查露骨的性与暴力描写，不为回避负面走向而拖延剧情，不以评论或升华介入叙事。

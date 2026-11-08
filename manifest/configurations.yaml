@@ -76,6 +76,7 @@ configurationDefaults:
     mode-expansion: true
     mode-expansion-continuation: false
     mode-preface: true
+    content-policy: false
     role-freesia: true
     style-aisthesis: false
     style-antheia: false
@@ -140,6 +141,7 @@ configurations:
     diff:
       sampling: { reasoning_effort: low, show_thoughts: true }
       connection: { transport: tool-single, parallelTools: true, forceTool: false, syntheticTurn: init }
+      modules: { content-policy: true }
   - id: other
     name: Other (structured output)
     diff:
