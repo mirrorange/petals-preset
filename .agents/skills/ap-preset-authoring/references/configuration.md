@@ -29,6 +29,7 @@ configurationDefaults:
     streamToolArguments: auto
     maxSteps: 6
     finalFallback: true
+    assumeToolSupport: false
     workflow: story            # 默认：第一个 story 工作流
     syntheticTurn: init        # 默认：第一个示范轮次，没有则 null
   sampling:
@@ -55,6 +56,7 @@ configurationDefaults:
 | | `streamToolArguments` | `auto` | Gemini 工具参数流式：`auto` / `on` / `off` |
 | | `maxSteps` | `6` | 多工具模式最多请求几次 |
 | | `finalFallback` | `true` | 解析不出正文时用原始文本作为正文 |
+| | `assumeToolSupport` | `false` | 工具传输跳过 ST 对 API 源和模型的检查（[transports.md](transports.md#能力检查)） |
 | | `workflow` | 第一个 `story` 工作流 | 故事轮使用的工作流（必须是 `story` 工作流） |
 | | `syntheticTurn` | 第一个示范轮次或 `null` | 工具传输插入的示范轮次 |
 | `sampling` | 任意键 | `{}` | ST Chat Completion 预设的设置项，见下 |

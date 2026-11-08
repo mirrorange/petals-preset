@@ -29,7 +29,9 @@ tools:
   # `4_story`, `5_synopsis`): fields sort alphabetically in turn order, so APIs that generate fields
   # alphabetically (Gemini) keep the workflow order. `{{field}}` in structure texts is the final name.
   orderPrefix: "{{n}}_"
+  # Native reasoning: scripts' / extensions' schemas are sent as they are, with no visible thinking field.
   envelope:
+    when: "!modules.native-reasoning"
     thinking: { name: thinking, description: "{{ap::name::narrator}}'s thought process about the task." }
     result: { name: result, description: "The task result, exactly in the requested format." }
   results:

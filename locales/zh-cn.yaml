@@ -40,6 +40,9 @@ modules:
   mode-preface:
     name: 成人内容前言
     description: 写作前确认成人题材的简短对话（V5 的非 Zero 模式）。关闭即为 Zero 变体。
+  content-policy:
+    name: 内容政策 (Claude)
+    description: Claude 专用——在成人内容前言之后声明成人内容政策，缓解过度拒绝。
   anti-evasion:
     name: 防回避
     description: 不审查露骨的性与暴力描写，不为回避负面走向而拖延剧情，不以评论或升华介入叙事。
@@ -102,6 +105,9 @@ modules:
   status-bar:
     name: 状态栏
     description: 正文上方的状态栏：日期（或第 N 天）、星期、时间、地点与天气。
+  native-reasoning:
+    name: 原生推理
+    description: 适用于自带推理的模型（Claude ≥ 5.5）——任务工作流不含思考步骤，脚本 / 扩展的 schema 直接发送、不加思考信封，推理交给模型的原生思考。避免 Claude 的 reasoning_extraction 拒绝。
   skip-thought:
     name: 跳过思考 (Gemini)
     description: Gemini 专用——让模型的内部思考块只输出一句固定的话，直接进入 Workflow 以加快输出。需配合合成轮次「Workflow init (skip thought)」。

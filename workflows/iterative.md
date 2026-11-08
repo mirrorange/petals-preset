@@ -72,10 +72,10 @@ Ask {{ap::name::editor}} every item under `Mandatory questions` and the relevant
 As {{ap::name::editor}}, answer the questions with professional advice and concrete solutions. Review `<settings>`, `<guidelines>` and `<history>`; point out redundancy, overused words or phrases and monotonous sentence structures or themes. End by reminding {{ap::name::narrator}} of the length requirements.
 
 <!-- @section stage:draft style=dialogue -->
-{{ap::prefix::narrator}}Using {{ap::name::editor}}' input, I will draft an initial version of the story content for internal review<!-- @if params.draftLanguage != "" -->, **written in {{ap::param::draftLanguage}}** to help organize my thoughts, while the final version will still be written in {{ap::lang}}<!-- @end -->. This draft contains only the story content and does not include any special structures.
+{{ap::prefix::narrator}}Using {{ap::name::editor}}' input, I will draft an initial version of the story content for review<!-- @if params.draftLanguage != "" -->, **written in {{ap::param::draftLanguage}}** to help organize my thoughts, while the final version will still be written in {{ap::lang}}<!-- @end -->. This draft contains only the story content and does not include any special structures.
 
 <!-- @section stage:draft style=imperative -->
-As {{ap::name::narrator}}, write an internal draft of the story content only<!-- @if params.draftLanguage != "" -->, **in {{ap::param::draftLanguage}}**<!-- @end --> (no structures).
+As {{ap::name::narrator}}, write an first draft of the story content only<!-- @if params.draftLanguage != "" -->, **in {{ap::param::draftLanguage}}**<!-- @end --> (no structures).
 
 <!-- @section stage:feedback style=dialogue -->
 {{ap::prefix::editor}}Upon receiving {{ap::name::narrator}}'s draft, I will conduct a comprehensive review checking:

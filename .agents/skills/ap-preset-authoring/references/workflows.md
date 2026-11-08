@@ -163,4 +163,4 @@ stages:
   - { id: content, actor: narrator, kind: content, optional: true, label: Output }
 ```
 
-纯元指令的回复主要通过 `reply` 等结构交付；`content` 设为可选，只有用户明确要求故事内容时才写。当调用方（脚本 / 其他扩展）带了自己的 JSON Schema 时，AP 会改用“思考 + 结果”信封，见 [transports.md](transports.md#调用方的工具与-schema)。
+纯元指令的回复主要通过 `reply` 等结构交付；`content` 设为可选，只有用户明确要求故事内容时才写。当调用方（脚本 / 其他扩展）带了自己的 JSON Schema 时，AP 会改用“思考 + 结果”信封（`tools.envelope.when` 为假时直接发送调用方 schema），见 [transports.md](transports.md#调用方的工具与-schema)。
