@@ -60,6 +60,7 @@ configurationDefaults:
     options: true
     status-bar: true
     skip-thought: false
+    native-reasoning: false
     anti-evasion: true
     banned-expressions: true
     character-enhancement: true
@@ -141,7 +142,7 @@ configurations:
     diff:
       sampling: { reasoning_effort: low, show_thoughts: true }
       connection: { transport: tool-single, parallelTools: true, forceTool: false, syntheticTurn: init }
-      modules: { content-policy: true }
+      modules: { content-policy: true, native-reasoning: true }
   - id: other
     name: Other (structured output)
     diff:

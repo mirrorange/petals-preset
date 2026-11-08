@@ -25,12 +25,21 @@ structures: [recap]
 - Adopt an **omniscient third-person perspective** with a focus on objectivity.
 - Use narrative language to summarize, telling it like a story and avoiding lists or other structured formats.
 
+<!-- @if modules.native-reasoning -->
+### Analysis & Validation
+
+Before writing the summary, analyze the story:
+
+1. Identify all key events and information, and how they relate to each other.
+2. Decide how to structure the narrative for a cohesive flow.
+<!-- @else -->
 ### Thinking & Validation
 
 Before writing the summary, in your thinking:
 
 1. List all key events and information; analyze their relationships.
 2. Consider how to structure the narrative for cohesive flow.
+<!-- @end -->
 
 ### Format
 
