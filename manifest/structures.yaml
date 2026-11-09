@@ -40,7 +40,7 @@ structures:
       when: '!modules.status-bar || transport in ["plaintext", "prefill"]'
     description: Synopsis of the events in this story segment.
     properties:
-      time: "When the events occurred: `MM-dd HH:mm - (MM-dd) HH:mm`, or `Day1 HH:mm - (Day2) HH:mm` without dates."
+      time: "When the events occurred: `MM-dd HH:mm`, or `DayN HH:mm` without dates."
       location: Scene or setting of the events.
       event: Title of the current event, 10 words or less.
       summary: Brief, objective description of what happened.

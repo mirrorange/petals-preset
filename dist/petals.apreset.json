@@ -490,7 +490,7 @@
         "author": "mirrorange",
         "description": "Write stories with Freesia! Freesia writes, Petals gives suggestions — a dual-character driven workflow.",
         "minAdvancedPreset": "1.11.1",
-        "hash": "931c830f71aa9f80",
+        "hash": "20fadb07b99185bb",
         "actors": {
           "narrator": {
             "name": "Freesia",
@@ -5252,7 +5252,7 @@
             },
             "description": "Synopsis of the events in this story segment.",
             "properties": {
-              "time": "When the events occurred: `MM-dd HH:mm - (MM-dd) HH:mm`, or `Day1 HH:mm - (Day2) HH:mm` without dates.",
+              "time": "When the events occurred: `MM-dd HH:mm`, or `DayN HH:mm` without dates.",
               "location": "Scene or setting of the events.",
               "event": "Title of the current event, 10 words or less.",
               "summary": "Brief, objective description of what happened."
