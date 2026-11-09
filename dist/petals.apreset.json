@@ -245,7 +245,7 @@
       "identifier": "ap_install_notice",
       "name": "Advanced Preset · install notice",
       "role": "system",
-      "content": "⟦ap:install-notice⟧\n[Notice from the preset file — not part of the story]\nThe selected Chat Completion preset, \"Petals Preset\" 7.11.1, is an Advanced Preset preset. It only works with the Advanced Preset extension for SillyTavern, which is not installed or not enabled here, so none of the preset's prompts were loaded.\n\nDo not continue the story or the roleplay in this reply. Instead, tell the user in their own language, briefly and kindly, that this preset needs the Advanced Preset extension, and guide them to install it:\n1. Open the Extensions panel (the stacked-blocks icon in the top bar) and click \"Install extension\".\n2. Paste one of these addresses and install (if one fails, try the next):\n   - https://github.com/mirrorange/advanced-preset\n   - https://gitlab.com/mirrorange/advanced-preset\n   - https://codeberg.org/mirrorange/advanced-preset\n3. Reload the page. Advanced Preset then sets up this preset by itself.\nIf the Tavern Helper extension is installed, the preset's installer script can do this automatically: enable the preset's scripts when Tavern Helper asks (or in Tavern Helper → Scripts → Preset scripts).\nIf Advanced Preset is installed but disabled, enable it in Extensions → Manage extensions and reload.",
+      "content": "⟦ap:install-notice⟧\n[Notice from the preset file — not part of the story]\nThe selected Chat Completion preset, \"Petals Preset\" 7.11.2, is an Advanced Preset preset. It only works with the Advanced Preset extension for SillyTavern, which is not installed or not enabled here, so none of the preset's prompts were loaded.\n\nDo not continue the story or the roleplay in this reply. Instead, tell the user in their own language, briefly and kindly, that this preset needs the Advanced Preset extension, and guide them to install it:\n1. Open the Extensions panel (the stacked-blocks icon in the top bar) and click \"Install extension\".\n2. Paste one of these addresses and install (if one fails, try the next):\n   - https://github.com/mirrorange/advanced-preset\n   - https://gitlab.com/mirrorange/advanced-preset\n   - https://codeberg.org/mirrorange/advanced-preset\n3. Reload the page. Advanced Preset then sets up this preset by itself.\nIf the Tavern Helper extension is installed, the preset's installer script can do this automatically: enable the preset's scripts when Tavern Helper asks (or in Tavern Helper → Scripts → Preset scripts).\nIf Advanced Preset is installed but disabled, enable it in Extensions → Manage extensions and reload.",
       "system_prompt": false,
       "marker": false,
       "injection_position": 0,
@@ -486,11 +486,11 @@
         "formatVersion": 3,
         "id": "petals",
         "name": "Petals Preset",
-        "version": "7.11.1",
+        "version": "7.11.2",
         "author": "mirrorange",
         "description": "Write stories with Freesia! Freesia writes, Petals gives suggestions — a dual-character driven workflow.",
         "minAdvancedPreset": "1.11.1",
-        "hash": "20fadb07b99185bb",
+        "hash": "910dc1dafd53ffaa",
         "actors": {
           "narrator": {
             "name": "Freesia",
