@@ -9,6 +9,11 @@ inputShaping:
 # input) tells Freesia which storyline she is writing and that its state is independent.
 storylines: true
 
+# Illustrations and voice (AP 1.12+): requested by the always-on `illustrations` / `voice` modules
+# while the user has image generation / speech synthesis switched on in AP's Media tab.
+image: true
+speech: true
+
 meta:
   trigger: "@{{ap::name::narrator}}"
   wrap: true
