@@ -50,6 +50,7 @@
 | `styles/` | Kardia、Aisthesis、Antheia、Kryos、Melos | 单选“主文风”，可都不选 |
 | | Eros（NSFW） | 开关，可叠加 |
 | `features/` | 事件摘要、选项、始终请求元回复、跳过思考（Gemini）、反过滤（Gemini） | 开关 |
+| | `illustrations` 插图、`voice` 语音 | 始终生效，用户在「多模态」页打开对应功能时出现 |
 | `tasks/` | 纯元指令、混合元指令、记忆、总结、代写 | 始终生效，靠条件出现 |
 
 几个值得借鉴的决定：
@@ -107,6 +108,7 @@
 | 选项 | 每轮 4 个方向不同的选项，默认打开 |
 | 用户输入整形 | `inputShaping: extract`：聊天记录以用户消息结尾时，把它从聊天记录中取出，由 `input` 区域的条目（`when="input.shaped"`）放进 `<input>` |
 | 故事线 | `storylines: true`（默认分隔）；`context` 模组拆成两个条目：`history` 区域的 `storylines`（`when="storyline.grouped"`）介绍历史按故事线分组、分隔消息、主线 / 支线 / if 线的含义；`input` 区域用户输入之前的 `storyline`（`when="!storyline.main"`）说明本轮写的是哪条线、`storyline.new` 时交代时间地点，并要求只写这条线；变量更新被阻止时（`storyline.frozen`）还要求状态独立——不更新变量、不写数据库、不产生故事正文和流程要求之外的副作用；同一条目在 `storyline.switching` 时说明新主线与原主线的关系；`storyline` 结构由 `context` 模组请求（AP 只在命名轮次发送），`storyline.naming` / `storyline.namingMain` 时请 Freesia 为新故事线 / 原主线起名 |
+| 插图与语音 | 清单声明 `image: true`、`speech: true`；`illustrations` 模组（`when: image.on`）请求 `<Freesia_Illustration>`，按 `image.prompt` 写标签、描述或指令（指令跟随回复语言），写作页的 `illustrationContent`（场景 / 人物特写）与 `illustrationView`（第一 / 第三视角）调整取景，`image.style` 时不写画风，`image.sfw` 时不为 NSFW 场景出图，`image.refs` 时列出参考图；`voice` 模组（`when: speech.on`）要求把每句说出口的话包进 `<speech character="…">`，并附上 `{{ap::speech::characters}}` 与 `{{ap::speech::format}}` |
 
 ## 第八步：推荐配置
 

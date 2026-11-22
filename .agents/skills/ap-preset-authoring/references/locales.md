@@ -39,6 +39,8 @@ insertionPoints:
   guidelines: { label: 写作准则, description: 内置准则之后 }
 userModules:
   my-reminder: { name: 我的提醒 }
+userModuleGroups:
+  writing-styles: { name: 文风 }
 userModuleTemplates:
   my-guideline: { name: 我的写作要求, description: 在写作指南中加入你自己的规则 }
 vars:
@@ -61,6 +63,7 @@ quickReplySets:
 | `structures` | 结构 id | `title` |
 | `insertionPoints` | 插入点 id | `label` `description` |
 | `userModules` | 随预设安装的用户模组 id | `name`（正文的翻译用 `user-modules/<id>.<lang>.md`，见 [user-modules.md](user-modules.md#文件格式)） |
+| `userModuleGroups` | 用户模组组 id（[userModuleGroups](user-modules.md#预设中的分组-usermodulegroups)） | `name`（安装时取当时面板语言的名称，之后组名归用户） |
 | `userModuleTemplates` | 用户模组模板 id | `name` `description`（正文的翻译用 `user-module-templates/<id>.<lang>.md`） |
 | `vars` | 构建变量 id | `label` `description` |
 | `quickReplySets` | 快速回复集 id | `qrList`（`{ 快速回复 id: { label, title, message } }`，见 [regex-and-quick-replies.md](regex-and-quick-replies.md#翻译)） |

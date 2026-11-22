@@ -28,6 +28,9 @@ AP 宏写作 `{{ap::名称::参数…}}`，参数用 `::` 分隔（两侧空白�
 | `{{ap::var::<id>::keys}}` / `::values` | 字典变量的键 / 值列表 |
 | `{{ap::var::<id>::<key>}}` | 字典变量某个键的值 |
 | `{{ap::var::<id>::<index>}}` | 列表变量的某一项（负数从末尾数） |
+| `{{ap::image::refs}}` | 当前图像连接的全局参考图与当前聊天角色卡的参考图，每行 `- <id>: <描述>`；没有时为空（见[图像与语音](#图像与语音)） |
+| `{{ap::speech::format}}` | 当前语音端点的格式说明（可用的语气 / 情绪 / 停顿标签等），由 AP 维护；没有时为空 |
+| `{{ap::speech::characters}}` | 当前语音连接中、对当前聊天生效（全局或当前角色卡）的已绑定说话人的角色名，逗号分隔；没有时为空 |
 
 ## 用法示例
 
@@ -42,6 +45,25 @@ Known facts about this chat:
 {{ap::structure::options}}
 ```
 
+### 图像与语音
+
+预设声明了 [`image` / `speech`](manifest.md#图像生成与语音合成-image--speech) 且对应功能开启（`image.on` / `speech.on`）时才有值，否则为空。它们来自用户的连接设置，由 AP 维护；风格提示词与说话人本身不交给预设。
+
+```markdown
+<!-- @if image.refs -->
+Reference images (put the ids you use in `refs`):
+{{ap::image::refs}}
+<!-- @end -->
+
+<!-- @if speech.on -->
+Wrap every spoken line in <speech character="Name">…</speech>.
+<!-- @if speech.characters -->Use these names when they speak: {{ap::speech::characters}}.<!-- @end -->
+{{ap::speech::format}}
+<!-- @end -->
+```
+
+`ap preview` 中它们是占位值：`--image-refs` 时为 `- ref1: (reference image 1)` 等，`--speech` 时 `format` 为 `(speech format notes of the API)`，`--speech-characters` 时角色名为 `(character 1), (character 2)`。
+
 ## 注意
 
 - 宏在**组装时**展开，`@if` 片段先按条件取舍再展开宏。
@@ -55,7 +77,8 @@ Known facts about this chat:
 
 - 未知宏名报错，例如 `{{ap::foo}}`；
 - 参数个数不对报错（如 `{{ap::lang::x}}`）；
-- 参数值无效报错：未知角色、参数、结构、构建变量；`workflow` 只接受 `summary` / `hint`；`input` 只接受 `meta` / `text`；`memory` 只接受 `chat` / `global`；`storyline` 只接受无参数或 `main`；只有自定义结构与 `status` 支持 `::last`；
+- 参数值无效报错：未知角色、参数、结构、构建变量；`workflow` 只接受 `summary` / `hint`；`input` 只接受 `meta` / `text`；`memory` 只接受 `chat` / `global`；`storyline` 只接受无参数或 `main`；`image` 只接受 `refs`；`speech` 只接受 `format` / `characters`；只有自定义结构与 `status` 支持 `::last`；
 - 构建变量选择器：字符串变量不接受选择器、列表变量只接受整数（报错）；字典变量读取了没有任何模组设置的键给出警告。
 - `{{ap::input::text}}`：预设没有声明 `inputShaping` 时警告（总为空）；`inputShaping.mode: extract` 却没有任何提示词使用它时警告（输入不会被发送）。
 - `{{ap::storyline}}` / `storyline.*`：预设没有声明 `storylines` 时警告（总是主线）。
+- `{{ap::image::…}}` 只接受 `refs`，`{{ap::speech::…}}` 只接受 `format` / `characters`（报错）；预设没有声明 `image` / `speech` 却使用了它们或 `image.*` / `speech.*` 时警告（总为空 / 关）。
