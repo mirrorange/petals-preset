@@ -490,7 +490,7 @@
         "author": "mirrorange",
         "description": "Write stories with Freesia! Freesia writes, Petals gives suggestions — a dual-character driven workflow.",
         "minAdvancedPreset": "1.12.0",
-        "hash": "c0e999e78615be5e",
+        "hash": "e209a3d49cc987cc",
         "actors": {
           "narrator": {
             "name": "Freesia",
@@ -804,6 +804,50 @@
             ]
           },
           {
+            "id": "illustrationContent",
+            "type": "select",
+            "label": "Illustration content",
+            "default": "",
+            "description": "What illustrations focus on. Unset picks whatever suits the moment.",
+            "group": "illustration",
+            "options": [
+              {
+                "value": "",
+                "label": "Unset"
+              },
+              {
+                "value": "scene",
+                "label": "Scene"
+              },
+              {
+                "value": "closeup",
+                "label": "Character close-up"
+              }
+            ]
+          },
+          {
+            "id": "illustrationView",
+            "type": "select",
+            "label": "Illustration perspective",
+            "default": "",
+            "description": "Unset picks whatever suits the moment.",
+            "group": "illustration",
+            "options": [
+              {
+                "value": "",
+                "label": "Unset"
+              },
+              {
+                "value": "first",
+                "label": "First person"
+              },
+              {
+                "value": "third",
+                "label": "Third person"
+              }
+            ]
+          },
+          {
             "id": "bannedWords",
             "type": "list",
             "label": "Banned words",
@@ -879,6 +923,12 @@
           "narration": {
             "label": "Narration",
             "order": 80,
+            "tab": "writing"
+          },
+          "illustration": {
+            "label": "Illustrations",
+            "order": 85,
+            "description": "Used when image generation is on in AP's Media tab.",
             "tab": "writing"
           },
           "banned": {
@@ -2892,7 +2942,126 @@
               {
                 "pieces": [
                   {
-                    "text": "## Illustrations\n\nAfter the story content, {{ap::name::narrator}} writes a prompt for one illustration of this segment, which an image model draws for the reader.\n\n- Pick the most vivid, visually clear moment: a striking scene, a character's entrance, an emotional peak. If nothing in this segment is worth illustrating, output no illustration.\n- The image model knows nothing about the story: describe every character's appearance in full each time, and never use pronouns or names alone to identify them.\n"
+                    "text": "## Illustrations\n\nAfter the story content, {{ap::name::narrator}} writes a prompt for one illustration of this segment, which an image model draws for the reader.\n\n"
+                  },
+                  {
+                    "text": "- Draw a close-up of the main character of the most vivid moment—or of two characters when the moment is about their interaction: their expression, gesture and action, framed close. Leave out minor characters and keep the background to a hint of the setting.\n",
+                    "when": {
+                      "t": "bin",
+                      "op": "==",
+                      "l": {
+                        "t": "var",
+                        "path": "params.illustrationContent"
+                      },
+                      "r": {
+                        "t": "lit",
+                        "v": "closeup"
+                      }
+                    }
+                  },
+                  {
+                    "text": "- Draw a whole scene: the moment of this segment most worth depicting, with the characters in it and their surroundings.\n",
+                    "when": {
+                      "t": "bin",
+                      "op": "&&",
+                      "l": {
+                        "t": "not",
+                        "e": {
+                          "t": "bin",
+                          "op": "==",
+                          "l": {
+                            "t": "var",
+                            "path": "params.illustrationContent"
+                          },
+                          "r": {
+                            "t": "lit",
+                            "v": "closeup"
+                          }
+                        }
+                      },
+                      "r": {
+                        "t": "bin",
+                        "op": "==",
+                        "l": {
+                          "t": "var",
+                          "path": "params.illustrationContent"
+                        },
+                        "r": {
+                          "t": "lit",
+                          "v": "scene"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "text": "- Pick the most vivid, visually clear moment: a striking scene, a character's entrance, an emotional peak.\n",
+                    "when": {
+                      "t": "bin",
+                      "op": "&&",
+                      "l": {
+                        "t": "not",
+                        "e": {
+                          "t": "bin",
+                          "op": "==",
+                          "l": {
+                            "t": "var",
+                            "path": "params.illustrationContent"
+                          },
+                          "r": {
+                            "t": "lit",
+                            "v": "closeup"
+                          }
+                        }
+                      },
+                      "r": {
+                        "t": "not",
+                        "e": {
+                          "t": "bin",
+                          "op": "==",
+                          "l": {
+                            "t": "var",
+                            "path": "params.illustrationContent"
+                          },
+                          "r": {
+                            "t": "lit",
+                            "v": "scene"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "text": "- Draw it from the protagonist's eyes: show what they see, not the protagonist themself (at most their hands or arms in the foreground).\n",
+                    "when": {
+                      "t": "bin",
+                      "op": "==",
+                      "l": {
+                        "t": "var",
+                        "path": "params.illustrationView"
+                      },
+                      "r": {
+                        "t": "lit",
+                        "v": "first"
+                      }
+                    }
+                  },
+                  {
+                    "text": "- Draw it from an onlooker's view, the protagonist in the frame like the other characters.\n",
+                    "when": {
+                      "t": "bin",
+                      "op": "==",
+                      "l": {
+                        "t": "var",
+                        "path": "params.illustrationView"
+                      },
+                      "r": {
+                        "t": "lit",
+                        "v": "third"
+                      }
+                    }
+                  },
+                  {
+                    "text": "- If nothing in this segment is worth illustrating, output no illustration.\n- The image model knows nothing about the story: describe every character's appearance in full each time, and never use pronouns or names alone to identify them.\n"
                   },
                   {
                     "text": "- Do not illustrate sexual, explicit or graphically violent moments; choose a safe moment of the segment instead, or output no illustration.\n",
@@ -2908,11 +3077,11 @@
                       "op": "==",
                       "l": {
                         "t": "var",
-                        "path": "image.api"
+                        "path": "image.prompt"
                       },
                       "r": {
                         "t": "lit",
-                        "v": "novelai"
+                        "v": "tags"
                       }
                     }
                   },
@@ -2926,11 +3095,11 @@
                         "op": "==",
                         "l": {
                           "t": "var",
-                          "path": "image.api"
+                          "path": "image.prompt"
                         },
                         "r": {
                           "t": "lit",
-                          "v": "novelai"
+                          "v": "tags"
                         }
                       },
                       "r": {
@@ -2949,11 +3118,11 @@
                         "op": "==",
                         "l": {
                           "t": "var",
-                          "path": "image.api"
+                          "path": "image.prompt"
                         },
                         "r": {
                           "t": "lit",
-                          "v": "novelai"
+                          "v": "tags"
                         }
                       },
                       "r": {
@@ -2966,19 +3135,72 @@
                     }
                   },
                   {
-                    "text": "- Write the prompt as one detailed paragraph in English: the subject and action, each character's appearance, outfit and expression, the setting, composition and camera angle, lighting and mood.\n",
+                    "text": "- Write the prompt as a direct instruction to a multimodal image model that understands intent, not only descriptions: tell it what to draw and how—the moment and what it should convey, who is in it and what they look like, composition and framing, lighting and mood—and state any requirement plainly.\n- Write the prompt in {{ap::param::language}}.\n",
                     "when": {
-                      "t": "not",
-                      "e": {
+                      "t": "bin",
+                      "op": "&&",
+                      "l": {
+                        "t": "not",
+                        "e": {
+                          "t": "bin",
+                          "op": "==",
+                          "l": {
+                            "t": "var",
+                            "path": "image.prompt"
+                          },
+                          "r": {
+                            "t": "lit",
+                            "v": "tags"
+                          }
+                        }
+                      },
+                      "r": {
                         "t": "bin",
                         "op": "==",
                         "l": {
                           "t": "var",
-                          "path": "image.api"
+                          "path": "image.prompt"
                         },
                         "r": {
                           "t": "lit",
-                          "v": "novelai"
+                          "v": "instruction"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "text": "- Write the prompt as one detailed paragraph in English: the subject and action, each character's appearance, outfit and expression, the setting, composition and camera angle, lighting and mood.\n",
+                    "when": {
+                      "t": "bin",
+                      "op": "&&",
+                      "l": {
+                        "t": "not",
+                        "e": {
+                          "t": "bin",
+                          "op": "==",
+                          "l": {
+                            "t": "var",
+                            "path": "image.prompt"
+                          },
+                          "r": {
+                            "t": "lit",
+                            "v": "tags"
+                          }
+                        }
+                      },
+                      "r": {
+                        "t": "not",
+                        "e": {
+                          "t": "bin",
+                          "op": "==",
+                          "l": {
+                            "t": "var",
+                            "path": "image.prompt"
+                          },
+                          "r": {
+                            "t": "lit",
+                            "v": "instruction"
+                          }
                         }
                       }
                     }
@@ -2995,11 +3217,11 @@
                           "op": "==",
                           "l": {
                             "t": "var",
-                            "path": "image.api"
+                            "path": "image.prompt"
                           },
                           "r": {
                             "t": "lit",
-                            "v": "novelai"
+                            "v": "tags"
                           }
                         }
                       },
@@ -3021,11 +3243,11 @@
                           "op": "==",
                           "l": {
                             "t": "var",
-                            "path": "image.api"
+                            "path": "image.prompt"
                           },
                           "r": {
                             "t": "lit",
-                            "v": "novelai"
+                            "v": "tags"
                           }
                         }
                       },
@@ -6409,6 +6631,8 @@
             "length": 0,
             "lengthMode": "",
             "narrativePerson": "",
+            "illustrationContent": "",
+            "illustrationView": "",
             "bannedWords": [],
             "bannedPhrases": [],
             "bannedExpressions": []
@@ -6656,6 +6880,10 @@
               "narration": {
                 "label": "叙述"
               },
+              "illustration": {
+                "label": "插图",
+                "description": "在 AP 的多模态页开启图像生成时使用。"
+              },
               "banned": {
                 "label": "自定义禁词表",
                 "description": "你自己的禁用词语、短语与表达。开启「禁词表」模组时追加到内置列表，关闭时单独发送。"
@@ -6867,6 +7095,24 @@
                   "third": "第三人称",
                   "alternating-third-first": "交替视角（第三/第一人称）",
                   "alternating-third-second": "交替视角（第三/第二人称）"
+                }
+              },
+              "illustrationContent": {
+                "label": "插图内容",
+                "description": "插图的侧重点。未设置时按当下情节自行选择。",
+                "options": {
+                  "": "未设置",
+                  "scene": "场景",
+                  "closeup": "人物特写"
+                }
+              },
+              "illustrationView": {
+                "label": "插图视角",
+                "description": "未设置时按当下情节自行选择。",
+                "options": {
+                  "": "未设置",
+                  "first": "第一视角",
+                  "third": "第三视角"
                 }
               },
               "bannedWords": {
