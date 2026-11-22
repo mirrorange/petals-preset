@@ -20,6 +20,11 @@ groups:
     tab: writing
   length: { label: Length, order: 70, tab: writing }
   narration: { label: Narration, order: 80, tab: writing }
+  illustration:
+    label: Illustrations
+    description: Used when image generation is on in AP's Media tab.
+    order: 85
+    tab: writing
   banned:
     label: Custom banned list
     description: >-
@@ -89,6 +94,24 @@ params:
       - { value: third, label: Third person }
       - { value: alternating-third-first, label: Alternating (third / first person) }
       - { value: alternating-third-second, label: Alternating (third / second person) }
+  - id: illustrationContent
+    type: select
+    label: Illustration content
+    description: What illustrations focus on. Unset picks whatever suits the moment.
+    group: illustration
+    options:
+      - { value: "", label: Unset }
+      - { value: scene, label: Scene }
+      - { value: closeup, label: Character close-up }
+  - id: illustrationView
+    type: select
+    label: Illustration perspective
+    description: Unset picks whatever suits the moment.
+    group: illustration
+    options:
+      - { value: "", label: Unset }
+      - { value: first, label: First person }
+      - { value: third, label: Third person }
   - id: bannedWords
     type: list
     label: Banned words
