@@ -16,7 +16,7 @@
 | `actors` `narrator` `user` | 角色 |
 | `styles` `plaintextFormat` `contentMarker` `prefillGuide` `historyItemTemplate` `stageHeading` `stop` | 写法与输出格式 |
 | `regions` `anchors` `workflowRegion` | 区域 |
-| `params` `groups` `modules` `entries` `insertionPoints` `userModules` `userModuleTemplates` `vars` | 参数、分组、模组、已排序的条目（条件已编译为 AST）、插入点、随预设安装的用户模组与用户模组模板（条目文字为源码原文，翻译在各项的 `locales` 中，见 [user-modules.md](user-modules.md#预设中的用户模组)）、构建变量 |
+| `params` `groups` `modules` `entries` `insertionPoints` `userModules` `userModuleTemplates` `userModuleGroups` `vars` | 参数、分组、模组、已排序的条目（条件已编译为 AST）、插入点、随预设安装的用户模组与用户模组模板（条目文字为源码原文，翻译在各项的 `locales` 中，见 [user-modules.md](user-modules.md#预设中的用户模组)）、用户模组的组（没有时省略）、构建变量 |
 | `workflows` `structures` `regex` `meta` `tokenSaving` | 工作流、结构、正则标记、元指令、省 token |
 | `regexScripts` `quickReplySets` | ST 正则脚本（ST 的 `RegexScriptData`）与快速回复集，没有时省略（见 [regex-and-quick-replies.md](regex-and-quick-replies.md)） |
 | `tavernHelperScripts` | 酒馆助手脚本与文件夹（酒馆助手自己的形状），没有时省略（见 [tavern-helper-scripts.md](tavern-helper-scripts.md)） |
@@ -80,6 +80,10 @@ AP 接管的每条助手消息在 `message.extra.advanced_preset` 中保存一�
     { "id": "a1", "start": 12, "end": 17, "quote": "轻轻推开门", "prefix": "…", "suffix": "…", "comment": "…" }
   ],
   "annotationVersions": { "draft": [ ], "patched": [ ] }, // 有补丁时：两份正文各自的批注
+  "speech": [                     // 台词（有 speech 结构且语音合成开启时）
+    { "id": "s1", "start": 30, "end": 35, "quote": "又下雨了。", "prefix": "…", "suffix": "…", "character": "艾琳", "text": "[sigh] 又下雨了。" }
+  ],
+  "speechVersions": { "draft": [ ], "patched": [ ] },     // 有补丁时：两份正文各自的台词
   "events": [ { "type": "memory.replace", "key": "…", "content": "…", "source": "model" } ],
   "metaInput": ["…"],             // 本轮输入中的元指令片段
   "reasoning": "…",               // 模型的推理内容（如果有）
@@ -89,7 +93,8 @@ AP 接管的每条助手消息在 `message.extra.advanced_preset` 中保存一�
 
 - 阶段 `status`：`done`（完成）、`missing`（必需阶段没有输出）、`interrupted`（生成被中断）；
 - 消息正文 `mes` 只包含终结正文（或纯轮次的回复文字），阶段与结构不写进正文，所以切换预设或关闭 AP 后聊天记录仍然干净；
-- 用户在 UI 中切换原稿 / 修订稿时，`mes`、`patchesApplied` 与 `annotations` 随之改变。
+- 用户在 UI 中切换原稿 / 修订稿时，`mes`、`patchesApplied`、`annotations` 与 `speech` 随之改变；
+- `speech` 的锚定方式与批注相同（见下）；`text` 是带语音提供方语气标签的台词原文（与 `quote` 相同时省略），`character` 为模型写的角色名。图像结构的值在 `structures` 中（`{ images: [...] }`）。
 - 用户在事件摘要 / 状态栏卡片上编辑后（或自定义组件调用 `setValue`），`structures` 中对应的值被直接覆盖（只改当前 swipe，`mes` 不变）。
 
 ### 消息挂载点
@@ -156,6 +161,8 @@ AP 接管的生成由自己向后端发出一次或多次请求，再按当前�
 | `togglePanel(open?)` | 打开 / 关闭 AP 面板（不传参数时切换） |
 | `annotations.get(mesId)` | 消息当前可见的行内批注（不含孤立批注），偏移对应当前 `mes` |
 | `annotations.on('change', (mesId) => …)` | 订阅批注变化（生成、编辑、切换 swipe 或补丁），返回取消订阅函数 |
+| `speech.get(mesId)` | 消息当前可见的台词（不含孤立台词），偏移对应当前 `mes`（[structures.md](structures.md#speech)） |
+| `speech.on('change', (mesId) => …)` | 订阅台词变化，返回取消订阅函数 |
 
 脚本调用 ST 生成（如 `generateRaw` / `generateQuietPrompt`）时，如果当前选中的是 Carrier，AP 同样会组装区域并接管请求，来源为 `task`；调用方的工具与 JSON Schema 的处理见 [transports.md](transports.md#调用方的工具与-schema)。
 

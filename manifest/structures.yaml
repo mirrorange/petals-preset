@@ -215,3 +215,33 @@ structures:
         [The generated reply content acting as {{ap::name::user}}]
         </Freesia_Impersonate>
       field: Put the generated reply (acting as {{ap::name::user}}) in the `{{field}}` field.
+  image:
+    kind: image
+    tag: Freesia_Illustration
+    field: illustrations
+    count: 1
+    description: Prompt(s) for illustrations of this story segment, drawn by an image model; empty when nothing is worth illustrating.
+    properties:
+      prompt: The image prompt, self-contained (the image model knows nothing about the story).
+      refs: Ids of the reference images that appear in the illustration.
+      ratio: "Aspect ratio: `1:1`, `3:4`, `4:3`, `9:16` or `16:9`."
+      caption: A short caption in the story's language, under 10 words.
+    formatPrompt:
+      tag: |-
+        After the story content (leave out optional tags you do not need):
+
+        <Freesia_Illustration>
+          <prompt>...</prompt>
+          <refs>id, id</refs>
+          <ratio>3:4</ratio>
+          <caption>...</caption>
+        </Freesia_Illustration>
+      field: Fill the `{{field}}` field with up to one item `{ "prompt", "refs", "ratio", "caption" }`, or leave it empty.
+  speech:
+    kind: speech
+    history: 0
+    formatPrompt:
+      tag: |-
+        Spoken lines are written inside the story text as `<speech character="Name">words</speech>`; the tags are removed from the text shown to the reader.
+
+        Example: “<speech character="Lena">Don't go,</speech>” Lena whispered. “<speech character="Lena">Not tonight.</speech>”

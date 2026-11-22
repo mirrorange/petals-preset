@@ -1,6 +1,6 @@
 # 结构
 
-**结构**是模型在正文之外交回的附加数据：叙述者的回复、记忆更新、剧情总结、代写、事件摘要、选项、顶部状态栏、行内批注，以及预设自定义的块。结构的**机制**（数据形状、解析、保存、卡片 UI）由 AP 内置；预设只为它们**命名**（标签名 / 字段名）并提供**说明文字**。
+**结构**是模型在正文之外交回的附加数据：叙述者的回复、记忆更新、剧情总结、代写、事件摘要、选项、顶部状态栏、行内批注、插图提示词与语音台词，以及预设自定义的块。结构的**机制**（数据形状、解析、保存、卡片 UI）由 AP 内置；预设只为它们**命名**（标签名 / 字段名）并提供**说明文字**。
 
 ```yaml
 structures:
@@ -27,20 +27,20 @@ structures:
 
 | 字段 | 默认 | 说明 |
 | --- | --- | --- |
-| `kind` | 结构 id | 种类：`reply` `memory` `recap` `impersonate` `synopsis` `options` `status` `annotations` `custom`。其他值报错 |
-| `tag` | 结构 id | 对话式写法中的 XML 标签名，须匹配 `^[A-Za-z_][\w.-]*$` |
+| `kind` | 结构 id | 种类：`reply` `memory` `recap` `impersonate` `synopsis` `options` `status` `storyline` `annotations` `image` `speech` `custom`。其他值报错 |
+| `tag` | 结构 id（`speech`：`speech`） | 对话式写法中的 XML 标签名，须匹配 `^[A-Za-z_][\w.-]*$`；`speech` 结构的 `tag` 是正文中台词标签的名字（两种写法通用） |
 | `field` | 结构 id | 指令式写法中的 JSON 字段名 / 工具参数名，须匹配 `^[A-Za-z_]\w*$`。模型实际看到的名字会加上排序前缀：`tools.orderPrefix`（如 `3_options`）或旧的 `tools.structurePrefix`（默认 `z_`，即 `z_options`），见 [字段名与顺序](#字段名与顺序) |
 | `description` | — | 字段整体的说明，进入 JSON Schema 的 `description`（模型可见，支持宏；`{{field}}` 为实际字段名） |
 | `properties` | — | 子字段说明，键只能是该种类的固定子字段（见下表），其他键报错 |
-| `count` | — | 仅 `options`：要求的选项数，写入 schema 的 `minItems` / `maxItems` |
-| `history` | — | 历史回传：最近 N 条助手消息再次带上该结构（任意非行内种类），可指定模板、位置与条件，见 [历史回传](#历史回传)。`annotations` 的 `history` 是数字，含义不同（见下） |
+| `count` | — | `options`：要求的选项数，写入 schema 的 `minItems` / `maxItems`；`image`：每轮最多几张图（默认 1，正整数），写入 `maxItems`，多出的丢弃 |
+| `history` | — | 历史回传：最近 N 条助手消息再次带上该结构（任意非行内种类），可指定模板、位置与条件，见 [历史回传](#历史回传)。`annotations` / `speech` 的 `history` 是数字，含义不同（见下） |
 | `historyTemplate` | `{{content}}` + 空行 + `[{{time}} · {{location}}] {{event}}: {{summary}}` | 旧写法，仅 `synopsis` 配合数字 `history`：附带摘要的消息的格式，见 [旧写法](#旧写法synopsis-的数字-history) |
 | `title` | 结构 id | 卡片标题（自定义结构用；`reply` 等也可以设，如花瓣的回复卡片显示叙述者名字）。可在 `locales` 中翻译 |
 | `formatPrompt.tag` | `''` | 对话式下的格式说明，由 `{{ap::structure::<id>}}` 输出 |
 | `formatPrompt.field` | `''` | 指令式下的格式说明，由 `{{ap::structure::<id>}}` 输出；`{{field}}` 为实际字段名 |
 | `shape` | `text` | 仅 `custom`：`text`（一段文字）或 `kv`（键值对） |
 | `display` | `card` | 仅 `custom`：`card`（消息下方显示可折叠卡片）或 `hidden`（只保存，不显示） |
-| `history` | `0` | 仅 `annotations`：把批注以 CriticMarkup 重新注入最近 N 条助手消息的历史（见 [annotations](#annotations)） |
+| `history` | `0` | 仅 `annotations` / `speech`：把批注以 CriticMarkup、把台词以台词标签重新注入最近 N 条助手消息的历史（见 [annotations](#annotations)、[speech](#speech)） |
 | `order` | 终结正文阶段之后 | 结构在一轮输出中的位置（指令式）：数字排序键，或 `{ before: <阶段> }` / `{ after: <阶段> }`（也可写 `before:<阶段>` / `after:<阶段>`），`<阶段>` 为阶段 id 或 `@content`（终结正文阶段）。工作流可以覆盖，见 [字段名与顺序](#字段名与顺序)。行内结构忽略 |
 | `ui` | — | 卡片：`position`（`top` 消息顶部 / `bottom` 消息底部）、`order`（区域内排序键）；`custom` 还可以带自己的组件 `template` / `module` / `style`，见 [卡片](#卡片) |
 
@@ -104,11 +104,13 @@ structures:
 | `status` | `{ date, weekday, time, location, weather }` | `date` `weekday` `time` `location` `weather` | 是 | 顶部状态栏：故事日期（或 `第N天`）、星期、时间、地点、天气 |
 | `storyline` | `{ name, previous_main }` | `name` `previous_main` | 是（本轮请求的子字段） | AI 为新故事线 / 原主线起的名称；只在需要命名的轮次请求，无卡片 |
 | `annotations` | 正文内标记 → `Annotation[]` | — | — | **行内**结构：写在正文里，解析后从正文移除，显示为虚线下划线与气泡 |
+| `image` | `{ images: { prompt, refs?, ratio?, caption? }[] }` | `prompt` `refs` `ratio` `caption` | 是 | 插图提示词：AP 按用户的图像连接生成图片，显示在正文之后；只在 `image.on` 时请求 |
+| `speech` | 正文内标记 → `SpeechSpan[]` | — | — | **行内**结构：台词写在正文里的 `<speech character="…">` 中，解析后去掉标记，可点击合成 / 播放；只在 `speech.on` 时请求 |
 | `custom` | `string` 或 `Record<string, string>` | — | 是 | 预设自定义的块，可带自己的卡片组件 |
 
 “必填”指生成的 JSON Schema 中该字段是否进入 `required`。`memory` 与 `recap` 是可选的：模型可以不写。
 
-`annotations` 是唯一的**行内结构**：它不是 schema 字段，也没有标签，两种写法下都由模型直接写在正文里（`tag` / `field` / `description` / `properties` 不使用）。
+`annotations` 与 `speech` 是**行内结构**：它们不是 schema 字段，两种写法下都由模型直接写在正文里（`field` / `description` / `properties` / `order` 不使用；`annotations` 也不用 `tag`）。
 
 ## 何时请求结构
 
@@ -126,9 +128,11 @@ structures: [options]
 
 - 指令式：作为字段加入回合 schema（结构化、单工具），或作为携带它的阶段工具的附加参数（多工具），位置见 [workflows.md](workflows.md#结构的位置)；
 - 对话式：AP 从模型输出中提取对应标签；
-- 行内结构（`annotations`）：两种写法相同，AP 从正文中解析标记；
+- 行内结构（`annotations`、`speech`）：两种写法相同，AP 从正文中解析标记；
 
 `storyline` 结构只在需要命名故事线的轮次请求（条件变量 `storyline.naming` / `storyline.namingMain` 至少一个为真），其他轮次即使模组列出它也不请求，见 [storyline](#故事线命名-storyline)。
+
+`image` / `speech` 结构只在预设声明了对应功能（[manifest.md](manifest.md#图像生成与语音合成-image--speech)）、用户开启了它并选好了连接时请求（`image.on` / `speech.on`），其他轮次即使模组列出也不请求；`image` 的 `refs` 子字段只在有可用的参考图（`image.refs`）时出现在 Schema 中。
 
 由脚本或其他扩展发起的任务生成（`gen.type == "script"` 且 `gen.origin == "task"`）不请求任何结构，即使模组列出了它们。
 
@@ -161,6 +165,11 @@ structures: [options]
 { "type": "array", "items": { "type": "object",
   "properties": { "label": {…}, "content": {…} },
   "required": ["label", "content"], "additionalProperties": false }, "minItems": 4, "maxItems": 4 }
+// image（count: 2 时 maxItems 为 2；image.refs 为假时没有 refs）
+{ "type": "array", "items": { "type": "object",
+  "properties": { "prompt": {…}, "refs": { "type": "array", "items": { "type": "string" } },
+    "ratio": { "type": "string", "enum": ["1:1", "3:4", "4:3", "9:16", "16:9"] }, "caption": {…} },
+  "required": ["prompt", "refs", "ratio", "caption"], "additionalProperties": false }, "maxItems": 1 }
 // custom, shape: text
 { "type": "string" }
 // custom, shape: kv
@@ -180,9 +189,10 @@ Gemini 不支持自由键的对象：`kv` 形式会改为 JSON 字符串字段�
 | `synopsis` | `<tag><time>…</time><location>…</location><event>…</event><summary>…</summary></tag>` |
 | `status` | `<tag><date>…</date><weekday>…</weekday><time>…</time><location>…</location><weather>…</weather></tag>` |
 | `options` | `<tag><option title="类型">内容</option>…</tag>`（也接受 `label="…"`） |
+| `image` | 每张图一个块：`<tag><prompt>…</prompt><refs>a, b</refs><ratio>3:4</ratio><caption>…</caption></tag>`，可重复；除 `prompt` 外的子标签可省略，没有子标签时整块是 `prompt` |
 | `custom(kv)` | `<tag><键>值</键>…</tag>`，每个子标签一个键 |
 
-同一结构出现多个块时，除 `memory` 外只取最后一个。标签内容做 XML 反转义（`&lt;` 等）。流式生成时未闭合的块不显示在正文中。
+同一结构出现多个块时，除 `memory` 与 `image` 外只取最后一个。标签内容做 XML 反转义（`&lt;` 等）。流式生成时未闭合的块不显示在正文中。
 
 ## 宽松解析
 
@@ -193,6 +203,7 @@ Gemini 不支持自由键的对象：`kv` 形式会改为 JSON 字符串字段�
 - `memory`：单个对象视为一项；`key` 缺失时读 `title`；`scope` 写 `global` 视为 `global_memory`，其他值视为 `memory`；`operation` 非 `delete` 一律视为 `replace`；`delete` 的 `content` 置为 `null`；没有 `key` 的项丢弃；
 - `options`：每项接受 `label` / `title` 与 `content` / `text`；字符串项视为 `content`；两者都为空的项丢弃；
 - `status`：字符串值先尝试 `JSON.parse`；子字段也接受别名（`day` → `date`，`week` / `dayOfWeek` → `weekday`，`clock` → `time`，`place` → `location`），缺失的子字段为空串；
+- `image`：接受数组、`{ images: [...] }`、单个对象或一段文字（视为一个 `prompt`）；`prompt` 也接受 `description` / `text`，`refs` 接受数组或逗号分隔的字符串（去重），`ratio` 接受 `16x9` / `16/9` 等写法、不在五种比例中的丢弃，`caption` 也接受 `title`；没有 `prompt` 的项丢弃，一张都没有时视为没有值；
 - `custom(kv)`：字符串值先尝试 `JSON.parse`；所有值转成字符串。
 
 ## 历史回传
@@ -218,7 +229,7 @@ structures:
 | 键 | 默认 | 说明 |
 | --- | --- | --- |
 | `depth` | `1` | 最近几条助手消息带上该结构，`0` 为关闭。已被省 token 替换为摘要的消息也计入 N，但只有仍为原文的消息会带上；没有该结构值的消息跳过 |
-| `template` | `synopsis`：`[{{time}} · {{location}}] {{event}}: {{summary}}`；其他：`{{value}}` | 插入的文字。占位符：该种类的子字段（如 `synopsis` 的 `{{time}}`、`status` 的 `{{date}}`；`custom` 的 `kv` 形式可用任意键）与 `{{value}}`（整个值的文字形式：`status` 为 `日期 星期 时间 \| 地点 \| 天气`，`options` 为 `- 标题: 内容` 列表，`kv` 为 `键: 值` 行）。其他 `{{…}}` 原样保留；不展开宏 |
+| `template` | `synopsis`：`[{{time}} · {{location}}] {{event}}: {{summary}}`；其他：`{{value}}` | 插入的文字。占位符：该种类的子字段（如 `synopsis` 的 `{{time}}`、`status` 的 `{{date}}`；`custom` 的 `kv` 形式可用任意键）与 `{{value}}`（整个值的文字形式：`status` 为 `日期 星期 时间 \| 地点 \| 天气`，`options` 为 `- 标题: 内容` 列表，`image` 为 `- 标题: 提示词` 列表，`kv` 为 `键: 值` 行）。其他 `{{…}}` 原样保留；不展开宏 |
 | `position` | 结构的排序 | `before` / `after`：紧贴在正文之前 / 之后；数字：排序键，与阶段同一条轴（正文位于终结正文阶段的键，如 `300`）。不写时按结构的 `order`（含工作流的 `structures.order`）相对终结正文阶段的位置；没写 `order` 的结构在正文之后 |
 | `when` | 总是 | 条件表达式，在本次请求的条件变量下求值（见下） |
 
@@ -230,7 +241,7 @@ structures:
 - 条件在历史改写时（组装之前）求值：`transport`、`style`、`workflow`、`gen.*`、`meta.*`、`modules.*`、`params.*`、`flags.*`、`features.*`、`chat.group`、`memory.*`、`recap.present`、`last.*` 可用；`stages.*` 为空、`input.shaped` 为假；
 - 位置按当前配置的故事工作流计算（`gen.origin` 为 `task` 时也是）；
 - 开启缓存优化时，每条消息带了哪些结构也属于它的渲染方式，按粘性渲染沿用（见 [meta-and-tasks.md](meta-and-tasks.md#缓存优化粘性渲染)）；
-- `annotations` 不使用此机制：它的 `history: N` 把批注以 CriticMarkup 注入正文（见 [annotations](#annotations)）。
+- `annotations` 与 `speech` 不使用此机制：它们的 `history: N` 把标记注入正文（见 [annotations](#annotations)、[speech](#speech)）。
 
 常见用法：纯文本 / 预填充传输中，历史里的结构就是格式示例；结构化 / 工具传输中模型不应在正文里写标签，可用条件只在前两种传输下回传，另由模组在别处提供上一次的值（如 `{{ap::structure::status::last}}`，条件 `last.status`）。
 
@@ -372,7 +383,7 @@ Previous status: {{ap::structure::status::last}}
 | 区域 | 内置卡片（排序键） |
 | --- | --- |
 | `top` | `status`（100） |
-| `bottom` | `reply`（100）、`impersonate`（200）、`options`（300）、`synopsis`（400）、`memory`（500）、`recap`（600）、`custom`（700） |
+| `bottom` | `image`（50）、`reply`（100）、`impersonate`（200）、`options`（300）、`synopsis`（400）、`memory`（500）、`recap`（600）、`custom`（700） |
 
 `ui.position` / `ui.order` 覆盖默认值，例如把选项放到摘要之后：`options: { kind: options, ui: { order: 450 } }`。顶部区域在流式生成时就显示（实时值），底部区域在生成结束后显示。
 
@@ -442,6 +453,60 @@ structures:
 
 请求方式与其他结构相同：由生效模组的 `structures: [annotations]` 请求，并在正文里放 `{{ap::structure::annotations}}` 输出格式说明。
 
+### image
+
+插图提示词。预设声明 [`image`](manifest.md#图像生成与语音合成-image--speech) 后，用户在面板的「多模态」页配置图像连接（OpenAI / Gemini / NovelAI / OpenRouter）；开启且选好连接时 `image.on` 为真，请求 `image` 结构的模组生效。AP 在回复完成后按提示词生成图片（`image.auto`），或在卡片上显示提示词与生成按钮，图片显示在正文之后。
+
+```yaml
+structures:
+  image:
+    kind: image
+    tag: image
+    count: 1
+    properties:
+      prompt: What the illustration shows.
+      refs: Ids of reference images to keep characters consistent.
+      ratio: Aspect ratio.
+      caption: A short title.
+    formatPrompt:
+      tag: "<image><prompt>…</prompt><ratio>3:4</ratio><caption>…</caption></image>"
+      field: "Fill `{{field}}` with up to one illustration."
+```
+
+- 提示词的写法由预设按 `image.prompt` 决定：`tags` 写逗号分隔的标签，`description` 写一整段英文描述，`instruction` 写指令式的自然语言（可直接提要求，不限英文）；
+- 用户的**风格提示词**由 AP 附加到请求上，不交给预设；`image.style` 为真时提示词不应再描述画风；
+- `image.sfw` 为真（用户开着 NSFW 屏蔽）时，预设应要求模型不为 NSFW 场景写提示词（可以不写，值为空时不生成）；
+- 参考图（OpenAI / Gemini / OpenRouter）：参考图分为全局的和绑定到角色卡的，只有全局参考图与当前聊天角色卡（群聊为所有成员）的参考图交给预设。`{{ap::image::refs}}` 列出 `- <id>: <描述>`，`refs` 子字段填所选的 id，AP 把对应图片随请求发送（不在当前聊天范围内的 id 被忽略）；`image.refs` 为假时 Schema 中没有 `refs`；
+- 宽松解析见 [宽松解析](#宽松解析)；`count` 之外的提示词丢弃。
+
+### speech
+
+内联台词。预设声明 [`speech`](manifest.md#图像生成与语音合成-image--speech) 后，`speech.on` 时请求 `speech` 结构的模组让模型把**所有说出口的话**包在台词标签中：
+
+```text
+她回头看了一眼。<speech character="艾琳">[sigh] 又下雨了。</speech>他没有回答。
+```
+
+```yaml
+structures:
+  speech:
+    kind: speech              # tag 默认 speech
+    history: 0
+    formatPrompt:
+      tag: |-
+        Wrap every spoken line in <speech character="Name">…</speech>, using the character's name.
+        {{ap::speech::format}}
+```
+
+- 属性名固定为 `character`，值为故事中的角色名；`{{ap::speech::characters}}` 列出已绑定说话人的角色名（`speech.characters`），让模型使用一致的名字；
+- 台词中可以有语音提供方的语气 / 停顿标签（如 Fish Audio 的 `<whisper>`、`[laugh]`），由 `{{ap::speech::format}}` 说明当前端点支持哪些。这些标签**合成时保留、显示时去掉**：`mes` 中只有台词原文；
+- 未包裹的文字是旁白：用户开启旁白语音（`speech.narrator`）时也会合成，否则只合成台词；
+- 语法：标签不能嵌套（内层的开标签被丢弃）；单独的闭标签被移除；未闭合的开标签丢弃标记、保留文字；空台词忽略。与批注可以重叠（批注划在台词里，或台词在批注里），两者都会正确锚定；
+- **保存**：与批注相同，`mes` 是干净正文，台词存于 sidecar 的 `speech`（偏移 + 原文 + 上下文锚定，`text` 为带语气标签的原文），编辑正文后重新定位；补丁工作流前后各有一份；
+- **流式**：标签不会闪现，生成过程中只交出已确定的台词文字；
+- **历史**：默认只有干净正文；`history: N` 时最近 N 条助手消息（`speech.on` 时）把台词按台词标签（含语气标签）重新注入；
+- **显示**：台词句与批注一样以下划线标出，点击生成或播放；正文之前有全文播放框。脚本可通过 `window.AdvancedPreset.speech.get(mesId)` / `.on('change', f)` 读取台词。
+
 ### 保存条件
 
-记忆与总结只在**拦截器参与的生成**中保存，且生成类型不是 `quiet`（后台生成）。所有结构值都写在消息的 `extra.advanced_preset.structures` 中，行内批注除外（`extra.advanced_preset.annotations`，见 [artifact-and-runtime.md](artifact-and-runtime.md)）。
+记忆与总结只在**拦截器参与的生成**中保存，且生成类型不是 `quiet`（后台生成）。所有结构值都写在消息的 `extra.advanced_preset.structures` 中，行内批注与台词除外（`extra.advanced_preset.annotations` / `speech`，见 [artifact-and-runtime.md](artifact-and-runtime.md)）。

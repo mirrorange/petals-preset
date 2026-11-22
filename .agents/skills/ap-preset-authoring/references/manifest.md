@@ -28,6 +28,7 @@
 | `anchors` | map | — | 语义锚点的另一种写法 |
 | `workflowRegion` | region id | `tail` 锚点的区域 | 工作流提示词放入的区域 |
 | `insertionPoints` | list | `[]` | 用户模组插入点，见 [user-modules.md](user-modules.md) |
+| `userModuleGroups` | list | `[]` | 随预设安装的用户模组的组，见 [user-modules.md](user-modules.md#预设中的分组-usermodulegroups) |
 | `vars` | map | `{}` | 构建变量，见 [build-variables.md](build-variables.md) |
 | `params` | list | `[]` | 参数，见[参数](#参数-params) |
 | `groups` | map | `{}` | 面板分组与单选集，见[分组](#分组-groups) |
@@ -37,6 +38,8 @@
 | `tokenSaving` | map | 见下 | 省 token 的默认参数 |
 | `inputShaping` | map | — | 用户输入整形（包裹或提取本次输入），见[用户输入整形](#用户输入整形-inputshaping) |
 | `storylines` | `true` \| map | — | 支持故事线（支线故事与 if 线），见[故事线](#故事线-storylines) |
+| `image` | `true` \| map | — | 支持图像生成，见[图像生成与语音合成](#图像生成与语音合成-image--speech) |
+| `speech` | `true` \| map | — | 支持语音合成，见[图像生成与语音合成](#图像生成与语音合成-image--speech) |
 | `syntheticTurns` | list | `[]` | 工具模式的示范轮次，见 [transports.md](transports.md#示范轮次-syntheticturns) |
 | `tools` | map | 见 transports | 模型可见的工具名、字段名与文案，见 [transports.md](transports.md#tools-文案) |
 | `theme` | map | `{}` | 面板与消息 UI 的配色 |
@@ -391,6 +394,26 @@ storylines:
 
 完整规则见 [meta-and-tasks.md](meta-and-tasks.md#故事线)。
 
+## 图像生成与语音合成 `image` / `speech`
+
+声明预设支持**图像生成** / **语音合成**。请求由 AP 在前端发出，连接（API 类型、Base URL、密钥、模型、风格提示词、参考图、说话人绑定、CORS 代理）由用户在面板的「多模态」页配置，按连接保存，不交给预设。不声明时 AP 不显示也不请求任何多模态内容，`image.*` / `speech.*` 恒为关。
+
+```yaml
+# manifest/behavior.yaml
+image: true
+speech: true
+```
+
+两个键也接受映射（为以后的选项预留，目前没有键）。声明后：
+
+- 条件变量 `image.on` / `image.auto` / `image.api` / `image.prompt` / `image.style` / `image.sfw` / `image.refs` 与 `speech.on` / `speech.auto` / `speech.api` / `speech.narrator` / `speech.characters`（[expressions.md](expressions.md)）描述用户的设置；
+- 宏 `{{ap::image::refs}}`、`{{ap::speech::format}}`、`{{ap::speech::characters}}`（[macros.md](macros.md#图像与语音)）；
+- [`image` 结构](structures.md#image)（插图提示词，正文之后）与内联的 [`speech` 结构](structures.md#speech)（正文中的 `<speech character="…">` 台词）只在 `image.on` / `speech.on` 时请求，由模组 `structures:` 列出；
+- 纯元指令、总结等任务轮（`gen.origin == "task"`）两者都关闭；
+- 需要 Advanced Preset 1.12.0 以上（更早的版本忽略这两个键）。
+
+`ap check`：值不是 `true` 或映射时报错；映射中的未知键、`minAdvancedPreset` 低于 1.12.0 时警告；声明了却没有模组请求对应结构、没有声明却有 `image` / `speech` 结构或使用了 `image.*` / `speech.*` / 对应的宏时警告；`image.api` / `image.prompt` / `speech.api` 与不存在的值比较时报错。
+
 ## 主题 `theme`
 
 ```yaml
@@ -419,6 +442,7 @@ build:
 ## 其余字段
 
 - `insertionPoints` → [user-modules.md](user-modules.md#插入点-insertionpoints)
+- `userModuleGroups` → [user-modules.md](user-modules.md#预设中的分组-usermodulegroups)
 - `vars` → [build-variables.md](build-variables.md)
 - `structures` → [structures.md](structures.md)
 - `syntheticTurns`、`tools` → [transports.md](transports.md)

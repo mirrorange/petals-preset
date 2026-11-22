@@ -20,6 +20,9 @@ groups:
     description: 未设置的语言沿用故事已有的语言；Workflow 语言未设置时同回复语言。
   length: { label: 长度 }
   narration: { label: 叙述 }
+  illustration:
+    label: 插图
+    description: 在 AP 的多模态页开启图像生成时使用。
   banned:
     label: 自定义禁词表
     description: 你自己的禁用词语、短语与表达。开启「禁词表」模组时追加到内置列表，关闭时单独发送。
@@ -153,6 +156,14 @@ params:
     label: 叙述视角
     description: 叙述部分使用的视角：固定一种人称，或在两种人称之间交替。不影响对白。未设置时沿用故事已有的视角。
     options: { "": 未设置, first: 第一人称, second: 第二人称, third: 第三人称, alternating-third-first: 交替视角（第三/第一人称）, alternating-third-second: 交替视角（第三/第二人称） }
+  illustrationContent:
+    label: 插图内容
+    description: 插图的侧重点。未设置时按当下情节自行选择。
+    options: { "": 未设置, scene: 场景, closeup: 人物特写 }
+  illustrationView:
+    label: 插图视角
+    description: 未设置时按当下情节自行选择。
+    options: { "": 未设置, first: 第一视角, third: 第三视角 }
   bannedWords:
     label: 禁用词语
     description: Freesia 不应使用的单个词语，如「闪过」「一丝」。

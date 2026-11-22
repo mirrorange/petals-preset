@@ -64,13 +64,25 @@ transport in ["structured", "tool-single", "tool-multi"]
 | `storyline.namingMain` | 布尔 | AI 本轮为没有名称的原主线命名（`#!` 切换主线时） |
 | `storyline.switching` | 布尔 | 本轮把当前故事线设为主线（`#!名称` / `#!?`）；`storyline.main` 同时为真，原主线是历史中的一条支线 |
 | `storyline.frozen` | 布尔 | 本轮的变量更新被阻止（配置 `storylines.freezeVariables`：`all` 为主线以外的故事线，`if` 为 if 线，`off` 为从不，见[支线轮次的变量](meta-and-tasks.md#支线轮次的变量)）；预设据此告诉模型不要更新状态 |
+| `image.on` | 布尔 | [图像生成](manifest.md#图像生成与语音合成-image--speech)可用：预设声明了 `image`、用户开启了图像生成并选好了连接，且本轮是故事轮（`gen.origin == "story"`）。为假时下列 `image.*` 都为假 / 空 |
+| `image.auto` | 布尔 | 回复完成后自动生成图片（否则用户点击生成） |
+| `image.api` | `openai` `gemini` `novelai` `openrouter`（关闭时为空字符串） | 当前图像连接的 API 类型。提示词的写法按 `image.prompt` 决定 |
+| `image.prompt` | `tags` `description` `instruction`（关闭时为空字符串） | 当前连接的提示词类型（用户在连接中选择；新建或切换 API 时 OpenAI / Gemini / OpenRouter 默认 `instruction`，NovelAI 默认 `tags`）：`tags` 为逗号分隔的 Danbooru 风格标签；`description` 为一整段英文图像描述；`instruction` 为指令式的自然语言，可以直接提出要求，不限于英文 |
+| `image.style` | 布尔 | 当前连接有用户的风格提示词（由 AP 附加到请求）：提示词不应描述画风 |
+| `image.sfw` | 布尔 | NSFW 屏蔽开启：不为 NSFW 场景写提示词 |
+| `image.refs` | 布尔 | 本轮有可用的参考图：当前连接的全局参考图与当前聊天角色卡的参考图（OpenAI / Gemini / OpenRouter，`{{ap::image::refs}}` 非空） |
+| `speech.on` | 布尔 | [语音合成](manifest.md#图像生成与语音合成-image--speech)可用：预设声明了 `speech`、用户开启了语音合成并选好了连接，且本轮是故事轮。为假时下列 `speech.*` 都为假 / 空 |
+| `speech.auto` | 布尔 | 回复完成后自动合成（否则用户点击合成） |
+| `speech.api` | `fish` `elevenlabs` `minimax` `gemini` `openai` `deepseek` `openrouter`（关闭时为空字符串） | 当前语音连接的 API 类型。`openrouter` 时模型来自哪家提供者不体现在变量里，标签写法看 `{{ap::speech::format}}` |
+| `speech.narrator` | 布尔 | 旁白（台词标签之外的文字）也合成 |
+| `speech.characters` | 布尔 | 当前连接有已绑定说话人的角色（`{{ap::speech::characters}}` 非空） |
 
 注意：
 
 - 阶段的 `when` 在 `stages.*` 计算之前求值，所以阶段条件里不要引用 `stages.*`。
 - 正则标记的 `requires` 与 `meta.tasks` 在组装之前求值，只能可靠地使用 `meta.*` 与 `flags.*`（`input.shaped` 在那里总为假）。
 - 结构 [`history.when`](structures.md#历史回传) 在历史改写时求值：`stages.*` 为空，`input.shaped` 为假，其余变量可用。
-- `ap preview` 中 `memory.*`、`recap.present`、`chat.group`、`meta.recent`、`last.*` 总为假；`input.shaped` 只在给了 `--input` 且预设声明了 `inputShaping` 时为真；`storyline.*` 由 `--storyline` / `--storyline-new` / `--storyline-grouped` / `--storyline-switch` / `--storyline-naming-main` 决定（默认主线、不分组；给了 `--storyline` 时分组；`storyline.frozen` 按所选配置的 `storylines.freezeVariables` 计算）。
+- `ap preview` 中 `memory.*`、`recap.present`、`chat.group`、`meta.recent`、`last.*` 总为假；`input.shaped` 只在给了 `--input` 且预设声明了 `inputShaping` 时为真；`storyline.*` 由 `--storyline` / `--storyline-new` / `--storyline-grouped` / `--storyline-switch` / `--storyline-naming-main` 决定（默认主线、不分组；给了 `--storyline` 时分组；`storyline.frozen` 按所选配置的 `storylines.freezeVariables` 计算）；`image.*` / `speech.*` 由 `--image` / `--speech` 等选项决定（见 [cli.md](cli.md#ap-preview)），默认关闭。
 - 这些变量同样是[模板](templates.md#作用域)作用域里的对象（`params.length`、`gen.type`……）。
 
 ## 诊断
