@@ -1,0 +1,217 @@
+# 繁體中文介面文案（只影響面板顯示，不進入提示詞）。
+# 鍵與 id 的對應由 `ap check` 校驗：多餘的鍵報 warn。
+
+name: 花瓣預設
+description: 與小蒼蘭一起寫故事吧！Freesia 寫故事，Petals 提建議，雙角色驅動的工作流
+
+groups:
+  role: { label: 角色 }
+  mode: { label: 模式 }
+  guidelines: { label: 寫作指南 }
+  narrative: { label: 敘事控制 }
+  pacing: { label: 節奏 }
+  style:
+    label: 文風
+    description: 選擇一種主文風（也可不用）；NSFW 場景可額外疊加 Eros。
+  main-style: { label: 主文風 }
+  features: { label: 功能 }
+  language:
+    label: 語言
+    description: 未設定的語言沿用故事已有的語言；Workflow 語言未設定時同回覆語言。
+  length: { label: 長度 }
+  narration: { label: 敘述 }
+  illustration:
+    label: 插圖
+    description: 在 AP 的多模態頁開啟影像生成時使用。
+  banned:
+    label: 自訂禁詞表
+    description: 你自己的禁用詞語、短語與表達。開啟「禁詞表」模組時追加到內建列表，關閉時單獨傳送。
+
+modules:
+  role-freesia:
+    name: Freesia
+    description: 文學妖精 Freesia 與她的小精靈 Petals；包含她與你對話時的回覆人設。
+  mode-continuation:
+    name: 續寫
+    description: 你的輸入是故事的一部分；Freesia 從結尾處直接接著寫，不重述你的內容。
+  mode-expansion:
+    name: 擴寫
+    description: 你的輸入是意圖、指令或故事片段；Freesia 把它擴展成完整的敘事。
+  mode-expansion-continuation:
+    name: 擴寫後續寫
+    description: 先把你的輸入擴寫成完整的敘事，再繼續推進一段劇情。
+  mode-preface:
+    name: 成人內容前言
+    description: 寫作前確認成人題材的簡短對話（V5 的非 Zero 模式）。關閉即為 Zero 變體。
+  content-policy:
+    name: 內容政策 (Claude)
+    description: Claude 專用——在成人內容前言之後聲明成人內容政策，緩解過度拒絕。
+  anti-evasion:
+    name: 防迴避
+    description: 不審查露骨的性與暴力描寫，不為迴避負面走向而拖延劇情，不以評論或昇華介入敘事。
+  banned-expressions:
+    name: 禁詞表
+    description: 避免陳詞濫調：禁用指定詞語與套路表達、「不是……而是……」句式、強化副詞和破折號。
+  character-enhancement: { name: 角色增強 }
+  cot-compatibility:
+    name: 思維鏈相容
+    description: 相容要求在正文前輸出自帶 <thinking> 等思考區塊的角色卡。
+  emotional-stability: { name: 防情緒化 }
+  narrative-boundaries:
+    name: 防搶話
+    description: 角色扮演——絕不替 {{user}} 行動或發言。
+  narrative-proactivity:
+    name: 允許搶話
+    description: 角色扮演——Freesia 可以替 {{user}} 寫一些次要台詞和日常動作。
+  no-wrap-up: { name: 防總結/昇華 }
+  nsfw-protocol: { name: 防發情 }
+  output-structure: { name: 輸出結構強化 }
+  pacing-control:
+    name: 控制節奏
+    description: 放慢節奏，聚焦當下的對話、動作與細節，不急於推進。
+  plot-advancement:
+    name: 推進劇情
+    description: 積極推進劇情發展：引入新事件、抉擇與轉折。
+  style-kardia:
+    name: Kardia
+    description: 自適應元文風：先分析設定與歷史，再自行校準語域、參照作品與節奏。穩妥的預設選擇。
+  style-aisthesis:
+    name: Aisthesis
+    description: 寫作的零度 + 冰山理論 + 行為主義：攝影機視角，不寫內心獨白，兼具硬漢派的易讀性。
+  style-antheia:
+    name: Antheia
+    description: 現代通俗文學融合治癒系 / 日常系 ACG 美學：柔和流暢，聚焦微小事件與人物關係。
+  style-kryos:
+    name: Kryos
+    description: 唯美主義、象徵主義與意識流的先鋒文風，取法 1920–40 年代中國現代主義（新感覺派、張愛玲、李金髮）。
+  style-melos:
+    name: Melos
+    description: 日式輕小說腔調：吐槽、對話驅動與聯想式內心獨白。
+  style-eros:
+    name: Eros（NSFW）
+    description: 輕小說風格的 NSFW 描寫：人體美學、聚焦動作、愉悅且兩情相悅。可與主文風疊加。
+  always-reply:
+    name: 始終請求元回覆
+    description: 每段故事之後，Freesia 都附上一段簡短的私人回覆。
+  antifiltering:
+    name: 反過濾 (Gemini)
+    description: Gemini 專用——在 top 之後附加一封預先寫好的超長情書，填充輸入以稀釋輸入過濾。消耗大量 Token，僅在需要時開啟。
+  event-synopsis:
+    name: 事件摘要
+    description: 每段之後輸出 <synopsis> 卡片；也是節省 Token 的資料來源（較早的樓層以摘要代替）。
+  freesia-comments:
+    name: Freesia 的評論
+    description: Freesia 回覆你時（啟用「始終請求元回覆」，或輸入中含 @Freesia），也會在正文的少量詞句上留下評論，顯示為虛線底線，懸停或輕點即可查看。
+  options:
+    name: 使用者選項
+    description: 推薦你的下一則輸入，以可點選的卡片顯示。
+  status-bar:
+    name: 狀態列
+    description: 正文上方的狀態列：日期（或第 N 天）、星期、時間、地點與天氣。
+  native-reasoning:
+    name: 原生推理
+    description: 適用於自帶推理的模型（Claude ≥ 5.5）——任務工作流不含思考步驟，腳本 / 擴充功能的 schema 直接傳送、不加思考信封，推理交給模型的原生思考。避免 Claude 的 reasoning_extraction 拒絕。
+  skip-thought:
+    name: 跳過思考 (Gemini)
+    description: Gemini 專用——讓模型的內部思考區塊只輸出一句固定的話，直接進入 Workflow 以加快輸出。需配合合成輪次「Workflow init (skip thought)」。
+
+workflows:
+  linear:
+    name: 線性
+    description: 提問 → 規劃 → 定稿。日常使用的工作流。
+    stages: { questions: 提出問題, planning: 規劃與創意, final: 撰寫正文 }
+  iterative:
+    name: 迭代
+    description: 增加「初稿 → 審閱 → 修訂」循環。品質更高，消耗更多 Token。設定草稿語言後，初稿用該語言撰寫、修訂稿用回覆語言。
+    stages: { questions: 提出問題, planning: 規劃與創意, draft: 撰寫初稿, feedback: 審閱與回饋, final: 修訂與重寫 }
+  edit:
+    name: 編輯
+    description: 線性 + 自我審閱，生成後按精確字串應用修改。
+    stages: { questions: 提出問題, planning: 規劃與創意, final: 撰寫正文, review: 審閱, edit: 修改 }
+  task:
+    name: 任務
+    stages: { thinking: 思考, content: 輸出 }
+
+params:
+  language:
+    label: 回覆語言
+    description: 故事正文與 Freesia 回覆使用的語言。未設定時沿用故事已有的語言。
+  dialogueLanguage:
+    label: 對白語言
+    description: 角色說話使用的語言。與回覆語言不同時，每句對白後附上回覆語言的翻譯（需要角色卡配合）。
+  workflowLanguage:
+    label: Workflow 語言
+    description: Workflow（Freesia 與 Petals 的討論、草稿說明、<thinking>）使用的語言；未設定時同回覆語言。用英文可節省 token。
+  draftLanguage:
+    label: 草稿語言
+    description: 僅迭代工作流：初稿用該語言撰寫（如英文），修訂時改用回覆語言。未設定時與回覆語言相同。
+  length:
+    label: 回覆長度
+    description: 每次回覆中故事正文的目標長度（不含 Workflow 與各類結構）。V5 推薦 600–800。
+    unit: 字
+  lengthMode:
+    label: 長度策略
+    options: { "": 未設定, approx: 約等於, atLeast: 不少於, atMost: 不多於 }
+  narrativePerson:
+    label: 敘述視角
+    description: 敘述部分使用的視角：固定一種人稱，或在兩種人稱之間交替。不影響對白。未設定時沿用故事已有的視角。
+    options: { "": 未設定, first: 第一人稱, second: 第二人稱, third: 第三人稱, alternating-third-first: 交替視角（第三/第一人稱）, alternating-third-second: 交替視角（第三/第二人稱） }
+  illustrationContent:
+    label: 插圖內容
+    description: 插圖的側重點。未設定時按當下情節自行選擇。
+    options: { "": 未設定, scene: 場景, closeup: 人物特寫 }
+  illustrationView:
+    label: 插圖視角
+    description: 未設定時按當下情節自行選擇。
+    options: { "": 未設定, first: 第一視角, third: 第三視角 }
+  bannedWords:
+    label: 禁用詞語
+    description: Freesia 不應使用的單個詞語，如「閃過」「一絲」。
+  bannedPhrases:
+    label: 禁用短語
+    description: 應避免的套話與意象，如「指節發白」「激起漣漪」。
+  bannedExpressions:
+    label: 禁用表達
+    description: 應避免的句式與表達方式，如「不是……而是……」「嘴角勾起一抹弧度」。每項單獨列為一行。
+
+configurations:
+  gemini: { name: Gemini (Vertex AI), description: 請求實際到達 Vertex AI 時使用，與 API 連線或反向代理無關。 }
+  gemini-aistudio: { name: Gemini (AI Studio), description: 請求實際到達 Gemini API（AI Studio）時使用，與 API 連線或反向代理無關。 }
+  gemini-other: { name: Gemini (其他), description: 其他或不確定的管道，不傳送思維簽名。 }
+  deepseek-tool: { name: DeepSeek (工具呼叫) }
+  deepseek-prefill: { name: DeepSeek (預填充), description: 僅 DeepSeek 官方 API 支援預填充，其他供應商請使用「DeepSeek (工具呼叫)」。 }
+  deepseek-claude-legacy: { name: "Claude 4.5 及之前版本" }
+  claude-4-6-5: { name: "Claude 4.6 至 Claude 5" }
+  claude-5-5-plus: { name: "Claude 5.5 及之後版本" }
+  other: { name: 其他 (結構化輸出) }
+  other-tool: { name: 其他 (工具呼叫) }
+
+vars:
+  mandatoryQuestions: { label: 必答問題, description: 每次提問階段都會提出。 }
+  optionalQuestions: { label: 可選問題, description: 由敘述者挑選最相關的 2–3 個。 }
+  bannedWords: { label: 禁用詞語, description: 不應使用的詞語。 }
+  bannedPhrases: { label: 禁用短語, description: 不應使用的套話與意象。 }
+  bannedExpressions: { label: 禁用表達, description: 不應使用的句式與表達方式。 }
+  bannedRules: { label: 禁詞表規則, description: 禁詞表中的其他規則，每項一句。 }
+insertionPoints:
+  after-identity: { label: 身份設定之後, description: 緊接在 Freesia 的身份與核心指令之後。 }
+  after-role: { label: 角色之後 }
+  guidelines: { label: 寫作指南, description: 位於指南區塊內，內建指南之後。 }
+  writing-style: { label: 文風, description: 位於文風區塊內，所選文風之後。 }
+  after-history: { label: 歷史之後, description: 緊接在聊天歷史與記憶之後，適合放當前狀態或提醒。 }
+  before-task: { label: 任務之前, description: 緊挨在工作流指令之前。 }
+
+quickReplySets:
+  petals:
+    qrList:
+      meta: { label: 元指令, title: "和 {{ap::name::narrator}} 說話：在輸入框末尾追加 @{{ap::name::narrator}}" }
+      summary:
+        label: 總結
+        title: 請 {{ap::name::narrator}} 總結目前為止的故事
+        message: "@{{ap::name::narrator}} 請總結目前為止的故事。\n{{input}}"
+      impersonate:
+        label: 代寫回覆
+        title: 請 {{ap::name::narrator}} 代寫你的下一則回覆（輸入框中的文字作為提示）
+        message: "@{{ap::name::narrator}} 請代寫我的下一則回覆。\n{{input}}"
+      storyline: { label: 故事線, title: "繼續最近的支線：在輸入框末尾追加 #" }
+      branch: { label: 新分支, title: "開始由 {{ap::name::narrator}} 命名的新支線：在輸入框末尾追加 #?" }
